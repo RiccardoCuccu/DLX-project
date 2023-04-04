@@ -1,0 +1,17 @@
+# Simulation files
+*.log
+*.qdb
+*.qpg
+*.qtl
+*.wlf
+_info
+_vmake
+transcript
+wlft*
+exempt*
+
+# Synthesis files
+*.mr
+*.svf
+*.syn
+*.vif
