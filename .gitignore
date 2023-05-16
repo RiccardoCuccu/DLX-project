@@ -1,9 +1,15 @@
 # Simulation files
+*.bin
+*.exe
+*.hdr
+*.list
 *.log
+*.mem
 *.qdb
 *.qpg
 *.qtl
 *.wlf
+*_dump.txt
 _info
 _vmake
 transcript
