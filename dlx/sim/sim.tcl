@@ -7,6 +7,7 @@ vcom -quiet ../src/a.a-cu.vhd \
 -suppress 1937;				# ** Warning: (vcom-1937) Choice in CASE statement alternative must be locally static.
 
 # Datapath (a.b)
+vcom -quiet ../src/a.b-datapath.vhd
 
 # Memory (a.c)
 vcom -quiet ../src/a.c-iram.vhd
@@ -15,7 +16,7 @@ vcom -quiet ../src/a.c-iram.vhd
 vcom -quiet ../src/a-dlx.vhd
 
 # Testbench
-vcom -quiet ../src/tb_dlx.vhd
+vcom -quiet ../src/test_bench/tb-dlx.vhd
 
 # Simulation
 vsim -quiet -t 10ps work.CFG_TB -voptargs=+acc

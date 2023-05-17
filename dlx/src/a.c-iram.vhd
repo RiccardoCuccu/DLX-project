@@ -16,8 +16,8 @@ entity IRAM is
 	generic (	RAM_DEPTH	: integer := RAM_SIZE_GLOBAL;
 			I_SIZE		: integer := IR_SIZE_GLOBAL);
 	
-	port (		Rst		: in  std_logic;
-			Clk		: in  std_logic;
+	port (		Clk		: in  std_logic;
+			Rst		: in  std_logic;
 			Addr		: in  std_logic_vector(I_SIZE - 1 downto 0);
 			Dout		: out std_logic_vector(I_SIZE - 1 downto 0));
 
@@ -41,7 +41,7 @@ begin
 	-- outputs: IRAM_mem
 
 	FILL_MEM_P: process (Rst, Clk, Addr)
-	file mem_fp		: text open READ_MODE is "./test.asm.mem";
+	file mem_fp		: text open READ_MODE is "./firmware.asm.mem";
 	variable file_line	: line;
 	variable index		: integer;
 	variable tmp_data	: std_logic_vector(I_SIZE - 1 downto 0);

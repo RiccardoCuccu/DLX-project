@@ -8,49 +8,47 @@ use work.constants.all;
 
 entity DLX_CU is
 
-	generic (
-		MICROCODE_MEM_SIZE	: integer := MMEM_SIZE_GLOBAL;		-- Microcode Memory Size
-		FUNC_SIZE		: integer := FUNC_SIZE_GLOBAL;		-- Func Field Size for R-Type Ops
-		OP_CODE_SIZE		: integer := OPC_SIZE_GLOBAL;		-- Op Code Size
---		ALU_OPC_SIZE		: integer := OPC_SIZE_GLOBAL;		-- ALU Op Code Size
-		IR_SIZE			: integer := IR_SIZE_GLOBAL;		-- Instruction Register Size
-		CW_SIZE			: integer := CW_SIZE_GLOBAL);		-- Control Word Size
+	generic (	MICROCODE_MEM_SIZE	: integer := MMEM_SIZE_GLOBAL;		-- Microcode Memory Size
+			FUNC_SIZE		: integer := FUNC_SIZE_GLOBAL;		-- Func Field Size for R-Type Ops
+			OP_CODE_SIZE		: integer := OPC_SIZE_GLOBAL;		-- Op Code Size
+--			ALU_OPC_SIZE		: integer := OPC_SIZE_GLOBAL;		-- ALU Op Code Size
+			IR_SIZE			: integer := IR_SIZE_GLOBAL;		-- Instruction Register Size
+			CW_SIZE			: integer := CW_SIZE_GLOBAL);		-- Control Word Size
 
-	port (
-		Clk			: in  std_logic;	-- Clock
-		Rst			: in  std_logic;	-- Reset:Active-Low
+	port (		Clk			: in  std_logic;	-- Clock
+			Rst			: in  std_logic;	-- Reset:Active-Low
 
-		-- Instruction Register
-		IR_IN			: in  std_logic_vector(IR_SIZE - 1 downto 0);
+			-- Instruction Register
+			IR_IN			: in  std_logic_vector(IR_SIZE - 1 downto 0);
 
-		-- IF Control Signal
-		IR_LATCH_EN		: out std_logic;	-- Instruction Register Latch Enable
-		NPC_LATCH_EN		: out std_logic;	-- NextProgramCounter Register Latch Enable
+			-- IF Control Signal
+			IR_LATCH_EN		: out std_logic;	-- Instruction Register Latch Enable
+			NPC_LATCH_EN		: out std_logic;	-- NextProgramCounter Register Latch Enable
 
-		-- ID Control Signals
-		RegA_LATCH_EN		: out std_logic;	-- Register A Latch Enable
-		RegB_LATCH_EN		: out std_logic;	-- Register B Latch Enable
-		RegIMM_LATCH_EN		: out std_logic;	-- Immediate Register Latch Enable
+			-- ID Control Signals
+			RegA_LATCH_EN		: out std_logic;	-- Register A Latch Enable
+			RegB_LATCH_EN		: out std_logic;	-- Register B Latch Enable
+			RegIMM_LATCH_EN		: out std_logic;	-- Immediate Register Latch Enable
 
-		-- EX Control Signals
-		MUXA_SEL		: out std_logic;	-- MUX-A Sel
-		MUXB_SEL		: out std_logic;	-- MUX-B Sel
-		ALU_OUTREG_EN		: out std_logic;	-- ALU Output Register Enable
-		EQ_COND			: out std_logic;	-- Branch if (not) Equal to Zero
+			-- EX Control Signals
+			MUXA_SEL		: out std_logic;	-- MUX-A Sel
+			MUXB_SEL		: out std_logic;	-- MUX-B Sel
+			ALU_OUTREG_EN		: out std_logic;	-- ALU Output Register Enable
+			EQ_COND			: out std_logic;	-- Branch if (not) Equal to Zero
 
-		-- ALU Operation Code
-		ALU_OPCODE		: out aluOp;		-- choose between implicit or explicit coding, like std_logic_vector(ALU_OPC_SIZE - 1 downto 0);
-		--ALU_OPCODE		: out std_logic_vector(ALU_OPC_SIZE - 1 downto 0);
+			-- ALU Operation Code
+			ALU_OPCODE		: out aluOp;		-- choose between implicit or explicit coding, like std_logic_vector(ALU_OPC_SIZE - 1 downto 0);
+			--ALU_OPCODE		: out std_logic_vector(ALU_OPC_SIZE - 1 downto 0);
 
-		-- MEM Control Signals
-		DRAM_WE			: out std_logic;	-- Data RAM Write Enable
-		LMD_LATCH_EN		: out std_logic;	-- LMD Register Latch Enable
-		JUMP_EN			: out std_logic;	-- JUMP Enable Signal for PC input MUX
-		PC_LATCH_EN		: out std_logic;	-- Program Counter Latch Enable
+			-- MEM Control Signals
+			DRAM_WE			: out std_logic;	-- Data RAM Write Enable
+			LMD_LATCH_EN		: out std_logic;	-- LMD Register Latch Enable
+			JUMP_EN			: out std_logic;	-- JUMP Enable Signal for PC input MUX
+			PC_LATCH_EN		: out std_logic;	-- Program Counter Latch Enable
 
-		-- WB Control signals
-		WB_MUX_SEL		: out std_logic;	-- Write Back MUX Sel
-		RF_WE			: out std_logic);	-- Register File Write Enable
+			-- WB Control signals
+			WB_MUX_SEL		: out std_logic;	-- Write Back MUX Sel
+			RF_WE			: out std_logic);	-- Register File Write Enable
 
 end DLX_CU;
 

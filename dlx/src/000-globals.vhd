@@ -10,15 +10,15 @@ package constants is
 	-- Control unit registers sizes
 	constant IR_SIZE_GLOBAL		: integer := 32;	-- Instruction Register size
 	constant PC_SIZE_GLOBAL		: integer := 32;	-- Program Counter size
-	constant MMEM_SIZE_GLOBAL	: integer := 164;	-- Microcode Memory size
-	constant RMEM_SIZE_GLOBAL	: integer := 64;	-- Microcode Relocation
+	constant MMEM_SIZE_GLOBAL	: integer := 64;	-- Microcode Memory size
+	--constant RMEM_SIZE_GLOBAL	: integer := 64;	-- Microcode Relocation
 	constant CW_SIZE_GLOBAL		: integer := 15;	-- Control Word size
 
 	-- Instruction memory
 	constant RAM_SIZE_GLOBAL	: integer := 2**8;	-- Instruction Memory size
 
 	-- Instruction cycles
-	constant IN_EXE_CYCLES_GLOBAL	: integer := 5;		-- Instructions Execution cycles
+	--constant IN_EXE_CYCLES_GLOBAL	: integer := 5;		-- Instructions Execution cycles
 
 	-- ALU Operations
 	type aluOp is (		--NOP, ADDS, LLS, LRS --- to be completed
