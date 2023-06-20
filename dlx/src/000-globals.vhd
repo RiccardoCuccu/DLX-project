@@ -6,6 +6,7 @@ package constants is
 	-- Control unit input sizes
 	constant OPC_SIZE_GLOBAL	: integer := 6;		-- OPCODE field size
 	constant FUNC_SIZE_GLOBAL	: integer := 11;	-- FUNC field size
+	constant REG_SIZE_GLOBAL	: integer := 5;		-- RS field size
 
 	-- Control unit registers sizes
 	constant IR_SIZE_GLOBAL		: integer := 32;	-- Instruction Register size
@@ -17,6 +18,10 @@ package constants is
 	-- Instruction memory
 	constant RAM_SIZE_GLOBAL	: integer := 2**8;	-- Instruction Memory size
 
+	-- Register file
+	constant RF_ADDRESSES_GLOBAL	: integer := 5;			-- Exponent address size
+	constant RF_SIZE_GLOBAL		: integer := IR_SIZE_GLOBAL;	-- Register size
+
 	-- Instruction cycles
 	--constant IN_EXE_CYCLES_GLOBAL	: integer := 5;		-- Instructions Execution cycles
 
@@ -26,6 +31,121 @@ package constants is
 				OP_BEQZ, OP_BNEZ, OP_ADDI, OP_SUBI, OP_ANDI, OP_ORI, OP_XORI, OP_SLLI, OP_NOP, OP_SRLI, OP_SNEI, OP_SLEI, OP_SGEI, OP_LW, OP_SW,
 				OP_J, OP_JAL
 			);
+	-- FUNC labels
+	type funcL is (		
+				L_RTYPE_SLL,
+				L_RTYPE_SRL,
+				L_RTYPE_SRA,
+				L_RTYPE_ADD,
+				L_RTYPE_ADDU,
+				L_RTYPE_SUB,
+				L_RTYPE_SUBU,
+				L_RTYPE_AND,
+				L_RTYPE_OR,
+				L_RTYPE_XOR,
+				L_RTYPE_SEQ,
+				L_RTYPE_SNE,
+				L_RTYPE_SLT,
+				L_RTYPE_SGT,
+				L_RTYPE_SLE,
+				L_RTYPE_SGE,
+				L_RTYPE_MOVI2S,
+				L_RTYPE_MOVS2I,
+				L_RTYPE_MOVF,
+				L_RTYPE_MOVD,
+				L_RTYPE_MOVFP2I,
+				L_RTYPE_MOVI2FP,
+				L_RTYPE_MOVI2T,
+				L_RTYPE_MOVT2I,
+				L_RTYPE_SLTU,
+				L_RTYPE_SGTU,
+				L_RTYPE_SLEU,
+				L_RTYPE_SGEU,
+				L_RTYPE_ADDF,
+				L_RTYPE_SUBF,
+				L_RTYPE_MULTF,
+				L_RTYPE_DIVF,
+				L_RTYPE_ADDD,
+				L_RTYPE_SUBD,
+				L_RTYPE_MULTD,
+				L_RTYPE_DIVD,
+				L_RTYPE_CVTF2D,
+				L_RTYPE_CVTF2I,
+				L_RTYPE_CVTD2F,
+				L_RTYPE_CVTD2I,
+				L_RTYPE_CVTI2F,
+				L_RTYPE_CVTI2D,
+				L_RTYPE_MULT,
+				L_RTYPE_DIV,
+				L_RTYPE_EQF,
+				L_RTYPE_NEF,
+				L_RTYPE_LTF,
+				L_RTYPE_GTF,
+				L_RTYPE_LEF,
+				L_RTYPE_GEF,
+				L_RTYPE_MULTU,
+				L_RTYPE_DIVU,
+				L_RTYPE_EQD,
+				L_RTYPE_NED,
+				L_RTYPE_LTD,
+				L_RTYPE_GTD,
+				L_RTYPE_LED,
+				L_RTYPE_GED,
+				L_RTYPE_NOP
+
+			);
+
+	-- OPCODE labels
+	type opcodeL is (	
+				L_RTYPE,
+				L_ITYPE_BEQZ,
+				L_ITYPE_BNEZ,
+				L_ITYPE_BFPT,
+				L_ITYPE_BFPF,
+				L_ITYPE_ADDI,
+				L_ITYPE_ADDUI,
+				L_ITYPE_SUBI,
+				L_ITYPE_SUBUI,
+				L_ITYPE_ANDI,
+				L_ITYPE_ORI,
+				L_ITYPE_XORI,
+				L_ITYPE_LHI,
+				L_ITYPE_RFE,
+				L_ITYPE_TRAP,
+				L_ITYPE_JR,
+				L_ITYPE_JALR,
+				L_ITYPE_SLLI,
+				L_ITYPE_NOP,
+				L_ITYPE_SRLI,
+				L_ITYPE_SRAI,
+				L_ITYPE_SEQI,
+				L_ITYPE_SNEI,
+				L_ITYPE_SLTI,
+				L_ITYPE_SGTI,
+				L_ITYPE_SLEI,
+				L_ITYPE_SGEI,
+				L_ITYPE_LB,
+				L_ITYPE_LH,
+				L_ITYPE_LW,
+				L_ITYPE_LBU,
+				L_ITYPE_LHU,
+				L_ITYPE_LF,
+				L_ITYPE_LD,
+				L_ITYPE_SB,
+				L_ITYPE_SH,
+				L_ITYPE_SW,
+				L_ITYPE_SF,
+				L_ITYPE_SD,
+				L_ITYPE_ITLB,
+				L_ITYPE_SLTUI,
+				L_ITYPE_SGTUI,
+				L_ITYPE_SLEUI,
+				L_ITYPE_SGEUI,
+				L_JTYPE_J,
+				L_JTYPE_JAL
+
+			);
+
 
 -- R-Type register-registe instruction -> FUNC field
 	constant RTYPE_SLL	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"04";

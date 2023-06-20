@@ -8,8 +8,8 @@ entity DLX is
 	generic (	SIZE_IR	: integer := IR_SIZE_GLOBAL;	-- Instruction Register Size
 			SIZE_PC	: integer := PC_SIZE_GLOBAL);	-- Program Counter Size
 	
-	port (		Clk	: in std_logic;
-			Rst	: in std_logic);		-- Active Low
+	port (		CLK	: in std_logic;
+			RST	: in std_logic);		-- Active Low
 
 end DLX;
 
@@ -37,8 +37,8 @@ architecture DLX_RTL of DLX is
 				IR_SIZE			: integer := IR_SIZE_GLOBAL;	-- Instruction Register Size
 				CW_SIZE			: integer := CW_SIZE_GLOBAL);	-- Control Word Size
 
-		port (		Clk			: in  std_logic;	-- Clock
-				Rst			: in  std_logic;	-- Reset:Active-Low
+		port (		CLK			: in  std_logic;	-- Clock
+				RST			: in  std_logic;	-- Reset:Active-Low
 
 				-- Instruction Register
 				IR_IN			: in  std_logic_vector(IR_SIZE - 1 downto 0);
@@ -81,8 +81,8 @@ architecture DLX_RTL of DLX is
 		generic (	IR_SIZE			: integer := IR_SIZE_GLOBAL;	-- Instruction Register size
 				PC_SIZE			: integer := PC_SIZE_GLOBAL);	-- Program Counter size
 
-		port (		Clk			: in std_logic;	-- Clock
-				Rst			: in std_logic;	-- Reset:Active-Low
+		port (		CLK			: in std_logic;	-- Clock
+				RST			: in std_logic;	-- Reset:Active-Low
 
 				IRam_DIn		: in std_logic_vector(IR_SIZE - 1 downto 0);
 
@@ -127,8 +127,8 @@ architecture DLX_RTL of DLX is
 		generic (	RAM_DEPTH	: integer := RAM_SIZE_GLOBAL;
 				I_SIZE		: integer := IR_SIZE_GLOBAL);
 
-		port (		Rst		: in  std_logic;
-				Clk		: in  std_logic;
+		port (		RST		: in  std_logic;
+				CLK		: in  std_logic;
 				Addr		: in  std_logic_vector(I_SIZE - 1 downto 0);
 				Dout		: out std_logic_vector(I_SIZE - 1 downto 0));
 
@@ -185,11 +185,11 @@ architecture DLX_RTL of DLX is
 		-- instruction must be executed
 		-- PC_BUS <= (others => '0'); 
 
---		PC_BUS_P: process (Clk, Rst)
+--		PC_BUS_P: process (CLK, RST)
 --		begin
---			if Rst = '0' then			-- asynchronous reset (active low)
+--			if RST = '0' then			-- asynchronous reset (active low)
 --				PC_BUS <= (others => '0');
---			elsif Clk'event and Clk = '0' then	-- rising clock edge
+--			elsif CLK'event and CLK = '0' then	-- rising clock edge
 --				PC_BUS <= std_logic_vector(unsigned(PC) + 4);
 --			end if;
 --		end process PC_BUS_P;
@@ -197,14 +197,14 @@ architecture DLX_RTL of DLX is
 
 		-- purpose: Instruction Register Process
 		-- type   : sequential
-		-- inputs : Clk, Rst, IRam_DOut, IR_LATCH_EN_i
+		-- inputs : CLK, RST, IRam_DOut, IR_LATCH_EN_i
 		-- outputs: IR
 
---		IR_P: process (Clk, Rst)
+--		IR_P: process (CLK, RST)
 --		begin
---			if Rst = '0' then			-- asynchronous reset (active low)
+--			if RST = '0' then			-- asynchronous reset (active low)
 --				IR <= (others => '0');
---			elsif Clk'event and Clk = '1' then	-- rising clock edge
+--			elsif CLK'event and CLK = '1' then	-- rising clock edge
 --				if (IR_LATCH_EN_i = '1') then
 --					IR <= IRam_DOut;
 --				end if;
@@ -214,14 +214,14 @@ architecture DLX_RTL of DLX is
 
 		-- purpose: Program Counter Process
 		-- type   : sequential
-		-- inputs : Clk, Rst, PC_BUS
+		-- inputs : CLK, RST, PC_BUS
 		-- outputs: PC
 
---		PC_P: process (Clk, Rst)
+--		PC_P: process (CLK, RST)
 --		begin
---			if Rst = '0' then			-- asynchronous reset (active low)
+--			if RST = '0' then			-- asynchronous reset (active low)
 --				PC <= (others => '0');
---			elsif Clk'event and Clk = '1' then	-- rising clock edge
+--			elsif CLK'event and CLK = '1' then	-- rising clock edge
 --				if (PC_LATCH_EN_i = '1') then
 --					PC <= PC_BUS;
 --				end if;
@@ -230,8 +230,8 @@ architecture DLX_RTL of DLX is
 
 		-- Control Unit Instantiation
 		CU_I: DLX_CU
-			port map (	Clk		=> Clk,
-					Rst		=> Rst,
+			port map (	CLK		=> CLK,
+					RST		=> RST,
 					IR_IN		=> IR,
 					IR_LATCH_EN	=> IR_LATCH_EN_i,
 					NPC_LATCH_EN	=> NPC_LATCH_EN_i,
@@ -252,8 +252,8 @@ architecture DLX_RTL of DLX is
 
 		-- Datapath Instantiation
 		DATAPATH_I: DLX_DATAPATH
-			port map (	Clk		=> Clk,
-					Rst		=> Rst,
+			port map (	CLK		=> CLK,
+					RST		=> RST,
 					IRam_DIn	=> IRam_DOut,
 					IR_LATCH_EN	=> IR_LATCH_EN_i,
 					NPC_LATCH_EN	=> NPC_LATCH_EN_i,
@@ -276,8 +276,8 @@ architecture DLX_RTL of DLX is
 
 		-- Instruction Ram Instantiation
 		IRAM_I: IRAM
-			port map (	Clk	=> Clk,
-					Rst	=> Rst,
+			port map (	CLK	=> CLK,
+					RST	=> RST,
 					Addr	=> PC,
 					Dout	=> IRam_DOut);
 

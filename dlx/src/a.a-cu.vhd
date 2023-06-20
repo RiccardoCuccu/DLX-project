@@ -60,73 +60,73 @@ architecture DLX_CU_HW of DLX_CU is
 	-- look-up table
 	signal cw_mem : mem_array := (	
 
-					"111100010000111",	-- x"00" RTYPE	*
-					"000000000000000",	-- x"01"
-					"111011111001100",	-- x"02" J	*
-					"000000000000000",	-- x"03" JAL
-					"111010101001000",	-- x"04" BEQZ	*
-					"000000000000000",	-- x"05" BNEZ
-					"000000000000000",	-- x"06" BFPT
-					"000000000000000",	-- x"07" BFPF
-					"111010110000111",	-- x"08" ADDI	*
-					"000000000000000",	-- x"09" ADDUI
-					"000000000000000",	-- x"0A" SUBI
-					"000000000000000",	-- x"0B" SUBUI
-					"000000000000000",	-- x"0C" ANDI
-					"000000000000000",	-- x"0D" ORI
-					"000000000000000",	-- x"0E" XORI
-					"000000000000000",	-- x"0F" LHI
-					
-					"000000000000000",	-- x"10" RFE
-					"000000000000000",	-- x"11" TRAP
-					"000000000000000",	-- x"12" JR
-					"000000000000000",	-- x"13" JALR
-					"000000000000000",	-- x"14" SLLI
-					"000000000000000",	-- x"15" NOP
-					"000000000000000",	-- x"16" SRLI
-					"000000000000000",	-- x"17" SRAI
-					"000000000000000",	-- x"18" SEQI
-					"000000000000000",	-- x"19" SNEI
-					"000000000000000",	-- x"1A" SLTI
-					"000000000000000",	-- x"1B" SGTI
-					"000000000000000",	-- x"1C" SLEI
-					"000000000000000",	-- x"1D" SGEI
-					"000000000000000",	-- x"1E"
-					"000000000000000",	-- x"1F"
+					"11" & "110" & "0010" & "0001" & "11",	-- x"00" RTYPE	*
+					"00" & "000" & "0000" & "0000" & "00",	-- x"01"
+					"11" & "101" & "1111" & "0011" & "00",	-- x"02" J	*
+					"00" & "000" & "0000" & "0000" & "00",	-- x"03" JAL
+					"11" & "101" & "0101" & "0010" & "00",	-- x"04" BEQZ	*
+					"00" & "000" & "0000" & "0000" & "00",	-- x"05" BNEZ
+					"00" & "000" & "0000" & "0000" & "00",	-- x"06" BFPT
+					"00" & "000" & "0000" & "0000" & "00",	-- x"07" BFPF
+					"11" & "101" & "0110" & "0001" & "11",	-- x"08" ADDI	*
+					"00" & "000" & "0000" & "0000" & "00",	-- x"09" ADDUI
+					"00" & "000" & "0000" & "0000" & "00",	-- x"0A" SUBI
+					"00" & "000" & "0000" & "0000" & "00",	-- x"0B" SUBUI
+					"00" & "000" & "0000" & "0000" & "00",	-- x"0C" ANDI
+					"00" & "000" & "0000" & "0000" & "00",	-- x"0D" ORI
+					"00" & "000" & "0000" & "0000" & "00",	-- x"0E" XORI
+					"00" & "000" & "0000" & "0000" & "00",	-- x"0F" LHI
 
-					"000000000000000",	-- x"20" LB
-					"000000000000000",	-- x"21" LH
-					"000000000000000",	-- x"22"
-					"000000000000000",	-- x"23" LW
-					"000000000000000",	-- x"24" LBU
-					"000000000000000",	-- x"25" LHU
-					"000000000000000",	-- x"26" LF
-					"000000000000000",	-- x"27" LD
-					"000000000000000",	-- x"28" SB
-					"000000000000000",	-- x"29" SH
-					"000000000000000",	-- x"2A"
-					"000000000000000",	-- x"2B" SW
-					"000000000000000",	-- x"2C"
-					"000000000000000",	-- x"2D"
-					"000000000000000",	-- x"2E" SF
-					"000000000000000",	-- x"2F" SD
+					"00" & "000" & "0000" & "0000" & "00",	-- x"10" RFE
+					"00" & "000" & "0000" & "0000" & "00",	-- x"11" TRAP
+					"00" & "000" & "0000" & "0000" & "00",	-- x"12" JR
+					"00" & "000" & "0000" & "0000" & "00",	-- x"13" JALR
+					"00" & "000" & "0000" & "0000" & "00",	-- x"14" SLLI
+					"00" & "000" & "0000" & "0000" & "00",	-- x"15" NOP
+					"00" & "000" & "0000" & "0000" & "00",	-- x"16" SRLI
+					"00" & "000" & "0000" & "0000" & "00",	-- x"17" SRAI
+					"00" & "000" & "0000" & "0000" & "00",	-- x"18" SEQI
+					"00" & "000" & "0000" & "0000" & "00",	-- x"19" SNEI
+					"00" & "000" & "0000" & "0000" & "00",	-- x"1A" SLTI
+					"00" & "000" & "0000" & "0000" & "00",	-- x"1B" SGTI
+					"00" & "000" & "0000" & "0000" & "00",	-- x"1C" SLEI
+					"00" & "000" & "0000" & "0000" & "00",	-- x"1D" SGEI
+					"00" & "000" & "0000" & "0000" & "00",	-- x"1E"
+					"00" & "000" & "0000" & "0000" & "00",	-- x"1F"
 
-					"000000000000000",	-- x"30"
-					"000000000000000",	-- x"31"
-					"000000000000000",	-- x"32"
-					"000000000000000",	-- x"33"
-					"000000000000000",	-- x"34"
-					"000000000000000",	-- x"35"
-					"000000000000000",	-- x"36"
-					"000000000000000",	-- x"37"
-					"000000000000000",	-- x"38" ITLB
-					"000000000000000",	-- x"39"
-					"000000000000000",	-- x"3A" SLTUI
-					"000000000000000",	-- x"3B" SGTUI
-					"000000000000000",	-- x"3C" SLEUI
-					"000000000000000",	-- x"3D" SGEUI
-					"000000000000000",	-- x"3E"
-					"000000000000000");	-- x"3F"
+					"00" & "000" & "0000" & "0000" & "00",	-- x"20" LB
+					"00" & "000" & "0000" & "0000" & "00",	-- x"21" LH
+					"00" & "000" & "0000" & "0000" & "00",	-- x"22"
+					"00" & "000" & "0000" & "0000" & "00",	-- x"23" LW
+					"00" & "000" & "0000" & "0000" & "00",	-- x"24" LBU
+					"00" & "000" & "0000" & "0000" & "00",	-- x"25" LHU
+					"00" & "000" & "0000" & "0000" & "00",	-- x"26" LF
+					"00" & "000" & "0000" & "0000" & "00",	-- x"27" LD
+					"00" & "000" & "0000" & "0000" & "00",	-- x"28" SB
+					"00" & "000" & "0000" & "0000" & "00",	-- x"29" SH
+					"00" & "000" & "0000" & "0000" & "00",	-- x"2A"
+					"00" & "000" & "0000" & "0000" & "00",	-- x"2B" SW
+					"00" & "000" & "0000" & "0000" & "00",	-- x"2C"
+					"00" & "000" & "0000" & "0000" & "00",	-- x"2D"
+					"00" & "000" & "0000" & "0000" & "00",	-- x"2E" SF
+					"00" & "000" & "0000" & "0000" & "00",	-- x"2F" SD
+
+					"00" & "000" & "0000" & "0000" & "00",	-- x"30"
+					"00" & "000" & "0000" & "0000" & "00",	-- x"31"
+					"00" & "000" & "0000" & "0000" & "00",	-- x"32"
+					"00" & "000" & "0000" & "0000" & "00",	-- x"33"
+					"00" & "000" & "0000" & "0000" & "00",	-- x"34"
+					"00" & "000" & "0000" & "0000" & "00",	-- x"35"
+					"00" & "000" & "0000" & "0000" & "00",	-- x"36"
+					"00" & "000" & "0000" & "0000" & "00",	-- x"37"
+					"00" & "000" & "0000" & "0000" & "00",	-- x"38" ITLB
+					"00" & "000" & "0000" & "0000" & "00",	-- x"39"
+					"00" & "000" & "0000" & "0000" & "00",	-- x"3A" SLTUI
+					"00" & "000" & "0000" & "0000" & "00",	-- x"3B" SGTUI
+					"00" & "000" & "0000" & "0000" & "00",	-- x"3C" SLEUI
+					"00" & "000" & "0000" & "0000" & "00",	-- x"3D" SGEUI
+					"00" & "000" & "0000" & "0000" & "00",	-- x"3E"
+					"00" & "000" & "0000" & "0000" & "00");	-- x"3F"
 
 	--signal IR_opcode : std_logic_vector(OP_CODE_SIZE - 1 downto 0);		-- OpCode part of IR
 	--signal IR_func   : std_logic_vector(FUNC_SIZE - 1 downto 0);		-- Func part of IR when Rtype
@@ -151,6 +151,10 @@ architecture DLX_CU_HW of DLX_CU is
 --	signal aluOpcode1  : std_logic_vector(ALU_OPC_SIZE - 1 downto 0) := ITYPE_NOP;
 --	signal aluOpcode2  : std_logic_vector(ALU_OPC_SIZE - 1 downto 0) := ITYPE_NOP;
 --	signal aluOpcode3  : std_logic_vector(ALU_OPC_SIZE - 1 downto 0) := ITYPE_NOP;
+
+	-- testbench signals
+	signal IR_opcode_LABEL : opcodeL;
+	signal IR_func_LABEL : funcL;
 
 begin
 
@@ -305,6 +309,130 @@ begin
 
 		end case;
 	end process ALU_OP_CODE_P;
+
+	ALU_OP_CODE_L: process (IR_opcode, IR_func)
+	begin
+		case IR_opcode is
+
+			-- R-Type instructions
+			when RTYPE =>
+				case IR_func is
+					when RTYPE_SLL		=> IR_func_LABEL <= L_RTYPE_SLL;
+					when RTYPE_SRL		=> IR_func_LABEL <= L_RTYPE_SRL;
+--					when RTYPE_SRA		=> IR_func_LABEL <= L_RTYPE_SRA;
+					when RTYPE_ADD		=> IR_func_LABEL <= L_RTYPE_ADD;
+--					when RTYPE_ADDU		=> IR_func_LABEL <= L_RTYPE_ADDU;
+					when RTYPE_SUB		=> IR_func_LABEL <= L_RTYPE_SUB;
+--					when RTYPE_SUBU		=> IR_func_LABEL <= L_RTYPE_SUBU;
+					when RTYPE_AND		=> IR_func_LABEL <= L_RTYPE_AND;
+					when RTYPE_OR		=> IR_func_LABEL <= L_RTYPE_OR;
+					when RTYPE_XOR		=> IR_func_LABEL <= L_RTYPE_XOR;
+--					when RTYPE_SEQ		=> IR_func_LABEL <= L_RTYPE_SEQ;
+					when RTYPE_SNE		=> IR_func_LABEL <= L_RTYPE_SNE;
+--					when RTYPE_SLT		=> IR_func_LABEL <= L_RTYPE_SLT;
+--					when RTYPE_SGT		=> IR_func_LABEL <= L_RTYPE_SGT;
+					when RTYPE_SLE		=> IR_func_LABEL <= L_RTYPE_SLE;
+					when RTYPE_SGE		=> IR_func_LABEL <= L_RTYPE_SGE;
+--					when RTYPE_MOVI2S	=> IR_func_LABEL <= L_RTYPE_MOVI2S;
+--					when RTYPE_MOVS2I	=> IR_func_LABEL <= L_RTYPE_MOVS2I;
+--					when RTYPE_MOVF		=> IR_func_LABEL <= L_RTYPE_MOVF;
+--					when RTYPE_MOVD		=> IR_func_LABEL <= L_RTYPE_MOVD;
+--					when RTYPE_MOVFP2I	=> IR_func_LABEL <= L_RTYPE_MOVFP2I;
+--					when RTYPE_MOVI2FP	=> IR_func_LABEL <= L_RTYPE_MOVI2FP;
+--					when RTYPE_MOVI2T	=> IR_func_LABEL <= L_RTYPE_MOVI2T;
+--					when RTYPE_MOVT2I	=> IR_func_LABEL <= L_RTYPE_MOVT2I;
+--					when RTYPE_SLTU		=> IR_func_LABEL <= L_RTYPE_SLTU;
+--					when RTYPE_SGTU		=> IR_func_LABEL <= L_RTYPE_SGTU;
+--					when RTYPE_SLEU		=> IR_func_LABEL <= L_RTYPE_SLEU;
+--					when RTYPE_SGEU		=> IR_func_LABEL <= L_RTYPE_SGEU;
+--					when RTYPE_ADDF		=> IR_func_LABEL <= L_RTYPE_ADDF;
+--					when RTYPE_SUBF		=> IR_func_LABEL <= L_RTYPE_SUBF;
+--					when RTYPE_MULTF	=> IR_func_LABEL <= L_RTYPE_MULTF;
+--					when RTYPE_DIVF		=> IR_func_LABEL <= L_RTYPE_DIVF;
+--					when RTYPE_ADDD		=> IR_func_LABEL <= L_RTYPE_ADDD;
+--					when RTYPE_SUBD		=> IR_func_LABEL <= L_RTYPE_SUBD;
+--					when RTYPE_MULTD	=> IR_func_LABEL <= L_RTYPE_MULTD;
+--					when RTYPE_DIVD		=> IR_func_LABEL <= L_RTYPE_DIVD;
+--					when RTYPE_CVTF2D	=> IR_func_LABEL <= L_RTYPE_CVTF2D;
+--					when RTYPE_CVTF2I	=> IR_func_LABEL <= L_RTYPE_CVTF2I;
+--					when RTYPE_CVTD2F	=> IR_func_LABEL <= L_RTYPE_CVTD2F;
+--					when RTYPE_CVTD2I	=> IR_func_LABEL <= L_RTYPE_CVTD2I;
+--					when RTYPE_CVTI2F	=> IR_func_LABEL <= L_RTYPE_CVTI2F;
+--					when RTYPE_CVTI2D	=> IR_func_LABEL <= L_RTYPE_CVTI2D;
+--					when RTYPE_MULT		=> IR_func_LABEL <= L_RTYPE_MUL;
+--					when RTYPE_DIV		=> IR_func_LABEL <= L_RTYPE_DIV;
+--					when RTYPE_EQF		=> IR_func_LABEL <= L_RTYPE_EQF;
+--					when RTYPE_NEF		=> IR_func_LABEL <= L_RTYPE_NEF;
+--					when RTYPE_LTF		=> IR_func_LABEL <= L_RTYPE_LTF;
+--					when RTYPE_GTF		=> IR_func_LABEL <= L_RTYPE_GTF;
+--					when RTYPE_LEF		=> IR_func_LABEL <= L_RTYPE_LEF;
+--					when RTYPE_GEF		=> IR_func_LABEL <= L_RTYPE_GEF;
+--					when RTYPE_MULTU	=> IR_func_LABEL <= L_RTYPE_MULTU;
+--					when RTYPE_DIVU		=> IR_func_LABEL <= L_RTYPE_DIVU;
+--					when RTYPE_EQD		=> IR_func_LABEL <= L_RTYPE_EQD;
+--					when RTYPE_NED		=> IR_func_LABEL <= L_RTYPE_NED;
+--					when RTYPE_LTD		=> IR_func_LABEL <= L_RTYPE_LTD;
+--					when RTYPE_GTD		=> IR_func_LABEL <= L_RTYPE_GTD;
+--					when RTYPE_LED		=> IR_func_LABEL <= L_RTYPE_LED;
+--					when RTYPE_GED		=> IR_func_LABEL <= L_RTYPE_GED;
+					when others		=> IR_func_LABEL <= L_RTYPE_NOP;
+				end case;
+				IR_opcode_LABEL <= L_RTYPE;
+
+			-- I-Type instructions
+			when ITYPE_BEQZ		=> IR_opcode_LABEL <= L_ITYPE_BEQZ;
+			when ITYPE_BNEZ		=> IR_opcode_LABEL <= L_ITYPE_BNEZ;
+--			when ITYPE_BFPT		=> IR_opcode_LABEL <= L_ITYPE_BFPT;
+--			when ITYPE_BFPF		=> IR_opcode_LABEL <= L_ITYPE_BFPF;
+			when ITYPE_ADDI		=> IR_opcode_LABEL <= L_ITYPE_ADDI;
+--			when ITYPE_ADDUI	=> IR_opcode_LABEL <= L_ITYPE_ADDUI;
+			when ITYPE_SUBI		=> IR_opcode_LABEL <= L_ITYPE_SUBI;
+--			when ITYPE_SUBUI	=> IR_opcode_LABEL <= L_ITYPE_SUBUI;
+			when ITYPE_ANDI		=> IR_opcode_LABEL <= L_ITYPE_ANDI;
+			when ITYPE_ORI		=> IR_opcode_LABEL <= L_ITYPE_ORI;
+			when ITYPE_XORI		=> IR_opcode_LABEL <= L_ITYPE_XORI;
+--			when ITYPE_LHI		=> IR_opcode_LABEL <= L_ITYPE_LHI;
+--			when ITYPE_RFE		=> IR_opcode_LABEL <= L_ITYPE_RFE;
+--			when ITYPE_TRAP		=> IR_opcode_LABEL <= L_ITYPE_TRAP;
+--			when ITYPE_JR		=> IR_opcode_LABEL <= L_ITYPE_JR;
+--			when ITYPE_JALR		=> IR_opcode_LABEL <= L_ITYPE_JALR;
+			when ITYPE_SLLI		=> IR_opcode_LABEL <= L_ITYPE_SLLI;
+			when ITYPE_NOP		=> IR_opcode_LABEL <= L_ITYPE_NOP;
+			when ITYPE_SRLI		=> IR_opcode_LABEL <= L_ITYPE_SRLI;
+--			when ITYPE_SRAI		=> IR_opcode_LABEL <= L_ITYPE_SRAI;
+--			when ITYPE_SEQI		=> IR_opcode_LABEL <= L_ITYPE_SEQI;
+			when ITYPE_SNEI		=> IR_opcode_LABEL <= L_ITYPE_SNEI;
+--			when ITYPE_SLTI		=> IR_opcode_LABEL <= L_ITYPE_SLTI;
+--			when ITYPE_SGTI		=> IR_opcode_LABEL <= L_ITYPE_SGTI;
+			when ITYPE_SLEI		=> IR_opcode_LABEL <= L_ITYPE_SLEI;
+			when ITYPE_SGEI		=> IR_opcode_LABEL <= L_ITYPE_SGEI;
+--			when ITYPE_LB		=> IR_opcode_LABEL <= L_ITYPE_LB;
+--			when ITYPE_LH		=> IR_opcode_LABEL <= L_ITYPE_LH;
+			when ITYPE_LW		=> IR_opcode_LABEL <= L_ITYPE_LW;
+--			when ITYPE_LBU		=> IR_opcode_LABEL <= L_ITYPE_LBU;
+--			when ITYPE_LHU		=> IR_opcode_LABEL <= L_ITYPE_LHU;
+--			when ITYPE_LF		=> IR_opcode_LABEL <= L_ITYPE_LF;
+--			when ITYPE_LD		=> IR_opcode_LABEL <= L_ITYPE_LD;
+--			when ITYPE_SB		=> IR_opcode_LABEL <= L_ITYPE_SB;
+--			when ITYPE_SH		=> IR_opcode_LABEL <= L_ITYPE_SH;
+			when ITYPE_SW		=> IR_opcode_LABEL <= L_ITYPE_SW;
+--			when ITYPE_SF		=> IR_opcode_LABEL <= L_ITYPE_SF;
+--			when ITYPE_SD		=> IR_opcode_LABEL <= L_ITYPE_SD;
+--			when ITYPE_ITLB		=> IR_opcode_LABEL <= L_ITYPE_ITLB;
+--			when ITYPE_SLTUI	=> IR_opcode_LABEL <= L_ITYPE_SLTUI;
+--			when ITYPE_SGTUI	=> IR_opcode_LABEL <= L_ITYPE_SGTUI;
+--			when ITYPE_SLEUI	=> IR_opcode_LABEL <= L_ITYPE_SLEUI;
+--			when ITYPE_SGEUI	=> IR_opcode_LABEL <= L_ITYPE_SGEUI;
+
+			-- J-Type instructions
+			when JTYPE_J		=> IR_opcode_LABEL <= L_JTYPE_J;
+			when JTYPE_JAL		=> IR_opcode_LABEL <= L_JTYPE_JAL;
+
+			when others		=> IR_opcode_LABEL <= L_ITYPE_NOP;
+
+		end case;
+	end process ALU_OP_CODE_L;
+
 
 	-- process to pipeline control words
 	CW_PIPE: process (Clk, Rst)

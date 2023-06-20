@@ -19,8 +19,8 @@ architecture TEST of TB_DLX is
 		generic (	SIZE_IR	: integer := IR_SIZE_GLOBAL;	-- Instruction Register Size
 				SIZE_PC	: integer := PC_SIZE_GLOBAL);	-- Program Counter Size
 
-		port (		Clk	: in std_logic;
-				Rst	: in std_logic);		-- Active Low
+		port (		CLK	: in std_logic;
+				RST	: in std_logic);		-- Active Low
 
 	end component;
 
