@@ -1,17 +1,54 @@
 # Constants & functions (000)
+vcom -quiet ../src/000-functions.vhd
 vcom -quiet ../src/000-globals.vhd
-#vcom -quiet ../src/000-functions.vhd
 
-# Control Unit (a.a)
+## Control Unit (a.a)
 vcom -quiet ../src/a.a-cu.vhd \
 -suppress 1937;				# ** Warning: (vcom-1937) Choice in CASE statement alternative must be locally static.
 
-# Datapath (a.b)
+## Datapath (a.b)
 vcom -quiet ../src/a.b-datapath.vhd
 vcom -quiet ../src/a.b.a-registerfile.vhd
 vcom -quiet ../src/a.b.b-mux41.vhd
+#vcom -quiet ../src/a.b.c-forwardingunit.vhd
 
-# Memory (a.c)
+### ALU (a.b.d)
+vcom -quiet ../src/a.b.d-alu.vhd
+
+
+#### P4Adder (a.b.d.a)
+vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4adder.vhd
+
+##### Carry Generator (a.b.d.a.a)
+vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4adder/a.b.d.a.a.d-pg_block.vhd
+vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4adder/a.b.d.a.a.c-propagate.vhd
+vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4adder/a.b.d.a.a.b-generate.vhd
+vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4adder/a.b.d.a.a.a-pg_row.vhd
+vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4adder/a.b.d.a.a-carry_generator.vhd
+
+##### Sum Generator (a.b.d.a.b)
+vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4adder/a.b.d.a.b.a.b-mux21.vhd
+vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4adder/a.b.d.a.b.a.a.a-fa.vhd
+vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4adder/a.b.d.a.b.a.a-rca.vhd
+vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4adder/a.b.d.a.b.a-carry_select_block.vhd
+vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4adder/a.b.d.a.b-sum_generator.vhd
+
+#### Booth Multiplier (a.b.d.b)
+#vcom -quiet ../src/a.b.d-alu/a.b.d.b-boothmultiplier.vhd
+
+#### Comparator (a.b.d.c)
+vcom -quiet ../src/a.b.d-alu/a.b.d.c-comparator.vhd
+
+#### Logic (a.b.d.d)
+vcom -quiet ../src/a.b.d-alu/a.b.d.d-logic.vhd
+
+#### Floating Point Adder (a.b.d.e)
+#vcom -quiet ../src/a.b.d-alu/a.b.d.e-floatingpointadder.vhd
+
+#### Floating Point Multiplier (a.b.d.f)
+#vcom -quiet ../src/a.b.d-alu/a.b.d.f-floatingpointmultiplier.vhd
+
+## Memory (a.c)
 vcom -quiet ../src/a.c-iram.vhd
 
 # DLX (a)

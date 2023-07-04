@@ -89,8 +89,19 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 
 	end component;
 
---	component ALU is
---	end component;
+	component ALU is
+		generic (	N		: integer := ALU_OP_SIZE_GLOBAL;
+				NB		: integer := ALU_BLOCK_SIZE_GLOBAL);
+
+		port (		OP1		: in	std_logic_vector(N - 1 downto 0);	-- Operand 1		/ 32 bits
+				OP2		: in	std_logic_vector(N - 1 downto 0);	-- Operand 2		/ 32 bits
+				OPC		: in	aluOp;					-- Control Signal
+				Y		: out	std_logic_vector(N - 1 downto 0);	-- Result		/ 32 bits
+				Z		: out	std_logic);				-- Zero flag	
+				--Co		: out	std_logic);
+				--Ovf		: out	std_logic);
+	end component;
+
 
 --	component FORWARDING_UNIT is
 --	end component;
@@ -113,6 +124,7 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 	-- FETCH-DECODE (IF_ID) Pipeline signals
 	signal IF_ID_PC, IF_ID_PC_NEXT : std_logic_vector(PC_SIZE - 1 downto 0);				-- Program Counter signals		/ 32 bits
 	signal IF_ID_IR, IF_ID_IR_NEXT : std_logic_vector(IR_SIZE - 1 downto 0);				-- Instruction Register signals		/ 32 bits
+	signal IF_ID_ALU_OPCODE, IF_ID_ALU_OPCODE_NEXT : aluOp;							-- ALU Operation Code
 
 	-- DECODE-EXECUTE (DE_EX) Pipeline signals
 	signal ID_EX_PC, ID_EX_PC_NEXT : std_logic_vector(PC_SIZE - 1 downto 0);				-- Program Counter signals		/ 32 bits
@@ -121,6 +133,7 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 	signal ID_EX_RF_DATAIN, ID_EX_RF_DATAIN_NEXT : std_logic_vector(RF_SIZE_GLOBAL - 1 downto 0);		-- Register File - Write data		/ 32 bits
 	signal ID_EX_RF_OUT1, ID_EX_RF_OUT1_NEXT : std_logic_vector(RF_SIZE_GLOBAL - 1 downto 0);		-- Register File - Read data 1		/ 32 bits
 	signal ID_EX_RF_OUT2, ID_EX_RF_OUT2_NEXT : std_logic_vector(RF_SIZE_GLOBAL - 1 downto 0);		-- Register File - Read data 2		/ 32 bits
+	signal ID_EX_ALU_OPCODE, ID_EX_ALU_OPCODE_NEXT : aluOp;							-- ALU Operation Code
 
 	-- EXECUTE-MEMORY (EX_MEM) Pipeline signals
 
@@ -132,8 +145,9 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 	signal RF_DATAIN, RF_OUT1, RF_OUT2 : std_logic_vector(RF_SIZE_GLOBAL - 1 downto 0);			-- / 32 bits
 
 	-- ALU signals
+	signal ALU_ZERO : std_logic;
 	signal ALU_MUX_SEL1, ALU_MUX_SEL2 : std_logic_vector(1 downto 0);					-- /  2 bits
-	signal ALU_OP1, ALU_OP2 : std_logic_vector(RF_SIZE_GLOBAL - 1 downto 0);				-- / 32 bits
+	signal ALU_OP1, ALU_OP2, ALU_OUTPUT : std_logic_vector(RF_SIZE_GLOBAL - 1 downto 0);			-- / 32 bits
 
 	-- Forwarding Unit signals
 
@@ -153,6 +167,7 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 					-- FETCH-DECODE
 					IF_ID_PC <= (others => '0');			-- Program Counter signal
 					IF_ID_IR <= (others => '0');			-- Instruction Register signal
+					IF_ID_ALU_OPCODE <= OP_NOP;			-- ALU Operation Code
 
 					-- DECODE-EXECUTE
 					ID_EX_PC <= (others => '0');			-- Program Counter signal
@@ -161,6 +176,7 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 					ID_EX_RF_DATAIN <= (others => '0');		-- Register File - Write data
 					ID_EX_RF_OUT1 <= (others => '0');		-- Register File - Read data 1
 					ID_EX_RF_OUT2 <= (others => '0');		-- Register File - Read data 2
+					ID_EX_ALU_OPCODE <= OP_NOP;			-- ALU Operation Code
 
 					-- EXECUTE-MEMORY
 
@@ -169,6 +185,7 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 					-- FETCH-DECODE
 					IF_ID_PC <= IF_ID_PC_NEXT;			-- Program Counter signal
 					IF_ID_IR <= IF_ID_IR_NEXT;			-- Instruction Register signal
+					IF_ID_ALU_OPCODE <= IF_ID_ALU_OPCODE_NEXT;	-- ALU Operation Code
 
 					-- DECODE-EXECUTE
 					ID_EX_PC <= ID_EX_PC_NEXT;			-- Program Counter signal
@@ -177,6 +194,7 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 					ID_EX_RF_DATAIN <= ID_EX_RF_DATAIN_NEXT;	-- Register File - Write data
 					ID_EX_RF_OUT1 <= ID_EX_RF_OUT1_NEXT;		-- Register File - Read data 1
 					ID_EX_RF_OUT2 <= ID_EX_RF_OUT2_NEXT;		-- Register File - Read data 2
+					ID_EX_ALU_OPCODE <= ID_EX_ALU_OPCODE_NEXT;	-- ALU Operation Code
 
 					-- EXECUTE-MEMORY
 
@@ -259,6 +277,7 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 		-- IF-ID PIPELINE
 		IF_ID_PC_NEXT <= PC;
 		IF_ID_IR_NEXT <= IR;
+		IF_ID_ALU_OPCODE_NEXT <= ALU_OPCODE;
 
 
 		------------------------------------------------------------------------------------------------------------------------
@@ -291,36 +310,14 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 			end if;
 		end process DECODE_P;
 
-
-		-- ID-EX PIPELINE
-		ID_EX_PC_NEXT <= IF_ID_PC;
-		ID_EX_IR_NEXT <= IF_ID_IR;
---		ID_EX_OFFSET_NEXT <= ID_EX_OFFSET;
-
-		ID_EX_RF_ADD_WR_NEXT <= IF_ID_IR(IR_SIZE - OPC_SIZE_GLOBAL - REG_SIZE_GLOBAL*2 - 1 downto IR_SIZE - OPC_SIZE_GLOBAL - REG_SIZE_GLOBAL*3);			-- IF_ID_IR(15 downto 11);
-		ID_EX_RF_DATAIN_NEXT <= RF_DATAIN;
-		ID_EX_RF_OUT1_NEXT <= RF_OUT1;
-		ID_EX_RF_OUT2_NEXT <= RF_OUT2;
-
-		------------------------------------------------------------------------------------------------------------------------
-		-- EXECUTE (EX)
-		------------------------------------------------------------------------------------------------------------------------
-		--	type   : sequential
-		--	inputs : 
-		--	outputs: 
-
-		------------------------------------------------------------------------------------------------------------------------
-		-- MEMORY (MEM)
-		------------------------------------------------------------------------------------------------------------------------
-
-		------------------------------------------------------------------------------------------------------------------------
-		-- WRITE BACK (WB)
-		------------------------------------------------------------------------------------------------------------------------
-
-
-		------------------------------------------------------------------------------------------------------------------------
-		-- Components Mapping
-		------------------------------------------------------------------------------------------------------------------------
+--		JUMP_ADDRESS_P: process(Branch_r, IF_ID_PC, ID_EX_OFFSET_NEXT, RF_OUT1)
+--		begin
+--			if (Branch_r = '0') then			-- NOTA: Branch_r è un segnale per indicare il jump relativo (definirlo come input del datapath)
+--				JUMP_PC <= IF_ID_PC + ID_EX_OFFSET_NEXT;		-- relative jump
+--			else
+--				JUMP_PC <= RF_OUT1;					-- absolute jump
+--			end if;
+--		end process;
 
 		REGF: REGISTER_FILE
 
@@ -340,14 +337,63 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 				OUT1	=> RF_OUT1,
 				OUT2	=> RF_OUT2);
 
+-- NOTE: da definire
+--		IMMGR: IMMEDIATE_GENERATOR
+--
+--		generic map (	N_tot  	=> M)
+--		
+--		port map (	INSTRUCTION => IF_ID_INSTRUCTION,
+--				IMMEDIATE   => ID_EX_OFFSET_NEXT);
+
+--		-- used for branch prediction
+--		COMP_REG: process(ALUSrc_PC, ALU_result, EX_MEM_ALU_result, Branch_j, Branch, EX_MEM_RD, ID_EX_RD, MEM_WB_RD, writa_data_f, read_addr_f1, read_data_f1)
+--		begin
+--			{...}
+--		end process;
+
+--		-- How stall the pipeline, this is the mux for control signals
+--		STALL_CONTROL_SIGNAL: process(stall, EXECUTE_CONTROL_SIGNALS, MemWrite, MemRead, Branch, RegWrite, MemToReg, ALUSrc, ALUSrc_PC)
+--		begin
+--			{..}
+--		end process;
+
+--		-- choose if use integer or floating register according OPCODE
+--		CHOOSE_I_F_REG: process(IF_ID_INSTRUCTION(31 DOWNTO 26))
+--		begin
+--			{..}
+--		end process;
+
+--		CHOOSE_RD: process(IF_ID_INSTRUCTION, ALUSrc, Branch_j, Float_operation_RD)
+--		begin
+--			{..}
+--		end process;
+
+		-- ID-EX PIPELINE
+		ID_EX_PC_NEXT <= IF_ID_PC;
+		ID_EX_IR_NEXT <= IF_ID_IR;
+--		ID_EX_OFFSET_NEXT <= ID_EX_OFFSET;
+
+		ID_EX_RF_ADD_WR_NEXT <= IF_ID_IR(IR_SIZE - OPC_SIZE_GLOBAL - REG_SIZE_GLOBAL*2 - 1 downto IR_SIZE - OPC_SIZE_GLOBAL - REG_SIZE_GLOBAL*3);			-- IF_ID_IR(15 downto 11);
+		ID_EX_RF_DATAIN_NEXT <= RF_DATAIN;
+		ID_EX_RF_OUT1_NEXT <= RF_OUT1;
+		ID_EX_RF_OUT2_NEXT <= RF_OUT2;
+
+		ID_EX_ALU_OPCODE_NEXT <= IF_ID_ALU_OPCODE;
+
+		------------------------------------------------------------------------------------------------------------------------
+		-- EXECUTE (EX)
+		------------------------------------------------------------------------------------------------------------------------
+		--	type   : sequential
+		--	inputs : 
+		--	outputs: 
 
 		ALUMUX1: MUX41
-		
+
 		generic map (	N	=> RF_SIZE_GLOBAL)
-		
+
 		port map (	A	=> ID_EX_RF_OUT1,
 				B	=> ID_EX_RF_DATAIN,
-				C	=> (others => '0'),     -- EX_MEM_ALU_result     (forwarding)
+				C	=> (others => '0'),	-- NOTA: EX_MEM_ALU_result     (forwarding)
 				D	=> ID_EX_PC,
 				S	=> ALU_MUX_SEL1,
 				Y	=> ALU_OP1);
@@ -355,12 +401,64 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 		ALUMUX2: MUX41
 
 		generic map (	N	=> RF_SIZE_GLOBAL)
-		
+
 		port map (	A	=> ID_EX_RF_OUT2,
 				B	=> ID_EX_RF_DATAIN,
-				C	=> (others => '0'),     -- EX_MEM_ALU_result     (forwarding)
+				C	=> (others => '0'),	-- NOTA: EX_MEM_ALU_result     (forwarding)
 				D	=> (others => '0'),
 				S	=> ALU_MUX_SEL2,
 				Y	=> ALU_OP2);
+
+--		RS2_OR_IMM: process(ID_EX_ALUSrc, ID_EX_immediate, EX_MEM_FowardB_Next_app)
+--		begin
+--			-- for immediate operation
+--			if (ID_EX_ALUSrc = '1') then
+--				ALU_operand2 <= ID_EX_immediate;
+--			-- for other operation
+--			else
+--				ALU_operand2 <= EX_MEM_FowardB_Next_app;
+--			end if;
+--		end process;
+
+--		SW_OR_SB: process(EX_MEM_FowardB_Next_app, ID_EX_Take_MSB)
+--		begin
+--			-- for store a byte
+--			if (ID_EX_Take_MSB = '1') then
+--				EX_MEM_FowardB_Next(31 downto 8) <= (Others => '0');
+--				EX_MEM_FowardB_Next(7 downto 0) <= EX_MEM_FowardB_Next_app(31 downto 24);
+--			-- for other store
+--			else
+--				EX_MEM_FowardB_Next <= EX_MEM_FowardB_Next_app;
+--			end if;
+--		end process;
+
+		ARITHMETIC_LOGIC_UNIT: ALU
+			
+			generic map (	N	=> ALU_OP_SIZE_GLOBAL,
+					NB	=> ALU_BLOCK_SIZE_GLOBAL)
+			
+			port map (	OP1	=> ALU_OP1,
+					OP2	=> ALU_OP2,
+					OPC	=> ID_EX_ALU_OPCODE,
+					Y	=> ALU_OUTPUT,
+					Z	=> ALU_ZERO);
+
+		------------------------------------------------------------------------------------------------------------------------
+		-- MEMORY (MEM)
+		------------------------------------------------------------------------------------------------------------------------
+
+		------------------------------------------------------------------------------------------------------------------------
+		-- WRITE BACK (WB)
+		------------------------------------------------------------------------------------------------------------------------
+
+
+		------------------------------------------------------------------------------------------------------------------------
+		-- Components Mapping
+		------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
 
 end DLX_DATAPATH_ARCH;

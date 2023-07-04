@@ -1,32 +1,42 @@
 library ieee;
 use ieee.std_logic_1164.all;
+use work.functions.all;
 
 package constants is
 
 	-- Control unit input sizes
-	constant OPC_SIZE_GLOBAL	: integer := 6;		-- OPCODE field size
-	constant FUNC_SIZE_GLOBAL	: integer := 11;	-- FUNC field size
-	constant REG_SIZE_GLOBAL	: integer := 5;		-- RS field size
+	constant OPC_SIZE_GLOBAL		: integer := 6;						-- OPCODE field size
+	constant FUNC_SIZE_GLOBAL		: integer := 11;					-- FUNC field size
+	constant REG_SIZE_GLOBAL		: integer := 5;						-- RS field size
 
 	-- Control unit registers sizes
-	constant IR_SIZE_GLOBAL		: integer := 32;	-- Instruction Register size
-	constant PC_SIZE_GLOBAL		: integer := 32;	-- Program Counter size
-	constant MMEM_SIZE_GLOBAL	: integer := 64;	-- Microcode Memory size
-	--constant RMEM_SIZE_GLOBAL	: integer := 64;	-- Microcode Relocation
-	constant CW_SIZE_GLOBAL		: integer := 15;	-- Control Word size
+	constant IR_SIZE_GLOBAL			: integer := 32;					-- Instruction Register size
+	constant PC_SIZE_GLOBAL			: integer := 32;					-- Program Counter size
+	constant MMEM_SIZE_GLOBAL		: integer := 64;					-- Microcode Memory size
+	--constant RMEM_SIZE_GLOBAL		: integer := 64;					-- Microcode Relocation
+	constant CW_SIZE_GLOBAL			: integer := 15;					-- Control Word size
 
 	-- Instruction memory
-	constant RAM_SIZE_GLOBAL	: integer := 2**8;	-- Instruction Memory size
+	constant RAM_SIZE_GLOBAL		: integer := 2**8;					-- Instruction Memory size
 
 	-- Register file
-	constant RF_ADDRESSES_GLOBAL	: integer := 5;			-- Exponent address size
-	constant RF_SIZE_GLOBAL		: integer := IR_SIZE_GLOBAL;	-- Register size
+	constant RF_ADDRESSES_GLOBAL		: integer := 5;						-- Exponent address size
+	constant RF_SIZE_GLOBAL			: integer := IR_SIZE_GLOBAL;				-- Register size
 
 	-- Instruction cycles
-	--constant IN_EXE_CYCLES_GLOBAL	: integer := 5;		-- Instructions Execution cycles
+	--constant IN_EXE_CYCLES_GLOBAL		: integer := 5;						-- Instructions Execution cycles
+
+	-- ALU registers sizes
+	constant ALU_OP_SIZE_GLOBAL		: integer := 32;					-- ALU operands size
+	constant ALU_BLOCK_SIZE_GLOBAL		: integer := 8;						-- ALU blocks size
+	constant ALU_BITBLOCK_SIZE_GLOBAL	: integer := ALU_OP_SIZE_GLOBAL/ALU_BLOCK_SIZE_GLOBAL;	-- ALU bits for each block
+	constant ALU_OP_MUX_SIZE_GLOBAL		: integer := ALU_BITBLOCK_SIZE_GLOBAL;			-- ALU MUX operands size
+	constant ALU_OP_RCA_SIZE_GLOBAL		: integer := ALU_BITBLOCK_SIZE_GLOBAL;			-- ALU RCA operands size
+	constant ALU_EXPP4_GLOBAL		: integer := log2(ALU_OP_SIZE_GLOBAL);			-- ALU exponent size
 
 	-- ALU Operations
 	type aluOp is (		--NOP, ADDS, LLS, LRS --- to be completed
+				--OP_SRA,
 				OP_SLL, OP_SRL, OP_ADD, OP_SUB, OP_AND, OP_OR, OP_XOR, OP_SNE, OP_SLE, OP_SGE,
 				OP_BEQZ, OP_BNEZ, OP_ADDI, OP_SUBI, OP_ANDI, OP_ORI, OP_XORI, OP_SLLI, OP_NOP, OP_SRLI, OP_SNEI, OP_SLEI, OP_SGEI, OP_LW, OP_SW,
 				OP_J, OP_JAL
