@@ -63,6 +63,7 @@ architecture DLX_RTL of DLX is
 				--ALU_OPCODE		: out std_logic_vector(ALU_OPC_SIZE - 1 downto 0);
 
 				-- MEM Control Signals
+				DRAM_RE			: out std_logic;	-- Data RAM Read Enable
 				DRAM_WE			: out std_logic;	-- Data RAM Write Enable
 				LMD_LATCH_EN		: out std_logic;	-- LMD Register Latch Enable
 				JUMP_EN			: out std_logic;	-- JUMP Enable Signal for PC input MUX
@@ -106,6 +107,7 @@ architecture DLX_RTL of DLX is
 				--ALU_OPCODE		: in std_logic_vector(ALU_OPC_SIZE - 1 downto 0);
 
 				-- MEM Control Signals
+				DRAM_RE			: in std_logic;	-- Data RAM Read Enable
 				DRAM_WE			: in std_logic;	-- Data RAM Write Enable
 				LMD_LATCH_EN		: in std_logic;	-- LMD Register Latch Enable
 				JUMP_EN			: in std_logic;	-- JUMP Enable Signal for PC input MUX
@@ -167,6 +169,7 @@ architecture DLX_RTL of DLX is
 	signal MUXA_SEL_i : std_logic;
 	signal MUXB_SEL_i : std_logic;
 	signal ALU_OUTREG_EN_i : std_logic;
+	signal DRAM_RE_i : std_logic;
 	signal DRAM_WE_i : std_logic;
 	signal LMD_LATCH_EN_i : std_logic;
 	signal PC_LATCH_EN_i : std_logic;
@@ -243,6 +246,7 @@ architecture DLX_RTL of DLX is
 					ALU_OUTREG_EN	=> ALU_OUTREG_EN_i,
 					EQ_COND		=> EQ_COND_i,
 					ALU_OPCODE	=> ALU_OPCODE_i,
+					DRAM_RE		=> DRAM_WE_i,
 					DRAM_WE		=> DRAM_WE_i,
 					LMD_LATCH_EN	=> LMD_LATCH_EN_i,
 					JUMP_EN		=> JUMP_EN_i,
@@ -265,6 +269,7 @@ architecture DLX_RTL of DLX is
 					ALU_OUTREG_EN	=> ALU_OUTREG_EN_i,
 					EQ_COND		=> EQ_COND_i,
 					ALU_OPCODE	=> ALU_OPCODE_i,
+					DRAM_RE		=> DRAM_RE_i,
 					DRAM_WE		=> DRAM_WE_i,
 					LMD_LATCH_EN	=> LMD_LATCH_EN_i,
 					JUMP_EN		=> JUMP_EN_i,

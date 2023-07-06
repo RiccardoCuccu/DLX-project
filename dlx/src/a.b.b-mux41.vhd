@@ -3,7 +3,7 @@ use ieee.std_logic_1164.all;
 use work.constants.all;
 
 entity MUX41 is
-	generic	(	N	: integer := 32);
+	generic	(	N	: integer := RF_SIZE_GLOBAL);
 
 	port	(	A	: in	std_logic_vector(N - 1 downto 0);
 			B	: in	std_logic_vector(N - 1 downto 0);

@@ -9,12 +9,13 @@ vcom -quiet ../src/a.a-cu.vhd \
 ## Datapath (a.b)
 vcom -quiet ../src/a.b-datapath.vhd
 vcom -quiet ../src/a.b.a-registerfile.vhd
-vcom -quiet ../src/a.b.b-mux41.vhd
+vcom -quiet ../src/a.b.b-mux21.vhd
+#vcom -quiet ../src/a.b.b-mux41.vhd
 #vcom -quiet ../src/a.b.c-forwardingunit.vhd
+vcom -quiet ../src/a.b.e-dram.vhd
 
 ### ALU (a.b.d)
 vcom -quiet ../src/a.b.d-alu.vhd
-
 
 #### P4Adder (a.b.d.a)
 vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4adder.vhd
@@ -37,10 +38,10 @@ vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4adder/a.b.d.a.b-sum_generator.vhd
 #vcom -quiet ../src/a.b.d-alu/a.b.d.b-boothmultiplier.vhd
 
 #### Comparator (a.b.d.c)
-vcom -quiet ../src/a.b.d-alu/a.b.d.c-comparator.vhd
+#vcom -quiet ../src/a.b.d-alu/a.b.d.c-comparator.vhd
 
 #### Logic (a.b.d.d)
-vcom -quiet ../src/a.b.d-alu/a.b.d.d-logic.vhd
+#vcom -quiet ../src/a.b.d-alu/a.b.d.d-logic.vhd
 
 #### Floating Point Adder (a.b.d.e)
 #vcom -quiet ../src/a.b.d-alu/a.b.d.e-floatingpointadder.vhd

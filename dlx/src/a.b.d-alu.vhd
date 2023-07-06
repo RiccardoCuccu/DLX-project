@@ -73,26 +73,25 @@ architecture BEHAVIORAL of ALU is
 			--Operand_1 : in  std_logic_vector(I_SIZE - 1 downto 0);
 			--Operand_2 : in  std_logic_vector(I_SIZE - 1 downto 0);
 			--Dout : out std_logic_vector(I_SIZE - 1 downto 0)
-			--);
-		
+			--);		
 	--end component;
 
 --	component fpAdderTOP is
 --		Port
 --		(
---			A       :   in  std_logic_vector(31 downto 0);
---			B       :   in  std_logic_vector(31 downto 0);
---			AddSub  :   in  std_logic;                      --0 add, 1 sub
---			Y       :   out std_logic_vector(31 downto 0)
+--			A	:   in  std_logic_vector(31 downto 0);
+--			B	:   in  std_logic_vector(31 downto 0);
+--			AddSub	:   in  std_logic;                      --0 add, 1 sub
+--			Y	:   out std_logic_vector(31 downto 0)
 --		);
 --	end component;
 
 --	component fpMultiplier is
 --		Port
 --		(
---			A : in  std_logic_vector(31 downto 0); --2nd operand
---			B : in  std_logic_vector(31 downto 0); --1st operand
---			Y : out std_logic_vector(31 downto 0) --result
+--			A : in  std_logic_vector(31 downto 0);	-- 2nd operand
+--			B : in  std_logic_vector(31 downto 0);	-- 1st operand
+--			Y : out std_logic_vector(31 downto 0)	-- result
 --		);
 --	end component;
 
@@ -106,11 +105,11 @@ architecture BEHAVIORAL of ALU is
 		------------------------------------------------------------------------------------------------------------------------
 		-- Processes
 		------------------------------------------------------------------------------------------------------------------------
-	
+
 		COMPUTATION: process(OP1, OP2, OPC)
 		begin
 			case(OPC) is
-	
+
 				-- Shift
 
 --				when OP_SLL =>	-- unsigned, R[regc] <-- R[rega] << R[regb]_27..31
@@ -138,9 +137,9 @@ architecture BEHAVIORAL of ALU is
 					OP_B <= OP2;
 					OP_Ci <= '0';
 					Y_TMP <= OP_S;
-	
+
 --				when OP_SUB =>	-- signed, R[regc] <-- R[rega] - R[regb]
---				when OP_SUBI =>	-- signed, R[regb] <-- R[rega ] - imm16
+--				when OP_SUBI =>	-- signed, R[regb] <-- R[rega] - imm16
 				when OP_SUB | OP_SUBI =>
 					OP_A <= OP1;
 					OP_B <= NOT OP2;
@@ -148,7 +147,7 @@ architecture BEHAVIORAL of ALU is
 					Y_TMP <= OP_S;
 
 				-- Logic Operations
-	
+
 --				when OP_AND =>	-- unsigned bitwise basis, R[regc] <-- R[rega] & R[regb]
 --				when OP_ANDI =>	-- unsigned bitwise basis, R[regb] <-- R[rega] & uimm16
 				when OP_AND | OP_ANDI =>
@@ -160,7 +159,7 @@ architecture BEHAVIORAL of ALU is
 					Y_TMP <= OP1 or OP2;
 
 --				when OP_XOR =>	-- unsigned bitwise basis, R[regc] <-- R[rega] XOR R[regb]
---				when OP_XORI =>	-- unsigned bitwise basis, R[regb] <-- R[rega ] XOR uimm16
+--				when OP_XORI =>	-- unsigned bitwise basis, R[regb] <-- R[rega] XOR uimm16
 				when OP_XOR | OP_XORI =>
 					Y_TMP <= OP1 xor OP2;
 
@@ -219,11 +218,11 @@ architecture BEHAVIORAL of ALU is
 		end process;
 
 		Y <= Y_TMP;
-	
+
 		------------------------------------------------------------------------------------------------------------------------
 		-- Components Mapping
 		------------------------------------------------------------------------------------------------------------------------
-	
+
 		SUM: P4_ADDER
 		generic map (N, NB)
 		port map (OP_A, OP_B, OP_Ci, OP_S, open);

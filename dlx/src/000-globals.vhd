@@ -14,7 +14,7 @@ package constants is
 	constant PC_SIZE_GLOBAL			: integer := 32;					-- Program Counter size
 	constant MMEM_SIZE_GLOBAL		: integer := 64;					-- Microcode Memory size
 	--constant RMEM_SIZE_GLOBAL		: integer := 64;					-- Microcode Relocation
-	constant CW_SIZE_GLOBAL			: integer := 15;					-- Control Word size
+	constant CW_SIZE_GLOBAL			: integer := 16;					-- Control Word size
 
 	-- Instruction memory
 	constant RAM_SIZE_GLOBAL		: integer := 2**8;					-- Instruction Memory size
@@ -33,6 +33,10 @@ package constants is
 	constant ALU_OP_MUX_SIZE_GLOBAL		: integer := ALU_BITBLOCK_SIZE_GLOBAL;			-- ALU MUX operands size
 	constant ALU_OP_RCA_SIZE_GLOBAL		: integer := ALU_BITBLOCK_SIZE_GLOBAL;			-- ALU RCA operands size
 	constant ALU_EXPP4_GLOBAL		: integer := log2(ALU_OP_SIZE_GLOBAL);			-- ALU exponent size
+
+	-- DRAM
+	constant DRAM_SIZE_GLOBAL		: integer := 128;					-- DRAM size
+	constant DRAM_WORD_SIZE_GLOBAL		: integer := ALU_OP_SIZE_GLOBAL;			-- DRAM registers size
 
 	-- ALU Operations
 	type aluOp is (		--NOP, ADDS, LLS, LRS --- to be completed
