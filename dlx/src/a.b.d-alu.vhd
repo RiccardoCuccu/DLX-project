@@ -73,7 +73,7 @@ architecture BEHAVIORAL of ALU is
 			--Operand_1 : in  std_logic_vector(I_SIZE - 1 downto 0);
 			--Operand_2 : in  std_logic_vector(I_SIZE - 1 downto 0);
 			--Dout : out std_logic_vector(I_SIZE - 1 downto 0)
-			--);		
+			--);
 	--end component;
 
 --	component fpAdderTOP is

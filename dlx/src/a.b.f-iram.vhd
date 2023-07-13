@@ -13,13 +13,13 @@ use work.constants.all;
 
 entity IRAM is
 	
-	generic (	RAM_DEPTH	: integer := RAM_SIZE_GLOBAL;
+	generic (	RAM_DEPTH	: integer := IRAM_SIZE_GLOBAL;
 			I_SIZE		: integer := IR_SIZE_GLOBAL);
 	
-	port (		Clk		: in  std_logic;
-			Rst		: in  std_logic;
-			Addr		: in  std_logic_vector(I_SIZE - 1 downto 0);
-			Dout		: out std_logic_vector(I_SIZE - 1 downto 0));
+	port (		--CLK		: in  std_logic;
+			RST		: in  std_logic;
+			ADDR		: in  std_logic_vector(I_SIZE - 1 downto 0);
+			DOUT		: out std_logic_vector(I_SIZE - 1 downto 0));
 
 end IRAM;
 
@@ -32,21 +32,21 @@ architecture BEHAVIORAL of IRAM is
 
 begin
 
-	-- Dout <= conv_std_logic_vector(IRAM_mem(conv_integer(unsigned(Addr))),I_SIZE);
-	Dout <= IRAM_mem(conv_integer(unsigned(Addr(I_SIZE - 1 downto 2))));
+	-- DOUT <= conv_std_logic_vector(IRAM_mem(conv_integer(unsigned(ADDR))),I_SIZE);
+	DOUT <= IRAM_mem(conv_integer(unsigned(ADDR(I_SIZE - 1 downto 2))));
 
 	-- purpose: This process is in charge of filling the Instruction RAM with the firmware
 	-- type   : combinational
-	-- inputs : Rst
+	-- inputs : RST
 	-- outputs: IRAM_mem
 
-	FILL_MEM_P: process (Rst, Clk, Addr)
+	FILL_MEM_P: process (RST, ADDR)
 	file mem_fp		: text open READ_MODE is "./firmware.asm.mem";
 	variable file_line	: line;
 	variable index		: integer;
 	variable tmp_data	: std_logic_vector(I_SIZE - 1 downto 0);
 	begin
-		if (Rst = '0') then					-- reset active low
+		if (RST = '0') then					-- Reset (active low)
 			index := 0;
 			while not endfile(mem_fp) loop
 				readline(mem_fp, file_line);
@@ -55,7 +55,7 @@ begin
 				index := index + 1;
 			end loop;
 		--elsif (CLK = '0') then
-		--	Dout <= IRAM_mem(conv_integer(unsigned(Addr(I_SIZE - 1 downto 2))));
+		--	DOUT <= IRAM_mem(conv_integer(unsigned(ADDR(I_SIZE - 1 downto 2))));
 		end if;
 	end process FILL_MEM_P;
 

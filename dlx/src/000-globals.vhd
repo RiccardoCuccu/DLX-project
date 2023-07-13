@@ -4,20 +4,22 @@ use work.functions.all;
 
 package constants is
 
+	constant SIZE_GLOBAL			: integer := 32;					-- Default size
+
 	-- Control unit input sizes
 	constant OPC_SIZE_GLOBAL		: integer := 6;						-- OPCODE field size
 	constant FUNC_SIZE_GLOBAL		: integer := 11;					-- FUNC field size
 	constant REG_SIZE_GLOBAL		: integer := 5;						-- RS field size
 
 	-- Control unit registers sizes
-	constant IR_SIZE_GLOBAL			: integer := 32;					-- Instruction Register size
-	constant PC_SIZE_GLOBAL			: integer := 32;					-- Program Counter size
+	constant IR_SIZE_GLOBAL			: integer := SIZE_GLOBAL;				-- Instruction Register size
+	constant PC_SIZE_GLOBAL			: integer := SIZE_GLOBAL;				-- Program Counter size
 	constant MMEM_SIZE_GLOBAL		: integer := 64;					-- Microcode Memory size
 	--constant RMEM_SIZE_GLOBAL		: integer := 64;					-- Microcode Relocation
 	constant CW_SIZE_GLOBAL			: integer := 16;					-- Control Word size
 
 	-- Instruction memory
-	constant RAM_SIZE_GLOBAL		: integer := 2**8;					-- Instruction Memory size
+	constant IRAM_SIZE_GLOBAL		: integer := 2**8;					-- Instruction Memory size
 
 	-- Register file
 	constant RF_ADDRESSES_GLOBAL		: integer := 5;						-- Exponent address size
@@ -27,7 +29,7 @@ package constants is
 	--constant IN_EXE_CYCLES_GLOBAL		: integer := 5;						-- Instructions Execution cycles
 
 	-- ALU registers sizes
-	constant ALU_OP_SIZE_GLOBAL		: integer := 32;					-- ALU operands size
+	constant ALU_OP_SIZE_GLOBAL		: integer := SIZE_GLOBAL;				-- ALU operands size
 	constant ALU_BLOCK_SIZE_GLOBAL		: integer := 8;						-- ALU blocks size
 	constant ALU_BITBLOCK_SIZE_GLOBAL	: integer := ALU_OP_SIZE_GLOBAL/ALU_BLOCK_SIZE_GLOBAL;	-- ALU bits for each block
 	constant ALU_OP_MUX_SIZE_GLOBAL		: integer := ALU_BITBLOCK_SIZE_GLOBAL;			-- ALU MUX operands size
@@ -35,7 +37,7 @@ package constants is
 	constant ALU_EXPP4_GLOBAL		: integer := log2(ALU_OP_SIZE_GLOBAL);			-- ALU exponent size
 
 	-- DRAM
-	constant DRAM_SIZE_GLOBAL		: integer := 128;					-- DRAM size
+	constant DRAM_SIZE_GLOBAL		: integer := 2**8;					-- DRAM size
 	constant DRAM_WORD_SIZE_GLOBAL		: integer := ALU_OP_SIZE_GLOBAL;			-- DRAM registers size
 
 	-- ALU Operations

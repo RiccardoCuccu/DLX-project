@@ -15,8 +15,8 @@ entity DRAM is
 			RE	: in std_logic;					-- Read Enable
 			WE	: in std_logic;					-- Write Enable
 			ADDR	: in std_logic_vector(NW - 1 downto 0);		-- Address
-			Din	: in std_logic_vector(NW - 1 downto 0);		-- Data in
-			Dout	: out std_logic_vector(NW - 1 downto 0));	-- Data out
+			DIN	: in std_logic_vector(NW - 1 downto 0);		-- Data in
+			DOUT	: out std_logic_vector(NW - 1 downto 0));	-- Data out
 
 end DRAM;
 
@@ -35,7 +35,7 @@ begin
 			DRAM_mem <= (others => (others => '0'));
 		elsif rising_edge(CLK) then
 			if(WE = '1' ) then
-				DRAM_mem(to_integer(unsigned(ADDR))) <= Din;
+				DRAM_mem(to_integer(unsigned(ADDR))) <= DIN;
 			end if;
 		end if;
 	end process;
@@ -43,11 +43,12 @@ begin
 	READ: process(RE, ADDR)			-- asynchronous
 	begin
 		if RE = '1' then
-			Dout <= DRAM_mem(to_integer(unsigned(ADDR)));
+			DOUT <= DRAM_mem(to_integer(unsigned(ADDR)));
 		end if;
 	end process;
 
 end BEHAVIORAL;
+
 
 configuration CFG_DRAM_BEHAVIORAL of DRAM is
 	for BEHAVIORAL

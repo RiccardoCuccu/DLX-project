@@ -5,8 +5,8 @@ use work.constants.all;
 
 entity DLX is
 
-	generic (	SIZE_IR	: integer := IR_SIZE_GLOBAL;	-- Instruction Register Size
-			SIZE_PC	: integer := PC_SIZE_GLOBAL);	-- Program Counter Size
+	generic (	IR_SIZE	: integer := IR_SIZE_GLOBAL;	-- Instruction Register Size
+			PC_SIZE	: integer := PC_SIZE_GLOBAL);	-- Program Counter Size
 	
 	port (		CLK	: in std_logic;
 			RST	: in std_logic);		-- Active Low
@@ -37,41 +37,41 @@ architecture DLX_RTL of DLX is
 				IR_SIZE			: integer := IR_SIZE_GLOBAL;	-- Instruction Register Size
 				CW_SIZE			: integer := CW_SIZE_GLOBAL);	-- Control Word Size
 
-		port (		CLK			: in  std_logic;	-- Clock
-				RST			: in  std_logic;	-- Reset:Active-Low
+		port (		CLK			: in  std_logic;		-- Clock
+				RST			: in  std_logic;		-- Reset, active-low
 
 				-- Instruction Register
 				IR_IN			: in  std_logic_vector(IR_SIZE - 1 downto 0);
 
 				-- IF Control Signal
-				IR_LATCH_EN		: out std_logic;	-- Instruction Register Latch Enable
+				IR_LATCH_EN		: out std_logic;		-- Instruction Register Latch Enable
 				NPC_LATCH_EN		: out std_logic;
 
 				-- ID Control Signals
-				RegA_LATCH_EN		: out std_logic;	-- Register A Latch Enable
-				RegB_LATCH_EN		: out std_logic;	-- Register B Latch Enable
-				RegIMM_LATCH_EN		: out std_logic;	-- Immediate Register Latch Enable
+				RegA_LATCH_EN		: out std_logic;		-- Register A Latch Enable
+				RegB_LATCH_EN		: out std_logic;		-- Register B Latch Enable
+				RegIMM_LATCH_EN		: out std_logic;		-- Immediate Register Latch Enable
 
 				-- EX Control Signals
-				MUXA_SEL		: out std_logic;	-- MUX-A Sel
-				MUXB_SEL		: out std_logic;	-- MUX-B Sel
-				ALU_OUTREG_EN		: out std_logic;	-- ALU Output Register Enable
-				EQ_COND			: out std_logic;	-- Branch if (not) Equal to Zero
+				MUXA_SEL		: out std_logic;		-- MUX-A Sel
+				MUXB_SEL		: out std_logic;		-- MUX-B Sel
+				ALU_OUTREG_EN		: out std_logic;		-- ALU Output Register Enable
+				EQ_COND			: out std_logic;		-- Branch if (not) Equal to Zero
 
 				-- ALU Operation Code
-				ALU_OPCODE		: out aluOp;		-- choose between implicit or explicit coding, like std_logic_vector(ALU_OPC_SIZE - 1 downto 0);
+				ALU_OPCODE		: out aluOp;			-- choose between implicit or explicit coding, like std_logic_vector(ALU_OPC_SIZE - 1 downto 0);
 				--ALU_OPCODE		: out std_logic_vector(ALU_OPC_SIZE - 1 downto 0);
 
 				-- MEM Control Signals
-				DRAM_RE			: out std_logic;	-- Data RAM Read Enable
-				DRAM_WE			: out std_logic;	-- Data RAM Write Enable
-				LMD_LATCH_EN		: out std_logic;	-- LMD Register Latch Enable
-				JUMP_EN			: out std_logic;	-- JUMP Enable Signal for PC input MUX
-				PC_LATCH_EN		: out std_logic;	-- Program Counte Latch Enable
+				DRAM_RE			: out std_logic;		-- Data RAM Read Enable
+				DRAM_WE			: out std_logic;		-- Data RAM Write Enable
+				LMD_LATCH_EN		: out std_logic;		-- LMD Register Latch Enable
+				JUMP_EN			: out std_logic;		-- JUMP Enable Signal for PC input MUX
+				PC_LATCH_EN		: out std_logic;		-- Program Counte Latch Enable
 
 				-- WB Control signals
-				WB_MUX_SEL		: out std_logic;	-- Write Back MUX Sel
-				RF_WE			: out std_logic);	-- Register File Write Enable
+				WB_MUX_SEL		: out std_logic;		-- Write Back MUX Sel
+				RF_WE			: out std_logic);		-- Register File Write Enable
 
 		end component;
 
@@ -82,64 +82,61 @@ architecture DLX_RTL of DLX is
 		generic (	IR_SIZE			: integer := IR_SIZE_GLOBAL;	-- Instruction Register size
 				PC_SIZE			: integer := PC_SIZE_GLOBAL);	-- Program Counter size
 
-		port (		CLK			: in std_logic;	-- Clock
-				RST			: in std_logic;	-- Reset:Active-Low
+		port (		CLK			: in std_logic;			-- Clock
+				RST			: in std_logic;			-- Reset, active-low
 
-				IRam_DIn		: in std_logic_vector(IR_SIZE - 1 downto 0);
+--				IRam_DIn		: in std_logic_vector(IR_SIZE - 1 downto 0);
 
 				-- IF Control Signal
-				IR_LATCH_EN		: in std_logic;	-- Instruction Register Latch Enable
+				IR_LATCH_EN		: in std_logic;			-- Instruction Register Latch Enable
 				NPC_LATCH_EN		: in std_logic;
 
 				-- ID Control Signals
-				RegA_LATCH_EN		: in std_logic;	-- Register A Latch Enable
-				RegB_LATCH_EN		: in std_logic;	-- Register B Latch Enable
-				RegIMM_LATCH_EN		: in std_logic;	-- Immediate Register Latch Enable
+				RegA_LATCH_EN		: in std_logic;			-- Register A Latch Enable
+				RegB_LATCH_EN		: in std_logic;			-- Register B Latch Enable
+				RegIMM_LATCH_EN		: in std_logic;			-- Immediate Register Latch Enable
 
 				-- EX Control Signals
-				MUXA_SEL		: in std_logic;	-- MUX-A Sel
-				MUXB_SEL		: in std_logic;	-- MUX-B Sel
-				ALU_OUTREG_EN		: in std_logic;	-- ALU Output Register Enable
-				EQ_COND			: in std_logic;	-- Branch if (not) Equal to Zero
+				MUXA_SEL		: in std_logic;			-- MUX-A Sel
+				MUXB_SEL		: in std_logic;			-- MUX-B Sel
+				ALU_OUTREG_EN		: in std_logic;			-- ALU Output Register Enable
+				EQ_COND			: in std_logic;			-- Branch if (not) Equal to Zero
 
 				-- ALU Operation Code
-				ALU_OPCODE		: in aluOp;		-- choose between implicit or explicit coding, like std_logic_vector(ALU_OPC_SIZE - 1 downto 0);
+				ALU_OPCODE		: in aluOp;			-- choose between implicit or explicit coding, like std_logic_vector(ALU_OPC_SIZE - 1 downto 0);
 				--ALU_OPCODE		: in std_logic_vector(ALU_OPC_SIZE - 1 downto 0);
 
 				-- MEM Control Signals
-				DRAM_RE			: in std_logic;	-- Data RAM Read Enable
-				DRAM_WE			: in std_logic;	-- Data RAM Write Enable
-				LMD_LATCH_EN		: in std_logic;	-- LMD Register Latch Enable
-				JUMP_EN			: in std_logic;	-- JUMP Enable Signal for PC input MUX
-				PC_LATCH_EN		: in std_logic;	-- Program Counte Latch Enable
+				DRAM_RE			: in std_logic;			-- Data RAM Read Enable
+				DRAM_WE			: in std_logic;			-- Data RAM Write Enable
+				LMD_LATCH_EN		: in std_logic;			-- LMD Register Latch Enable
+				JUMP_EN			: in std_logic;			-- JUMP Enable Signal for PC input MUX
+				PC_LATCH_EN		: in std_logic;			-- Program Counte Latch Enable
 
 				-- WB Control signals
-				WB_MUX_SEL		: in std_logic;	-- Write Back MUX Sel
-				RF_WE			: in std_logic;	-- Register File Write Enable
+				WB_MUX_SEL		: in std_logic;			-- Write Back MUX Sel
+				RF_WE			: in std_logic;			-- Register File Write Enable
 
-				IR_OUT			: out std_logic_vector(IR_SIZE -1 downto 0);
-				PC_OUT			: out std_logic_vector(PC_SIZE -1 downto 0));
+				IR_OUTPUT		: out std_logic_vector(IR_SIZE -1 downto 0));
+--				PC_OUTPUT		: out std_logic_vector(PC_SIZE -1 downto 0));
 
 		end component;
 
 
 	-- Instruction Ram (a.c)
-	component IRAM
-
-		generic (	RAM_DEPTH	: integer := RAM_SIZE_GLOBAL;
-				I_SIZE		: integer := IR_SIZE_GLOBAL);
-
-		port (		RST		: in  std_logic;
-				CLK		: in  std_logic;
-				Addr		: in  std_logic_vector(I_SIZE - 1 downto 0);
-				Dout		: out std_logic_vector(I_SIZE - 1 downto 0));
-
-	end component;
+--	component IRAM
+--
+--		generic (	RAM_DEPTH	: integer := RAM_SIZE_GLOBAL;
+--				I_SIZE		: integer := IR_SIZE_GLOBAL);
+--
+--		port (		RST		: in  std_logic;
+--				CLK		: in  std_logic;
+--				Addr		: in  std_logic_vector(I_SIZE - 1 downto 0);
+--				Dout		: out std_logic_vector(I_SIZE - 1 downto 0));
+--
+--	end component;
 
 	-- Data Ram (MISSING! You must include it in your final project!)
-
-
-
 
 
 	----------------------------------------------------------------
@@ -147,14 +144,14 @@ architecture DLX_RTL of DLX is
 	----------------------------------------------------------------
 	
 	-- Instruction Register (IR) and Program Counter (PC) declaration
-	signal IR : std_logic_vector(SIZE_IR - 1 downto 0);
-	signal PC : std_logic_vector(SIZE_PC - 1 downto 0);
+	signal IR : std_logic_vector(IR_SIZE - 1 downto 0);
+--	signal PC : std_logic_vector(PC_SIZE - 1 downto 0);
 
 	-- Instruction Ram Bus signals
-	signal IRam_DOut : std_logic_vector(SIZE_IR - 1 downto 0);
+--	signal IRam_DOut : std_logic_vector(IR_SIZE - 1 downto 0);
 
 	-- Datapath Bus signals
---	signal PC_BUS : std_logic_vector(SIZE_PC - 1 downto 0);
+--	signal PC_BUS : std_logic_vector(PC_SIZE - 1 downto 0);
 
 	-- Control Unit Bus signals
 	signal IR_LATCH_EN_i : std_logic;
@@ -258,7 +255,7 @@ architecture DLX_RTL of DLX is
 		DATAPATH_I: DLX_DATAPATH
 			port map (	CLK		=> CLK,
 					RST		=> RST,
-					IRam_DIn	=> IRam_DOut,
+--					IRam_DIn	=> IRam_DOut,
 					IR_LATCH_EN	=> IR_LATCH_EN_i,
 					NPC_LATCH_EN	=> NPC_LATCH_EN_i,
 					RegA_LATCH_EN	=> RegA_LATCH_EN_i,
@@ -276,14 +273,15 @@ architecture DLX_RTL of DLX is
 					PC_LATCH_EN	=> PC_LATCH_EN_i,
 					WB_MUX_SEL	=> WB_MUX_SEL_i,
 					RF_WE		=> RF_WE_i,
-					IR_OUT		=> IR,
-					PC_OUT		=> PC);
+					IR_OUTPUT	=> IR
+--					PC_OUTPUT	=> PC
+					);
 
 		-- Instruction Ram Instantiation
-		IRAM_I: IRAM
-			port map (	CLK	=> CLK,
-					RST	=> RST,
-					Addr	=> PC,
-					Dout	=> IRam_DOut);
+--		IRAM_I: IRAM
+--			port map (	CLK	=> CLK,
+--					RST	=> RST,
+--					Addr	=> PC,
+--					Dout	=> IRam_DOut);
 
 end DLX_RTL;

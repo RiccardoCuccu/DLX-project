@@ -7,17 +7,17 @@ end TB_DLX;
 
 architecture TEST of TB_DLX is
 
-	constant SIZE_IR	: integer := IR_SIZE_GLOBAL;		-- Instruction Register Size
-	constant SIZE_PC	: integer := PC_SIZE_GLOBAL;		-- Program Counter Size
-	constant SIZE_ALU_OPC	: integer := OPC_SIZE_GLOBAL;		-- ALU Op Code Word Size in case explicit coding is used
+	constant IR_SIZE	: integer := IR_SIZE_GLOBAL;		-- Instruction Register Size
+	constant PC_SIZE	: integer := PC_SIZE_GLOBAL;		-- Program Counter Size
+--	constant ALU_OPC_SIZE	: integer := OPC_SIZE_GLOBAL;		-- ALU Op Code Word Size in case explicit coding is used
 
 	signal Clock		: std_logic := '0';
 	signal Reset		: std_logic := '1';
 
 	component DLX
 
-		generic (	SIZE_IR	: integer := IR_SIZE_GLOBAL;	-- Instruction Register Size
-				SIZE_PC	: integer := PC_SIZE_GLOBAL);	-- Program Counter Size
+		generic (	IR_SIZE	: integer := IR_SIZE_GLOBAL;	-- Instruction Register Size
+				PC_SIZE	: integer := PC_SIZE_GLOBAL);	-- Program Counter Size
 
 		port (		CLK	: in std_logic;
 				RST	: in std_logic);		-- Active Low
@@ -30,7 +30,7 @@ begin
 	-- instance of DLX
 	U1: DLX
 
-		generic map (SIZE_IR, SIZE_PC)
+		generic map (IR_SIZE, PC_SIZE)
 		port map (Clock, Reset);
 
 	PCLOCK: process(Clock)
@@ -38,7 +38,7 @@ begin
 		Clock <= not(Clock) after 0.5 ns;
 	end process;
 
-	Reset <= '0', '1' after 6 ns, '0' after 11 ns, '1' after 15 ns;  
+	Reset <= '0', '1' after 6 ns, '0' after 11 ns, '1' after 15 ns;
 
 end TEST;
 

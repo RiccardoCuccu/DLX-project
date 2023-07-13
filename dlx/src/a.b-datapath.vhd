@@ -7,46 +7,46 @@ use work.constants.all;
 
 entity DLX_DATAPATH is
 
-	generic (	IR_SIZE			: integer := IR_SIZE_GLOBAL;	-- Instruction Register size		/ 32 bits
-			PC_SIZE			: integer := PC_SIZE_GLOBAL);	-- Program Counter size			/ 32 bits
+	generic (	IR_SIZE			: integer := IR_SIZE_GLOBAL;			-- Instruction Register size		/ 32 bits
+			PC_SIZE			: integer := PC_SIZE_GLOBAL);			-- Program Counter size			/ 32 bits
 
-	port (		CLK			: in std_logic;	-- Clock
-			RST			: in std_logic;	-- Reset:Active-Low
+	port (		CLK			: in  std_logic;				-- Clock
+			RST			: in  std_logic;				-- Reset (active low)
 
-			IRam_DIn		: in std_logic_vector(IR_SIZE - 1 downto 0);
+--			IRam_DIn		: in  std_logic_vector(IR_SIZE - 1 downto 0);
 
 			-- IF Control Signal
-			IR_LATCH_EN		: in std_logic;	-- Instruction Register Latch Enable
-			NPC_LATCH_EN		: in std_logic;
+			IR_LATCH_EN		: in  std_logic;				-- Instruction Register Latch Enable
+			NPC_LATCH_EN		: in  std_logic;
 
 			-- ID Control Signals
-			RegA_LATCH_EN		: in std_logic;	-- Register A Latch Enable
-			RegB_LATCH_EN		: in std_logic;	-- Register B Latch Enable
-			RegIMM_LATCH_EN		: in std_logic;	-- Immediate Register Latch Enable
+			RegA_LATCH_EN		: in  std_logic;				-- Register A Latch Enable
+			RegB_LATCH_EN		: in  std_logic;				-- Register B Latch Enable
+			RegIMM_LATCH_EN		: in  std_logic;				-- Immediate Register Latch Enable
 
 			-- EX Control Signals
-			MUXA_SEL		: in std_logic;	-- MUX-A Sel
-			MUXB_SEL		: in std_logic;	-- MUX-B Sel
-			ALU_OUTREG_EN		: in std_logic;	-- ALU Output Register Enable
-			EQ_COND			: in std_logic;	-- Branch if (not) Equal to Zero
+			MUXA_SEL		: in  std_logic;				-- MUX-A Sel
+			MUXB_SEL		: in  std_logic;				-- MUX-B Sel
+			ALU_OUTREG_EN		: in  std_logic;				-- ALU Output Register Enable
+			EQ_COND			: in  std_logic;				-- Branch if (not) Equal to Zero
 
 			-- ALU Operation Code
-			ALU_OPCODE		: in aluOp;	-- choose between implicit or explicit coding, like std_logic_vector(ALU_OPC_SIZE - 1 downto 0);
-			--ALU_OPCODE		: in std_logic_vector(ALU_OPC_SIZE - 1 downto 0);
+			ALU_OPCODE		: in  aluOp;					-- choose between implicit or explicit coding, like std_logic_vector(ALU_OPC_SIZE - 1 downto 0);
+			--ALU_OPCODE		: in  std_logic_vector(ALU_OPC_SIZE - 1 downto 0);
 
 			-- MEM Control Signals
-			DRAM_RE			: in std_logic;	-- Data RAM Read Enable
-			DRAM_WE			: in std_logic;	-- Data RAM Write Enable
-			LMD_LATCH_EN		: in std_logic;	-- LMD Register Latch Enable
-			JUMP_EN			: in std_logic;	-- JUMP Enable Signal for PC input MUX
-			PC_LATCH_EN		: in std_logic;	-- Program Counte Latch Enable
+			DRAM_RE			: in  std_logic;				-- Data RAM Read Enable
+			DRAM_WE			: in  std_logic;				-- Data RAM Write Enable
+			LMD_LATCH_EN		: in  std_logic;				-- LMD Register Latch Enable
+			JUMP_EN			: in  std_logic;				-- JUMP Enable Signal for PC input MUX
+			PC_LATCH_EN		: in  std_logic;				-- Program Counte Latch Enable
 
 			-- WB Control signals
-			WB_MUX_SEL		: in std_logic;	-- Write Back MUX Sel
-			RF_WE			: in std_logic;	-- Register File Write Enable
+			WB_MUX_SEL		: in  std_logic;				-- Write Back MUX Sel
+			RF_WE			: in  std_logic;				-- Register File Write Enable
 
-			IR_OUT			: out std_logic_vector(IR_SIZE - 1 downto 0);	-- Instruction Register		/ 32 bits
-			PC_OUT			: out std_logic_vector(PC_SIZE - 1 downto 0));	-- Program Counter		/ 32 bits
+			IR_OUTPUT			: out std_logic_vector(IR_SIZE - 1 downto 0));	-- Instruction Register			/ 32 bits
+--			PC_OUTPUT			: out std_logic_vector(PC_SIZE - 1 downto 0));	-- Program Counter			/ 32 bits
 
 end DLX_DATAPATH;
 
@@ -57,77 +57,179 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 	-- Components Declaration
 	------------------------------------------------------------------------------------------------------------------------
 
-	component REGISTER_FILE is
+	-- GLOBALS ------------------------------------------------------------------------------------------------------------------------
 
-		generic	(	N		: integer := RF_SIZE_GLOBAL;
-				NA		: integer := RF_ADDRESSES_GLOBAL);
+	component LD is
+	
+		port	(	RST		: in  std_logic;				-- Reset (active low)
+				EN		: in  std_logic;				-- Enable
+				D		: in  std_logic;
+				Q		: out std_logic);
+	
+	end component;
 
-		port	(	CLK		: in	std_logic;
-				RESET		: in	std_logic;
-				ENABLE		: in	std_logic;
-				RD1		: in	std_logic;
-				RD2		: in	std_logic;
-				WR		: in	std_logic;
-				ADD_WR		: in	std_logic_vector(NA - 1 downto 0);	-- /  5 bits
-				ADD_RD1		: in	std_logic_vector(NA - 1 downto 0);	-- /  5 bits
-				ADD_RD2		: in	std_logic_vector(NA - 1 downto 0);	-- /  5 bits
-				DATAIN		: in	std_logic_vector(N - 1 downto 0);	-- / 32 bits
-				OUT1		: out	std_logic_vector(N - 1 downto 0);	-- / 32 bits
-				OUT2		: out	std_logic_vector(N - 1 downto 0));	-- / 32 bits
+	component LDR is
+
+		generic (	N		: integer := SIZE_GLOBAL);			-- / 32 bits
+
+		port (		RST		: in  std_logic;				-- Reset (active low)
+				EN		: in  std_logic;				-- Enable
+				REGIN		: in  std_logic_vector(N - 1 downto 0);
+				REGOUT		: out std_logic_vector(N - 1 downto 0));
+
+	end component;
+
+	component FFDR is
+	
+		generic (	N		: integer := SIZE_GLOBAL);			-- / 32 bits
+	
+		port (		CLK		: in  std_logic;				-- Clock
+				RST		: in  std_logic;				-- Reset (active low)
+				EN		: in  std_logic;				-- Enable
+				REGIN		: in  std_logic_vector(N - 1 downto 0);
+				REGOUT		: out std_logic_vector(N - 1 downto 0));
 
 	end component;
 
 	component MUX21 is
 
-		generic	(	N		: integer := RF_SIZE_GLOBAL);
-	
-		port	(	A		: in	std_logic_vector(N - 1 downto 0);	-- / 32 bits
-				B		: in	std_logic_vector(N - 1 downto 0);	-- / 32 bits
-				S		: in	std_logic;				-- /  1 bit
-				Y		: out	std_logic_vector(N - 1 downto 0));	-- / 32 bits
+		generic	(	N		: integer := SIZE_GLOBAL);			-- / 32 bits
+
+		port	(	A		: in  std_logic_vector(N - 1 downto 0);		-- / 32 bits
+				B		: in  std_logic_vector(N - 1 downto 0);		-- / 32 bits
+				S		: in  std_logic;				-- /  1 bit
+				Y		: out std_logic_vector(N - 1 downto 0));	-- / 32 bits
 
 	end component;
 
 --	component MUX41 is
 --
---		generic	(	N		: integer := RF_SIZE_GLOBAL);
+--		generic	(	N		: integer := SIZE_GLOBAL);			-- / 32 bits
 --
---		port	(	A		: in	std_logic_vector(N - 1 downto 0);	-- / 32 bits
---				B		: in	std_logic_vector(N - 1 downto 0);	-- / 32 bits
---				C		: in	std_logic_vector(N - 1 downto 0);	-- / 32 bits
---				D		: in	std_logic_vector(N - 1 downto 0);	-- / 32 bits
---				S		: in	std_logic_vector(1 downto 0);		-- /  2 bits
---				Y		: out	std_logic_vector(N - 1 downto 0));	-- / 32 bits
+--		port	(	A		: in  std_logic_vector(N - 1 downto 0);		-- / 32 bits
+--				B		: in  std_logic_vector(N - 1 downto 0);		-- / 32 bits
+--				C		: in  std_logic_vector(N - 1 downto 0);		-- / 32 bits
+--				D		: in  std_logic_vector(N - 1 downto 0);		-- / 32 bits
+--				S		: in  std_logic_vector(1 downto 0);		-- /  2 bits
+--				Y		: out std_logic_vector(N - 1 downto 0));	-- / 32 bits
 --
 --	end component;
 
-	component ALU is
-		generic (	N		: integer := ALU_OP_SIZE_GLOBAL;
-				NB		: integer := ALU_BLOCK_SIZE_GLOBAL);
+--	component PC is
+--
+--		generic (	N		: integer := PC_SIZE_GLOBAL);			-- / 32 bits
+--
+--		port (		CLK		: in  std_logic;				-- Clock
+--				RST		: in  std_logic;				-- Reset (active low)
+--				EN		: in  std_logic;				-- Enable
+--				REGIN		: in  std_logic_vector(N - 1 downto 0);		-- / 32 bits
+--				REGOUT		: out std_logic_vector(N - 1 downto 0));	-- / 32 bits
+--
+--	end component;
+--
+--	component IR is
+--
+--		generic (	N		: integer := IR_SIZE_GLOBAL);			-- / 32 bits
+--
+--		port (		CLK		: in  std_logic;				-- Clock
+--				RST		: in  std_logic;				-- Reset (active low)
+--				EN		: in  std_logic;				-- Enable
+--				REGIN		: in  std_logic_vector(N - 1 downto 0);		-- / 32 bits
+--				REGOUT		: out std_logic_vector(N - 1 downto 0));	-- / 32 bits
+--
+--	end component;
 
-		port (		OP1		: in	std_logic_vector(N - 1 downto 0);	-- Operand 1		/ 32 bits
-				OP2		: in	std_logic_vector(N - 1 downto 0);	-- Operand 2		/ 32 bits
-				OPC		: in	aluOp;					-- Control Signal
-				Y		: out	std_logic_vector(N - 1 downto 0);	-- Result		/ 32 bits
-				Z		: out	std_logic);				-- Zero flag	
-				--Co		: out	std_logic);
-				--Ovf		: out	std_logic);
+	-- FETCH ------------------------------------------------------------------------------------------------------------------------
+
+	component IRAM
+
+		generic (	RAM_DEPTH	: integer := IRAM_SIZE_GLOBAL;			-- / 2^8 bits
+				I_SIZE		: integer := IR_SIZE_GLOBAL);			-- / 32 bits
+
+		port (		RST		: in  std_logic;				-- Clock
+				--CLK		: in  std_logic;				-- Reset (active low)
+				ADDR		: in  std_logic_vector(I_SIZE - 1 downto 0);	-- Address		/ 32 bits
+				DOUT		: out std_logic_vector(I_SIZE - 1 downto 0));	-- Data out		/ 32 bits
+
 	end component;
+
+	-- DECODE ------------------------------------------------------------------------------------------------------------------------
+
+	component RF is
+
+		generic	(	N		: integer := RF_SIZE_GLOBAL;			-- / 32 bits
+				NA		: integer := RF_ADDRESSES_GLOBAL);		-- /  5 bits
+
+		port	(	CLK		: in  std_logic;				-- Clock
+				RST		: in  std_logic;				-- Reset (active low)
+				EN		: in  std_logic;				-- Enable
+				EN_RD1		: in  std_logic;				-- Read Enable 1
+				EN_RD2		: in  std_logic;				-- Read Enable 2
+				EN_WR		: in  std_logic;				-- Write Enable
+				ADD_RD1		: in  std_logic_vector(NA - 1 downto 0);	-- Read Address 1	/  5 bits
+				ADD_RD2		: in  std_logic_vector(NA - 1 downto 0);	-- Read Address 2	/  5 bits
+				ADD_WR		: in  std_logic_vector(NA - 1 downto 0);	-- Write Address	/  5 bits
+				DATAIN		: in  std_logic_vector(N - 1 downto 0);		-- Input data		/ 32 bits
+				OUT1		: out std_logic_vector(N - 1 downto 0);		-- Output data 1	/ 32 bits
+				OUT2		: out std_logic_vector(N - 1 downto 0));	-- Output data 2	/ 32 bits
+
+	end component;
+
+	component SIGNEX is
+
+		generic (	N 		: integer := IR_SIZE_GLOBAL;			-- / 32 bits
+				OPC		: integer := OPC_SIZE_GLOBAL;			-- /  6 bits
+				REG 		: integer := REG_SIZE_GLOBAL);			-- /  5 bits
+
+		port (		INSTR		: in  std_logic_vector(N - 1 downto 0);		-- Instruction		/ 32 bits
+				IMM		: out std_logic_vector(N - 1 downto 0));	-- Immediate		/ 32 bits
+
+	end component;
+
+	-- EXECUTE ------------------------------------------------------------------------------------------------------------------------
+
+	component ALU is
+
+		generic (	N		: integer := ALU_OP_SIZE_GLOBAL;		-- / 32 bits
+				NB		: integer := ALU_BLOCK_SIZE_GLOBAL);		-- /  8 bits
+
+		port (		OP1		: in  std_logic_vector(N - 1 downto 0);		-- Operand 1		/ 32 bits
+				OP2		: in  std_logic_vector(N - 1 downto 0);		-- Operand 2		/ 32 bits
+				OPC		: in  aluOp;					-- Control Signal
+				Y		: out std_logic_vector(N - 1 downto 0);		-- Result		/ 32 bits
+				Z		: out std_logic);				-- Zero flag	
+				--Co		: out std_logic);
+				--Ovf		: out std_logic);
+
+	end component;
+
+	component ZERODET is
+
+		generic	(	N		: integer := ALU_OP_SIZE_GLOBAL);
+
+		port	(	A		: in  std_logic_vector(N - 1 downto 0);
+				Y		: out std_logic);
+
+	end component;
+
+	-- MEMORY ------------------------------------------------------------------------------------------------------------------------
 
 	component DRAM is
 	
-		generic (	N		: integer := DRAM_SIZE_GLOBAL;
-				NW		: integer := DRAM_WORD_SIZE_GLOBAL);
+		generic (	N		: integer := DRAM_SIZE_GLOBAL;			-- / 2^8 bits
+				NW		: integer := DRAM_WORD_SIZE_GLOBAL);		-- / 32 bits
 
-		port (		CLK	: in std_logic;						-- Clock
-				RST	: in std_logic;						-- Reset:Active-Low
-				RE	: in std_logic;						-- Read Enable
-				WE	: in std_logic;						-- Write Enable
-				ADDR	: in std_logic_vector(NW - 1 downto 0);			-- Address
-				Din	: in std_logic_vector(NW - 1 downto 0);			-- Data in
-				Dout	: out std_logic_vector(NW - 1 downto 0));		-- Data out
-	
+		port (		CLK		: in  std_logic;				-- Clock
+				RST		: in  std_logic;				-- Reset (active low)
+				RE		: in  std_logic;				-- Read Enable
+				WE		: in  std_logic;				-- Write Enable
+				ADDR		: in  std_logic_vector(NW - 1 downto 0);	-- Address		/ 32 bits
+				DIN		: in  std_logic_vector(NW - 1 downto 0);	-- Data in		/ 32 bits
+				DOUT		: out std_logic_vector(NW - 1 downto 0));	-- Data out		/ 32 bits
+
 	end component;
+
+
 
 
 --	component FORWARDING_UNIT is
@@ -137,31 +239,34 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 	------------------------------------------------------------------------------------------------------------------------
 	-- Signals Declaration
 	------------------------------------------------------------------------------------------------------------------------
-	
+
 	-- Instruction Register (IR) and Program Counter (PC) declaration
-	signal IR : std_logic_vector(IR_SIZE - 1 downto 0);								-- Instruction Register signals		/ 32 bits
-	signal PC : std_logic_vector(PC_SIZE - 1 downto 0);								-- Program Counter signals		/ 32 bits
+	signal IR_OUT : std_logic_vector(IR_SIZE - 1 downto 0);								-- Instruction Register signal		/ 32 bits
+	signal PC_OUT : std_logic_vector(PC_SIZE - 1 downto 0);								-- Program Counter signal		/ 32 bits
+	signal NPC_OUT : std_logic_vector(PC_SIZE - 1 downto 0);							-- Next Program Counter signal		/ 32 bits
 
 	-- Instruction Ram Bus signals
 --	signal IRam_DOut : std_logic_vector(SIZE_IR - 1 downto 0);
 
 	-- Datapath Bus signals
+	signal IR_BUS : std_logic_vector(IR_SIZE - 1 downto 0);								-- Instruction Register Bus		/ 32 bits
 	signal PC_BUS : std_logic_vector(PC_SIZE - 1 downto 0);								-- Program Counter Bus			/ 32 bits
+	signal NPC_BUS : std_logic_vector(PC_SIZE - 1 downto 0);							-- Next Program Counter Bus		/ 32 bits
 
 	-- FETCH-DECODE (IF_ID) Pipeline signals
-	signal IF_ID_PC, IF_ID_PC_NEXT : std_logic_vector(PC_SIZE - 1 downto 0);					-- Program Counter signals		/ 32 bits
-	signal IF_ID_IR, IF_ID_IR_NEXT : std_logic_vector(IR_SIZE - 1 downto 0);					-- Instruction Register signals		/ 32 bits
-	signal IF_ID_RegA_LATCH_EN, IF_ID_RegA_LATCH_EN_NEXT : std_logic;						-- Register A Latch Enable
-	signal IF_ID_RegB_LATCH_EN, IF_ID_RegB_LATCH_EN_NEXT : std_logic;						-- Register B Latch Enable
-	signal IF_ID_RegIMM_LATCH_EN, IF_ID_RegIMM_LATCH_EN_NEXT : std_logic;						-- Immediate Register Latch Enable
+	signal IF_ID_PC, IF_ID_PC_NEXT : std_logic_vector(PC_SIZE - 1 downto 0);					-- Program Counter signal		/ 32 bits
+	signal IF_ID_IR, IF_ID_IR_NEXT : std_logic_vector(IR_SIZE - 1 downto 0);					-- Instruction Register signal		/ 32 bits
+--	signal IF_ID_RegA_LATCH_EN, IF_ID_RegA_LATCH_EN_NEXT : std_logic;						-- Register A Latch Enable
+--	signal IF_ID_RegB_LATCH_EN, IF_ID_RegB_LATCH_EN_NEXT : std_logic;						-- Register B Latch Enable
+--	signal IF_ID_RegIMM_LATCH_EN, IF_ID_RegIMM_LATCH_EN_NEXT : std_logic;						-- Immediate Register Latch Enable
 --	signal IF_ID_MUXA_SEL, IF_ID_MUXA_SEL_NEXT : std_logic;								-- ALU MUX A selector
 --	signal IF_ID_MUXB_SEL, IF_ID_MUXB_SEL_NEXT : std_logic;								-- ALU MUX B selector
 --	signal IF_ID_ALU_OPCODE, IF_ID_ALU_OPCODE_NEXT : aluOp;								-- ALU Operation Code
 
 	-- DECODE-EXECUTE (DE_EX) Pipeline signals
-	signal ID_EX_PC, ID_EX_PC_NEXT : std_logic_vector(PC_SIZE - 1 downto 0);					-- Program Counter signals		/ 32 bits
-	signal ID_EX_IR, ID_EX_IR_NEXT : std_logic_vector(IR_SIZE - 1 downto 0);					-- Instruction Register signals		/ 32 bits
-	signal ID_EX_RF_ADD_WR, ID_EX_RF_ADD_WR_NEXT : std_logic_vector(RF_ADDRESSES_GLOBAL - 1 downto 0);		-- Register File - Write address	/  5 bits
+	signal ID_EX_PC, ID_EX_PC_NEXT : std_logic_vector(PC_SIZE - 1 downto 0);					-- Program Counter signal		/ 32 bits
+--	signal ID_EX_IR, ID_EX_IR_NEXT : std_logic_vector(IR_SIZE - 1 downto 0);					-- Instruction Register signal		/ 32 bits
+	signal ID_EX_RD, ID_EX_RD_NEXT : std_logic_vector(RF_ADDRESSES_GLOBAL - 1 downto 0);				-- Register File - Write address	/  5 bits
 	signal ID_EX_RF_DATAIN, ID_EX_RF_DATAIN_NEXT : std_logic_vector(RF_SIZE_GLOBAL - 1 downto 0);			-- Register File - Write data		/ 32 bits
 	signal ID_EX_RF_OUT1, ID_EX_RF_OUT1_NEXT : std_logic_vector(RF_SIZE_GLOBAL - 1 downto 0);			-- Register File - Read data 1		/ 32 bits
 	signal ID_EX_RF_OUT2, ID_EX_RF_OUT2_NEXT : std_logic_vector(RF_SIZE_GLOBAL - 1 downto 0);			-- Register File - Read data 2		/ 32 bits
@@ -171,32 +276,44 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 --	signal ID_EX_ALU_OPCODE, ID_EX_ALU_OPCODE_NEXT : aluOp;								-- ALU Operation Code
 
 	-- EXECUTE-MEMORY (EX_MEM) Pipeline signals
+	signal EX_MEM_PC, EX_MEM_PC_NEXT : std_logic_vector(PC_SIZE - 1 downto 0);					-- Program Counter signal		/ 32 bits
+	signal EX_MEM_BRANCH_COND, EX_MEM_BRANCH_COND_NEXT : std_logic;							-- Branch Condition
+	signal EX_MEM_RD, EX_MEM_RD_NEXT : std_logic_vector(RF_ADDRESSES_GLOBAL - 1 downto 0);				-- Register File - Write address	/  5 bits
 	signal EX_MEM_RF_OUT2, EX_MEM_RF_OUT2_NEXT : std_logic_vector(RF_SIZE_GLOBAL - 1 downto 0);			-- Register File - Read data 2		/ 32 bits
-	signal EX_MEM_ALU_OUTPUT, EX_MEM_ALU_OUTPUT_NEXT : std_logic_vector(RF_SIZE_GLOBAL - 1 downto 0);		-- ALU Output				/ 32 bits
+	signal EX_MEM_ALU_OUT, EX_MEM_ALU_OUT_NEXT : std_logic_vector(RF_SIZE_GLOBAL - 1 downto 0);			-- ALU Output				/ 32 bits
 
 	-- MEMORY-WRITE BACK (MEM_WB) Pipeline signals
-	signal MEM_WB_ALU_OUTPUT, MEM_WB_ALU_OUTPUT_NEXT : std_logic_vector(RF_SIZE_GLOBAL - 1 downto 0);		-- ALU Output				/ 32 bits
-	signal MEM_WB_DRAM_OUTPUT, MEM_WB_DRAM_OUTPUT_NEXT : std_logic_vector(DRAM_WORD_SIZE_GLOBAL - 1 downto 0);	-- DRAM Output 				/ 32 bits
+	signal MEM_WB_RD, MEM_WB_RD_NEXT : std_logic_vector(RF_ADDRESSES_GLOBAL - 1 downto 0);				-- Register File - Write address	/  5 bits
+	signal MEM_WB_ALU_OUT, MEM_WB_ALU_OUT_NEXT : std_logic_vector(RF_SIZE_GLOBAL - 1 downto 0);			-- ALU Output				/ 32 bits
+	signal MEM_WB_DRAM_OUT, MEM_WB_DRAM_OUT_NEXT : std_logic_vector(DRAM_WORD_SIZE_GLOBAL - 1 downto 0);		-- DRAM Output 				/ 32 bits
 
-	-- Registe File signals
-	signal RF_ENABLE, RF_WR, RF_RD1, RF_RD2 : std_logic;
-	signal RF_ADD_WR, RF_ADD_RD1, RF_ADD_RD2 : std_logic_vector(RF_ADDRESSES_GLOBAL - 1 downto 0);			-- /  5 bits
-	signal RF_DATAIN, RF_OUT1, RF_OUT2 : std_logic_vector(RF_SIZE_GLOBAL - 1 downto 0);				-- / 32 bits
+	-- FETCH signals
 
-	-- ALU signals
+	-- DECODE signals
+--	signal RF_ENABLE, RF_WR, RF_RD1, RF_RD2 : std_logic;
+	signal RS1, RS2, RD : std_logic_vector(RF_ADDRESSES_GLOBAL - 1 downto 0);					-- /  5 bits
+	signal RF_OUT1, RF_OUT2 : std_logic_vector(RF_SIZE_GLOBAL - 1 downto 0);					-- / 32 bits
+	signal IMM_OUT : std_logic_vector(IR_SIZE_GLOBAL - 1 downto 0);							-- / 32 bits
+
+	-- EXECUTE signals
+	signal ZERO_OUT, ZERO_OUT_NEG : std_logic;
+	signal BRANCH_COND : std_logic;
 	signal ALU_ZERO : std_logic;
-	signal ALU_OP1, ALU_OP2, ALU_OUTPUT : std_logic_vector(RF_SIZE_GLOBAL - 1 downto 0);				-- / 32 bits
+	signal ALU_PREOP1, ALU_PREOP2, ALU_OP1, ALU_OP2, ALU_OUT : std_logic_vector(RF_SIZE_GLOBAL - 1 downto 0);	-- / 32 bits
 
-	-- DRAM signals
-	signal DRAM_OUTPUT : std_logic_vector(DRAM_WORD_SIZE_GLOBAL - 1 downto 0);					-- / 32 bits
-	signal WB_MUX_OUTPUT : std_logic_vector(DRAM_WORD_SIZE_GLOBAL - 1 downto 0);					-- / 32 bits
+	-- MEMORY signals
+	signal PC_MUX_SEL : std_logic;
+	signal PC_MUXA, PC_MUXB : std_logic_vector(PC_SIZE - 1 downto 0);						-- / 32 bits
+--	signal PC_JUMP, REL_JUMP : std_logic_vector(PC_SIZE - 1 downto 0);						-- / 32 bits
+	signal DRAM_OUT : std_logic_vector(DRAM_WORD_SIZE_GLOBAL - 1 downto 0);						-- / 32 bits
+	signal WB_MUX_OUT : std_logic_vector(DRAM_WORD_SIZE_GLOBAL - 1 downto 0);					-- / 32 bits
 
 	-- Forwarding Unit signals
 
 	begin
 
-		PC_OUT	<= PC;
-		IR_OUT	<= IR;
+--		PC_OUTPUT	<= PC_OUT;
+		IR_OUTPUT	<= IR_OUT;
 
 		------------------------------------------------------------------------------------------------------------------------
 		-- Processes
@@ -207,64 +324,64 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 			if (CLK'event and CLK = '1') then
 				if (RST = '0') then
 					-- FETCH-DECODE
-					IF_ID_PC <= (others => '0');				-- Program Counter signal
-					IF_ID_IR <= (others => '0');				-- Instruction Register signal
-					IF_ID_RegA_LATCH_EN <= '0';				-- Latch Enable Register A
-					IF_ID_RegB_LATCH_EN <= '0';				-- Latch Enable Register B
-					IF_ID_RegIMM_LATCH_EN <= '0';				-- Latch Enable Immediate
---					IF_ID_MUXA_SEL <= '0';					-- ALU MUX A selector
---					IF_ID_MUXB_SEL <= '0';					-- ALU MUX B selector
---					IF_ID_ALU_OPCODE <= OP_NOP;				-- ALU Operation Code
+					IF_ID_PC		<= (others => '0');			-- Program Counter signal
+					IF_ID_IR		<= (others => '0');			-- Instruction Register signal
 
 					-- DECODE-EXECUTE
-					ID_EX_PC <= (others => '0');				-- Program Counter signal
-					ID_EX_IR <= (others => '0');				-- Instruction Register signal
-					ID_EX_RF_ADD_WR <= (others => '0');			-- Register File - Write address
-					ID_EX_RF_DATAIN <= (others => '0');			-- Register File - Write data
-					ID_EX_RF_OUT1 <= (others => '0');			-- Register File - Read data 1
-					ID_EX_RF_OUT2 <= (others => '0');			-- Register File - Read data 2
-					ID_EX_IMM_NEXT <= (others => '0');			-- Immediate
---					ID_EX_MUXA_SEL <= '0';					-- ALU MUX A selector
---					ID_EX_MUXB_SEL <= '0';					-- ALU MUX B selector
---					ID_EX_ALU_OPCODE <= OP_NOP;				-- ALU Operation Code
+					ID_EX_PC		<= (others => '0');			-- Program Counter signal
+--					ID_EX_IR		<= (others => '0');			-- Instruction Register signal
+					ID_EX_RD		<= (others => '0');			-- Register File - Write address
+					ID_EX_RF_DATAIN		<= (others => '0');			-- Register File - Write data
+					ID_EX_RF_OUT1		<= (others => '0');			-- Register File - Read data 1
+					ID_EX_RF_OUT2		<= (others => '0');			-- Register File - Read data 2
+					ID_EX_IMM		<= (others => '0');			-- Immediate
+--					ID_EX_MUXA_SEL		<= '0';					-- ALU MUX A selector
+--					ID_EX_MUXB_SEL		<= '0';					-- ALU MUX B selector
+--					ID_EX_ALU_OPCODE 	<= OP_NOP;				-- ALU Operation Code
 
 					-- EXECUTE-MEMORY
-					EX_MEM_RF_OUT2_NEXT <= (others => '0');			-- Register File - Read data 2
-					EX_MEM_ALU_OUTPUT_NEXT <= (others => '0');		-- ALU Output
+					EX_MEM_PC		<= (others => '0');			-- Program Counter signal
+					EX_MEM_RF_OUT2		<= (others => '0');			-- Register File - Read data 2
+					EX_MEM_ALU_OUT		<= (others => '0');			-- ALU Output
+					EX_MEM_BRANCH_COND	<= '0';					-- Branch Condition
 
 					-- MEMORY-WRITE BACK
+					MEM_WB_ALU_OUT		<= (others => '0');			-- ALU Output
+					MEM_WB_DRAM_OUT		<= (others => '0');			-- DRAM Output
 				else
 					-- FETCH-DECODE
-					IF_ID_PC <= IF_ID_PC_NEXT;				-- Program Counter signal
-					IF_ID_IR <= IF_ID_IR_NEXT;				-- Instruction Register signal
-					IF_ID_RegA_LATCH_EN <= IF_ID_RegA_LATCH_EN_NEXT;	-- Latch Enable Register A
-					IF_ID_RegB_LATCH_EN <= IF_ID_RegB_LATCH_EN_NEXT;	-- Latch Enable Register B
-					IF_ID_RegIMM_LATCH_EN <= IF_ID_RegIMM_LATCH_EN_NEXT;	-- Latch Enable Immediate
---					IF_ID_MUXA_SEL <= IF_ID_MUXA_SEL_NEXT;			-- ALU MUX A selector
---					IF_ID_MUXB_SEL <= IF_ID_MUXB_SEL_NEXT;			-- ALU MUX B selector
---					IF_ID_ALU_OPCODE <= IF_ID_ALU_OPCODE_NEXT;		-- ALU Operation Code
+					IF_ID_PC		<= IF_ID_PC_NEXT;			-- Program Counter signal
+					IF_ID_IR		<= IF_ID_IR_NEXT;			-- Instruction Register signal
 
 					-- DECODE-EXECUTE
-					ID_EX_PC <= ID_EX_PC_NEXT;				-- Program Counter signal
-					ID_EX_IR <= ID_EX_IR_NEXT;				-- Instruction Register signal
-					ID_EX_RF_ADD_WR <= ID_EX_RF_ADD_WR_NEXT;		-- Register File - Write address
-					ID_EX_RF_DATAIN <= ID_EX_RF_DATAIN_NEXT;		-- Register File - Write data
-					ID_EX_RF_OUT1 <= ID_EX_RF_OUT1_NEXT;			-- Register File - Read data 1
-					ID_EX_RF_OUT2 <= ID_EX_RF_OUT2_NEXT;			-- Register File - Read data 2
-					ID_EX_IMM <= ID_EX_IMM_NEXT;				-- Immediate
---					ID_EX_MUXA_SEL <= ID_EX_MUXA_SEL_NEXT;			-- ALU MUX A selector
---					ID_EX_MUXB_SEL <= ID_EX_MUXB_SEL_NEXT;			-- ALU MUX B selector
---					ID_EX_ALU_OPCODE <= ID_EX_ALU_OPCODE_NEXT;		-- ALU Operation Code
+					ID_EX_PC		<= ID_EX_PC_NEXT;			-- Program Counter signal
+--					ID_EX_IR		<= ID_EX_IR_NEXT;			-- Instruction Register signal
+					ID_EX_RD		<= ID_EX_RD_NEXT;			-- Register File - Write address
+					ID_EX_RF_DATAIN		<= ID_EX_RF_DATAIN_NEXT;		-- Register File - Write data
+					ID_EX_RF_OUT1		<= ID_EX_RF_OUT1_NEXT;			-- Register File - Read data 1
+					ID_EX_RF_OUT2		<= ID_EX_RF_OUT2_NEXT;			-- Register File - Read data 2
+					ID_EX_IMM		<= ID_EX_IMM_NEXT;			-- Immediate
+--					ID_EX_MUXA_SEL		<= ID_EX_MUXA_SEL_NEXT;			-- ALU MUX A selector
+--					ID_EX_MUXB_SEL		<= ID_EX_MUXB_SEL_NEXT;			-- ALU MUX B selector
+--					ID_EX_ALU_OPCODE 	<= ID_EX_ALU_OPCODE_NEXT;		-- ALU Operation Code
 
 					-- EXECUTE-MEMORY
-					EX_MEM_RF_OUT2_NEXT <= EX_MEM_RF_OUT2_NEXT;		-- Register File - Read data 2
-					EX_MEM_ALU_OUTPUT_NEXT <= EX_MEM_ALU_OUTPUT_NEXT;	-- ALU Output
+					EX_MEM_PC		<= EX_MEM_PC_NEXT;			-- Program Counter signal
+					EX_MEM_RF_OUT2		<= EX_MEM_RF_OUT2_NEXT;			-- Register File - Read data 2
+					EX_MEM_ALU_OUT		<= EX_MEM_ALU_OUT_NEXT;			-- ALU Output
+					EX_MEM_BRANCH_COND	<= EX_MEM_BRANCH_COND_NEXT;		-- Branch Condition
 
 					-- MEMORY-WRITE BACK
+					MEM_WB_ALU_OUT		<= MEM_WB_ALU_OUT_NEXT;			-- ALU Output
+					MEM_WB_DRAM_OUT		<= MEM_WB_DRAM_OUT_NEXT;		-- DRAM Output 	
 				end if;
 			end if;
 		end process PIPELINES;
-					
+
+
+		------------------------------------------------------------------------------------------------------------------------
+		-- FETCH (IF)
+		------------------------------------------------------------------------------------------------------------------------
 
 		-- This is the input to program counter: currently zero 
 		-- so no update of PC happens
@@ -275,9 +392,9 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 
 --		PC_BUS_P: process (CLK, RST)
 --		begin
---			if RST = '0' then			-- asynchronous reset (active low)
+--			if RST = '0' then			-- Asynchronous Reset (active low)
 --				PC_BUS <= (others => '0');
---			elsif CLK'event and CLK = '0' then	-- rising clock edge
+--			elsif CLK'event and CLK = '0' then	-- Rising Clock Edge
 --				PC_BUS <= std_logic_vector(unsigned(PC) + 4);
 --			end if;
 --		end process PC_BUS_P;
@@ -288,130 +405,142 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 		--	inputs : CLK, RST, PC_BUS, PC_LATCH_EN
 		--	outputs: PC
 
-		PC_P: process (CLK, RST)
-		begin
-			if RST = '0' then			-- asynchronous reset (active low)
-				PC <= (others => '0');
-			elsif CLK'event and CLK = '1' then	-- rising clock edge
-				if (PC_LATCH_EN = '1') then
-					PC <= PC_BUS;
-				end if;
-			end if;
-		end process PC_P;
+--		PC_P: process (CLK, RST)
+--		begin
+--			if RST = '0' then			-- Asynchronous Reset (active low)
+--				PC <= (others => '0');
+--			elsif CLK'event and CLK = '1' then	-- Rising Clock Edge
+--				if (PC_LATCH_EN = '1') then
+--					PC <= PC_BUS;
+--				end if;
+--			end if;
+--		end process PC_P;
 
+		PROGRAM_COUNTER: FFDR
+
+			generic map (	N		=> PC_SIZE_GLOBAL)
+
+			port map (	CLK		=> CLK,
+					RST		=> RST,
+					EN		=> PC_LATCH_EN,
+					REGIN		=> PC_BUS,
+					REGOUT		=> PC_OUT);
+
+		NEW_PROGRAM_COUNTER: LDR
+
+			generic map (	N		=> PC_SIZE_GLOBAL)
+
+			port map (	--CLK		=> CLK,
+					RST		=> RST,
+					EN		=> NPC_LATCH_EN,
+					REGIN		=> NPC_BUS,
+					REGOUT		=> NPC_OUT);
+
+		INSTRUCTION_MEMORY: IRAM
+
+			generic map (	RAM_DEPTH	=> IRAM_SIZE_GLOBAL,
+					I_SIZE		=> IR_SIZE_GLOBAL)
+
+			port map (	RST		=> RST,
+					--CLK		=> CLK,
+					ADDR		=> PC_OUT,
+					DOUT		=> IR_BUS);
 
 		-- Instruction Register Process
 		-- 	type   : sequential
 		-- 	inputs : CLK, RST, IRam_DIn, IR_LATCH_EN
 		-- 	outputs: IR
 
-		IR_P: process (CLK, RST)
-		begin
-			if RST = '0' then			-- asynchronous reset (active low)
-				IR <= (others => '0');
-			elsif CLK'event and CLK = '1' then	-- rising clock edge
-				if (IR_LATCH_EN = '1') then
-					IR <= IRam_DIn;
-				end if;
-			end if;
-		end process IR_P;
+--		IR_P: process (CLK, RST)
+--		begin
+--			if RST = '0' then			-- Asynchronous Reset (active low)
+--				IR_OUT <= (others => '0');
+--			elsif CLK'event and CLK = '1' then	-- Rising Clock Edge
+--				if (IR_LATCH_EN = '1') then
+----					IR_OUT <= IRam_DIn;
+--					IR_OUT <= IR_BUS;
+--				end if;
+--			end if;
+--		end process IR_P;
 
+		INSTRUCTION_REGISTER: LDR
 
-		------------------------------------------------------------------------------------------------------------------------
-		-- FETCH (IF)
-		------------------------------------------------------------------------------------------------------------------------
-		--	type   : sequential
-		--	inputs : PC, JUMP_EN
-		--	outputs: PC_BUS
+			generic map (	N		=> IR_SIZE_GLOBAL)
 
-		FETCH_P: process(RST, PC, JUMP_EN)
-		begin
--- NOTA: DEFINIRE JUMP_PC NEL DECODE
-			if RST = '0' then						-- asynchronous reset (active low)
-				PC_BUS <= (others => '0');
-			elsif JUMP_EN = '0' then					-- increment PC
-				PC_BUS <= std_logic_vector(unsigned(PC) + 4);
---			else								-- jump to JUMP_PC + 4
---				PC_BUS <= std_logic_vector(unsigned(JUMP_PC) + 4);			
-			end if;
-		end process FETCH_P;
+			port map (	--CLK		=> CLK,
+					RST		=> RST,
+					EN		=> IR_LATCH_EN,
+					REGIN		=> IR_BUS,
+					REGOUT		=> IR_OUT);
 
+		NPC_BUS			<= std_logic_vector(unsigned(PC_OUT) + 4);
+		
 		-- IF-ID PIPELINE
-		IF_ID_PC_NEXT <= PC;
-		IF_ID_IR_NEXT <= IR;
-		IF_ID_RegA_LATCH_EN_NEXT <= RegA_LATCH_EN;
-		IF_ID_RegB_LATCH_EN_NEXT <= RegB_LATCH_EN;
-		IF_ID_RegIMM_LATCH_EN_NEXT <= RegIMM_LATCH_EN;
---		IF_ID_MUXA_SEL_NEXT <= MUXA_SEL;
---		IF_ID_MUXB_SEL_NEXT <= MUXB_SEL;
---		IF_ID_ALU_OPCODE_NEXT <= ALU_OPCODE;
-
+		IF_ID_PC_NEXT		<= PC_OUT;
+		IF_ID_IR_NEXT		<= IR_OUT;
 
 		------------------------------------------------------------------------------------------------------------------------
-		-- DECODE (DE)
+		-- DECODE (ID)
 		------------------------------------------------------------------------------------------------------------------------
 		--	type   : sequential
 		--	inputs : RST, IF_ID_PC, IF_ID_IR
 		--	outputs: RF_SIGNALS
 
-		DECODE_P: process(RST, IF_ID_PC, IF_ID_IR)
-		begin	
-			if RST = '0' then						-- asynchronous reset (active low)
-				RF_ENABLE	<= '0';
-				RF_RD1		<= '0';
-				RF_RD2		<= '0';
-				RF_WR		<= '0';
-				RF_ADD_WR	<= (others => '0');
-				RF_ADD_RD1	<= (others => '0');
-				RF_ADD_RD2	<= (others => '0');
-				RF_DATAIN	<= (others => '0');
-			else
-				RF_ENABLE	<= '1';
-				RF_RD1		<= '1';
-				RF_RD2		<= '1';
-				RF_WR		<= RF_WE;		-- NOTA: VALORE DA METTERE AD 1 QUANDO C'È DA ASSEGNARE UN VALORE DI RITORNO DAL WRITE BACK
-				RF_ADD_WR	<= (others => '0');	-- NOTA: INDIRIZZO DA ASSEGNARE DI RITORNO DAL WRITE BACK
-				RF_ADD_RD1	<= IF_ID_IR(IR_SIZE - OPC_SIZE_GLOBAL - 1 downto IR_SIZE - OPC_SIZE_GLOBAL - REG_SIZE_GLOBAL);				-- IF_ID_IR(25 downto 21);
-				RF_ADD_RD2	<= IF_ID_IR(IR_SIZE - OPC_SIZE_GLOBAL - REG_SIZE_GLOBAL - 1 downto IR_SIZE - OPC_SIZE_GLOBAL - REG_SIZE_GLOBAL*2);	-- IF_ID_IR(20 downto 16);
-				RF_DATAIN	<= WB_MUX_OUTPUT;	-- NOTA: VALORE DA ASSEGNARE DI RITORNO DAL WRITE BACK
-			end if;
-		end process DECODE_P;
+		REGISTER_FILE: RF
 
---		JUMP_ADDRESS_P: process(Branch_r, IF_ID_PC, ID_EX_OFFSET_NEXT, RF_OUT1)
+			generic map (	N		=> RF_SIZE_GLOBAL,
+					NA		=> RF_ADDRESSES_GLOBAL)
+
+			port map (	CLK		=> CLK,
+					RST		=> RST,
+					EN		=> '1',
+					EN_RD1		=> '1',
+					EN_RD2		=> '1',
+					EN_WR		=> RF_WE,
+					ADD_RD1		=> RS1,
+					ADD_RD2		=> RS2,
+					ADD_WR		=> MEM_WB_RD,
+					DATAIN		=> WB_MUX_OUT,
+					OUT1		=> RF_OUT1,
+					OUT2		=> RF_OUT2);
+
+		SIGN_EXTEND: SIGNEX
+
+			generic map (	N		=> IR_SIZE_GLOBAL,
+					OPC		=> OPC_SIZE_GLOBAL,
+					REG		=> REG_SIZE_GLOBAL)
+
+			port map (	INSTR		=> IF_ID_IR,
+					IMM		=> IMM_OUT);
+
+--		JUMP_ADDRESS_P: process(NPC_LATCH_EN, IF_ID_PC, ID_EX_IMM_NEXT, RF_OUT1)
 --		begin
---			if (Branch_r = '0') then			-- NOTA: Branch_r è un segnale per indicare il jump relativo (definirlo come input del datapath)
---				JUMP_PC <= IF_ID_PC + ID_EX_OFFSET_NEXT;		-- relative jump
+--			if (NPC_LATCH_EN = '0') then			
+--				PC_JUMP <= IF_ID_PC + ID_EX_IMM_NEXT;		-- Relative Jump
 --			else
---				JUMP_PC <= RF_OUT1;					-- absolute jump
+--				PC_JUMP <= RF_OUT1;				-- Absolute Jump
 --			end if;
 --		end process;
 
-		REG_FILE: REGISTER_FILE
+--		RELATIVE_JUMP: process(RST, IF_ID_PC, ID_EX_IMM_NEXT)
+--		begin	
+--			if RST = '0' then						-- Asynchronous Reset (active low)
+--				REL_JUMP	<= (others => '0');
+--			else
+--				REL_JUMP	<= IF_ID_PC + ID_EX_IMM_NEXT;		-- Relative Jump Address
+--			end if;
+--		end process RELATIVE_JUMP;
 
-		generic map (	N	=> RF_SIZE_GLOBAL,
-				NA	=> RF_ADDRESSES_GLOBAL)
-
-		port map (	CLK	=> CLK,
-				RESET	=> RST,
-				ENABLE	=> RF_ENABLE,
-				RD1	=> RF_RD1,
-				RD2	=> RF_RD2,
-				WR	=> RF_WR,
-				ADD_WR	=> RF_ADD_WR,
-				ADD_RD1	=> RF_ADD_RD1,
-				ADD_RD2	=> RF_ADD_RD2,
-				DATAIN	=> RF_DATAIN,
-				OUT1	=> RF_OUT1,
-				OUT2	=> RF_OUT2);
+--		JUMP_MUX: MUX21
+--
+--			generic map (	N		=> IR_SIZE_GLOBAL)
+--
+--			port map (	A		=> REL_JUMP,				-- Relative Jump
+--					B		=> ID_EX_RF_OUT1_NEXT,			-- Absolute Jump
+--					S		=> NPC_LATCH_EN,			-- NOTA: sostituire "NPC_LATCH_EN" con un segnale per indicare che il jump è relativo (definirlo come input del datapath)
+--					Y		=> PC_JUMP);
 
 -- NOTE: da definire
---		IMMGR: IMMEDIATE_GENERATOR
---
---		generic map (	N_tot  	=> M)
---		
---		port map (	INSTRUCTION => IF_ID_INSTRUCTION,
---				IMMEDIATE   => ID_EX_OFFSET_NEXT);
-
 --		-- used for branch prediction
 --		COMP_REG: process(ALUSrc_PC, ALU_result, EX_MEM_ALU_result, Branch_j, Branch, EX_MEM_RD, ID_EX_RD, MEM_WB_RD, writa_data_f, read_addr_f1, read_data_f1)
 --		begin
@@ -430,18 +559,7 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 --			{..}
 --		end process;
 
-		REG_LATCHES: process(IF_ID_RegA_LATCH_EN, IF_ID_RegB_LATCH_EN, IF_ID_RegIMM_LATCH_EN, IF_ID_IR, RF_OUT1, RF_OUT2)
-		begin
-			if (IF_ID_RegA_LATCH_EN = '1') then
-				ID_EX_RF_OUT1_NEXT <= RF_OUT1;
-			end if;
-			if (IF_ID_RegB_LATCH_EN = '1') then
-				ID_EX_RF_OUT2_NEXT <= RF_OUT2;
-			end if;
-			if (IF_ID_RegIMM_LATCH_EN = '1') then
-				ID_EX_IMM_NEXT <= (OPC_SIZE_GLOBAL + REG_SIZE_GLOBAL*2 - 1 downto 0 => '0') & IF_ID_IR(IR_SIZE - OPC_SIZE_GLOBAL - REG_SIZE_GLOBAL*2 - 1 downto 0);								-- IF_ID_IR(15 downto 0);
-			end if;
-		end process;
+
 
 		-- chose register destination
 --		CHOOSE_RD: process(IF_ID_INSTRUCTION, ALUSrc, Branch_j, Float_operation_RD)
@@ -449,20 +567,36 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 --			{..}
 --		end process;
 
+		RS1			<= IF_ID_IR(IR_SIZE - OPC_SIZE_GLOBAL - 1 downto IR_SIZE - OPC_SIZE_GLOBAL - REG_SIZE_GLOBAL);						-- IF_ID_IR(25 downto 21);
+		RS2			<= IF_ID_IR(IR_SIZE - OPC_SIZE_GLOBAL - REG_SIZE_GLOBAL - 1 downto IR_SIZE - OPC_SIZE_GLOBAL - REG_SIZE_GLOBAL*2);			-- IF_ID_IR(20 downto 16);
+		RD			<= IF_ID_IR(IR_SIZE - OPC_SIZE_GLOBAL - REG_SIZE_GLOBAL*2 - 1 downto IR_SIZE - OPC_SIZE_GLOBAL - REG_SIZE_GLOBAL*3);			-- IF_ID_IR(15 downto 11);
+
+--		REL_JUMP		<= IF_ID_PC + ID_EX_IMM_NEXT;			-- Relative Jump Address
+
+		LATCH_REGA: LDR		generic map (RF_SIZE_GLOBAL)	port map (RST, RegA_LATCH_EN, RF_OUT1, ID_EX_RF_OUT1_NEXT);
+		LATCH_REGB: LDR		generic map (RF_SIZE_GLOBAL)	port map (RST, RegB_LATCH_EN, RF_OUT2, ID_EX_RF_OUT2_NEXT);
+		LATCH_REGIMM: LDR	generic map (RF_SIZE_GLOBAL)	port map (RST, RegIMM_LATCH_EN, IMM_OUT, ID_EX_IMM_NEXT);
+
 		-- ID-EX PIPELINE
-		ID_EX_PC_NEXT <= IF_ID_PC;
-		ID_EX_IR_NEXT <= IF_ID_IR;
---		ID_EX_OFFSET_NEXT <= ID_EX_OFFSET;
+		ID_EX_PC_NEXT		<= IF_ID_PC;
+--		ID_EX_IR_NEXT		<= IF_ID_IR;
+--		ID_EX_OFFSET_NEXT	<= ID_EX_OFFSET;
 
-		ID_EX_RF_ADD_WR_NEXT <= IF_ID_IR(IR_SIZE - OPC_SIZE_GLOBAL - REG_SIZE_GLOBAL*2 - 1 downto IR_SIZE - OPC_SIZE_GLOBAL - REG_SIZE_GLOBAL*3);			-- IF_ID_IR(15 downto 11);
-		ID_EX_RF_DATAIN_NEXT <= RF_DATAIN;
-		--ID_EX_RF_OUT1_NEXT <= RF_OUT1;
-		--ID_EX_RF_OUT2_NEXT <= RF_OUT2;
+		ID_EX_RD_NEXT		<= RD;
+		ID_EX_RF_DATAIN_NEXT	<= WB_MUX_OUT;
 
---		ID_EX_MUXA_SEL_NEXT <= IF_ID_MUXA_SEL;
---		ID_EX_MUXB_SEL_NEXT <= IF_ID_MUXB_SEL;
-
---		ID_EX_ALU_OPCODE_NEXT <= IF_ID_ALU_OPCODE;
+--		REG_LATCHES: process(RegA_LATCH_EN, RegB_LATCH_EN, RegIMM_LATCH_EN, IF_ID_IR, RF_OUT1, RF_OUT2)
+--		begin
+--			if (RegA_LATCH_EN = '1') then
+--				ID_EX_RF_OUT1_NEXT <= RF_OUT1;
+--			end if;
+--			if (RegB_LATCH_EN = '1') then
+--				ID_EX_RF_OUT2_NEXT <= RF_OUT2;
+--			end if;
+--			if (RegIMM_LATCH_EN = '1') then
+--				ID_EX_IMM_NEXT <= IMM_OUT;
+--			end if;
+--		end process;
 
 		------------------------------------------------------------------------------------------------------------------------
 		-- EXECUTE (EX)
@@ -471,23 +605,41 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 		--	inputs : 
 		--	outputs: 
 
+		ALU_PRE_MUX1: MUX21
+
+			generic map (	N	=> RF_SIZE_GLOBAL)
+
+			port map (	A	=> ID_EX_RF_DATAIN,
+					B	=> ID_EX_PC,
+					S	=> '0',
+					Y	=> ALU_PREOP1);
+
 		ALU_MUX1: MUX21
 
-		generic map (	N	=> RF_SIZE_GLOBAL)
+			generic map (	N	=> RF_SIZE_GLOBAL)
 
-		port map (	A	=> ID_EX_RF_OUT1,
-				B	=> ID_EX_IMM,				-- Warnings
-				S	=> MUXA_SEL,
-				Y	=> ALU_OP1);
-	
+			port map (	A	=> ID_EX_RF_OUT1,
+					B	=> ALU_PREOP1,					-- Warnings
+					S	=> MUXA_SEL,
+					Y	=> ALU_OP1);
+
+		ALU_PRE_MUX2: MUX21
+
+			generic map (	N	=> RF_SIZE_GLOBAL)
+
+			port map (	A	=> ID_EX_RF_DATAIN,
+					B	=> ID_EX_IMM_NEXT,
+					S	=> '0',
+					Y	=> ALU_PREOP2);
+
 		ALU_MUX2: MUX21
 
-		generic map (	N	=> RF_SIZE_GLOBAL)
+			generic map (	N	=> RF_SIZE_GLOBAL)
 
-		port map (	A	=> ID_EX_RF_OUT2,
-				B	=> ID_EX_IMM,				-- Warnings
-				S	=> MUXB_SEL,
-				Y	=> ALU_OP2);
+			port map (	A	=> ID_EX_RF_OUT2,
+					B	=> ALU_PREOP2,					-- Warnings
+					S	=> MUXB_SEL,
+					Y	=> ALU_OP2);
 
 --		ALUMUX1: MUX41
 --
@@ -499,7 +651,7 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 --				D	=> ID_EX_PC,
 --				S	=> MUXA_SEL,
 --				Y	=> ALU_OP1);
---	
+--
 --		ALUMUX2: MUX41
 --
 --		generic map (	N	=> RF_SIZE_GLOBAL)
@@ -542,8 +694,36 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 			port map (	OP1	=> ALU_OP1,
 					OP2	=> ALU_OP2,
 					OPC	=> ALU_OPCODE,
-					Y	=> ALU_OUTPUT,
+					Y	=> ALU_OUT,
 					Z	=> ALU_ZERO);
+
+		ZERO_DETECTOR: ZERODET
+
+			generic map (	N	=> ALU_OP_SIZE_GLOBAL)
+
+			port map (	A	=> ID_EX_RF_OUT1,
+					Y	=> ZERO_OUT);
+
+		ZERO_OUT_NEG	<= not(ZERO_OUT);
+
+--		BRANCH_MUX: MUX21
+--
+--			generic map (	N	=> 1)
+--
+--			port map (	A	=> ZERO_OUT,
+--					B	=> ZERO_OUT_NEG,
+--					S	=> EQ_COND,
+--					Y	=> BRANCH_COND);
+
+		BRANCH_MUX: process(ZERO_OUT, EQ_COND)
+		begin
+			if (EQ_COND = '0') then
+				BRANCH_COND <= ZERO_OUT;
+			else
+				BRANCH_COND <= ZERO_OUT_NEG;
+			end if;
+		end process;
+
 
 --		ForwardingUnitComponent: ForwardingUnit
 --			Generic Map(NbitRegAddressing => R)
@@ -558,15 +738,30 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 --				ForwardA        => ForwardAmuxSelector,
 --				ForwardB        => ForwardBmuxSelector);
 
+		LATCH_ALUOUT: LDR	generic map (ALU_OP_SIZE_GLOBAL)	port map (RST, ALU_OUTREG_EN, ALU_OUT, EX_MEM_ALU_OUT_NEXT);
+		LATCH_BRANCH: LD						port map (RST, ALU_OUTREG_EN, BRANCH_COND, EX_MEM_BRANCH_COND_NEXT);
+
 		-- EX-MEM PIPELINE
-		EX_MEM_ALU_OUTPUT_NEXT <= ALU_OUTPUT;
---		EX_MEM_RD_NEXT <= ID_EX_RD;
-		EX_MEM_RF_OUT2_NEXT <= ID_EX_RF_OUT2;
+		EX_MEM_PC_NEXT		<= ID_EX_PC;
+		EX_MEM_RD_NEXT		<= ID_EX_RD;
+--		EX_MEM_ALU_OUT_NEXT	<= ALU_OUT;
+		EX_MEM_RF_OUT2_NEXT	<= ID_EX_RF_OUT2;
 
 
 		------------------------------------------------------------------------------------------------------------------------
 		-- MEMORY (MEM)
 		------------------------------------------------------------------------------------------------------------------------
+
+		PC_MUX_SEL		<= EX_MEM_BRANCH_COND or JUMP_EN;
+
+		PC_MUX: MUX21
+
+			generic map (	N	=> PC_SIZE_GLOBAL)
+
+			port map (	A	=> EX_MEM_ALU_OUT,
+					B	=> EX_MEM_PC,
+					S	=> PC_MUX_SEL,
+					Y	=> PC_BUS);
 
 		DATA_MEMORY: DRAM
 
@@ -574,17 +769,19 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 					NW	=> DRAM_WORD_SIZE_GLOBAL)
 
 			port map (	CLK	=> CLK,					-- Clock
-					RST	=> RST,					-- Reset:Active-Low
+					RST	=> RST,					-- Reset (active low)
 					RE	=> DRAM_RE,				-- Read Enable
 					WE	=> DRAM_WE,				-- Write Enable
-					ADDR	=> EX_MEM_ALU_OUTPUT,			-- Address
-					Din	=> EX_MEM_RF_OUT2,			-- Data in
-					Dout	=> DRAM_OUTPUT);			-- Data out
+					ADDR	=> EX_MEM_ALU_OUT,			-- Address
+					DIN	=> EX_MEM_RF_OUT2,			-- Data in
+					DOUT	=> DRAM_OUT);				-- Data out
 		
+		LATCH_LMD: LDR		generic map (DRAM_WORD_SIZE_GLOBAL)	port map (RST, LMD_LATCH_EN, DRAM_OUT, MEM_WB_DRAM_OUT_NEXT);
+
 		-- MEM-WB PIPELINE
-		MEM_WB_ALU_OUTPUT_NEXT <= EX_MEM_ALU_OUTPUT;
-		MEM_WB_DRAM_OUTPUT_NEXT <= DRAM_OUTPUT;
---		MEM_WB_RD_NEXT <= EX_MEM_RD;
+		MEM_WB_RD_NEXT		<= EX_MEM_RD;
+		MEM_WB_ALU_OUT_NEXT	<= EX_MEM_ALU_OUT;
+--		MEM_WB_DRAM_OUT_NEXT	<= DRAM_OUT;
 
 		------------------------------------------------------------------------------------------------------------------------
 		-- WRITE BACK (WB)
@@ -592,19 +789,16 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 
 		WB_MUX: MUX21
 
-		generic map (	N	=> DRAM_WORD_SIZE_GLOBAL)
+			generic map (	N	=> DRAM_WORD_SIZE_GLOBAL)
 
-		port map (	A	=> MEM_WB_DRAM_OUTPUT,
-				B	=> MEM_WB_ALU_OUTPUT,
-				S	=> WB_MUX_SEL,
-				Y	=> WB_MUX_OUTPUT);
+			port map (	A	=> MEM_WB_DRAM_OUT,
+					B	=> MEM_WB_ALU_OUT,
+					S	=> WB_MUX_SEL,
+					Y	=> WB_MUX_OUT);
 
 		------------------------------------------------------------------------------------------------------------------------
 		-- Components Mapping
 		------------------------------------------------------------------------------------------------------------------------
-
-
-
 
 
 

@@ -15,8 +15,8 @@ entity DLX_CU is
 			IR_SIZE			: integer := IR_SIZE_GLOBAL;		-- Instruction Register Size
 			CW_SIZE			: integer := CW_SIZE_GLOBAL);		-- Control Word Size
 
-	port (		Clk			: in  std_logic;	-- Clock
-			Rst			: in  std_logic;	-- Reset:Active-Low
+	port (		CLK			: in  std_logic;	-- Clock
+			RST			: in  std_logic;	-- Reset (active low)
 
 			-- Instruction Register
 			IR_IN			: in  std_logic_vector(IR_SIZE - 1 downto 0);
@@ -137,7 +137,7 @@ architecture DLX_CU_HW of DLX_CU is
 	--signal cw        : std_logic_vector(CW_SIZE - 1 downto 0);			-- full control word read from cw_mem
 
 	-- control words
-	signal cw1 : std_logic_vector(CW_SIZE - 1 downto 0);				-- first stage
+	signal cw1 : std_logic_vector(CW_SIZE - 1 downto 0);				-- fiRST stage
 	signal cw2 : std_logic_vector(CW_SIZE - 1 - 2 downto 0);			-- second stage
 	signal cw3 : std_logic_vector(CW_SIZE - 1 - 5 downto 0);			-- third stage
 	signal cw4 : std_logic_vector(CW_SIZE - 1 - 9 downto 0);			-- fourth stage
@@ -191,254 +191,127 @@ begin
 
 	ALU_OP_CODE_P: process (IR_opcode, IR_func)
 	begin
-		case IR_opcode is
+		-- R-Type instructions
+		if IR_opcode = RTYPE then			-- ALU Operations		-- Operation Labels
+			if IR_func = RTYPE_SLL		then	aluOpcode_i <= OP_SLL;		IR_func_LABEL <= L_RTYPE_SLL;
+			elsif IR_func = RTYPE_SRL	then	aluOpcode_i <= OP_SRL;		IR_func_LABEL <= L_RTYPE_SRL;
+--			elsif IR_func = RTYPE_SRA	then	aluOpcode_i <= OP_SRA;		IR_func_LABEL <= L_RTYPE_SRA;
+			elsif IR_func = RTYPE_ADD	then	aluOpcode_i <= OP_ADD;		IR_func_LABEL <= L_RTYPE_ADD;
+--			elsif IR_func = RTYPE_ADDU	then	aluOpcode_i <= OP_ADDU;		IR_func_LABEL <= L_RTYPE_ADDU;
+			elsif IR_func = RTYPE_SUB	then	aluOpcode_i <= OP_SUB;		IR_func_LABEL <= L_RTYPE_SUB;
+--			elsif IR_func = RTYPE_SUBU	then	aluOpcode_i <= OP_SUBU;		IR_func_LABEL <= L_RTYPE_SUBU;
+			elsif IR_func = RTYPE_AND	then	aluOpcode_i <= OP_AND;		IR_func_LABEL <= L_RTYPE_AND;
+			elsif IR_func = RTYPE_OR	then	aluOpcode_i <= OP_OR;		IR_func_LABEL <= L_RTYPE_OR;
+			elsif IR_func = RTYPE_XOR	then	aluOpcode_i <= OP_XOR;		IR_func_LABEL <= L_RTYPE_XOR;
+--			elsif IR_func = RTYPE_SEQ	then	aluOpcode_i <= OP_SEQ;		IR_func_LABEL <= L_RTYPE_SEQ;
+			elsif IR_func = RTYPE_SNE	then	aluOpcode_i <= OP_SNE;		IR_func_LABEL <= L_RTYPE_SNE;
+--			elsif IR_func = RTYPE_SLT	then	aluOpcode_i <= OP_SLT;		IR_func_LABEL <= L_RTYPE_SLT;
+--			elsif IR_func = RTYPE_SGT	then	aluOpcode_i <= OP_SGT;		IR_func_LABEL <= L_RTYPE_SGT;
+			elsif IR_func = RTYPE_SLE	then	aluOpcode_i <= OP_SLE;		IR_func_LABEL <= L_RTYPE_SLE;
+			elsif IR_func = RTYPE_SGE	then	aluOpcode_i <= OP_SGE;		IR_func_LABEL <= L_RTYPE_SGE;
+--			elsif IR_func = RTYPE_MOVI2S	then	aluOpcode_i <= OP_MOVI2S;	IR_func_LABEL <= L_RTYPE_MOVI2S;
+--			elsif IR_func = RTYPE_MOVS2I	then	aluOpcode_i <= OP_MOVS2I;	IR_func_LABEL <= L_RTYPE_MOVS2I;
+--			elsif IR_func = RTYPE_MOVF	then	aluOpcode_i <= OP_MOVF;		IR_func_LABEL <= L_RTYPE_MOVF;
+--			elsif IR_func = RTYPE_MOVD	then	aluOpcode_i <= OP_MOVD;		IR_func_LABEL <= L_RTYPE_MOVD;
+--			elsif IR_func = RTYPE_MOVFP2I	then	aluOpcode_i <= OP_MOVFP2I;	IR_func_LABEL <= L_RTYPE_MOVFP2I;
+--			elsif IR_func = RTYPE_MOVI2FP	then	aluOpcode_i <= OP_MOVI2FP;	IR_func_LABEL <= L_RTYPE_MOVI2FP;
+--			elsif IR_func = RTYPE_MOVI2T	then	aluOpcode_i <= OP_MOVI2T;	IR_func_LABEL <= L_RTYPE_MOVI2T;
+--			elsif IR_func = RTYPE_MOVT2I	then	aluOpcode_i <= OP_MOVT2I;	IR_func_LABEL <= L_RTYPE_MOVT2I;
+--			elsif IR_func = RTYPE_SLTU	then	aluOpcode_i <= OP_SLTU;		IR_func_LABEL <= L_RTYPE_SLTU;
+--			elsif IR_func = RTYPE_SGTU	then	aluOpcode_i <= OP_SGTU;		IR_func_LABEL <= L_RTYPE_SGTU;
+--			elsif IR_func = RTYPE_SLEU	then	aluOpcode_i <= OP_SLEU;		IR_func_LABEL <= L_RTYPE_SLEU;
+--			elsif IR_func = RTYPE_SGEU	then	aluOpcode_i <= OP_SGEU;		IR_func_LABEL <= L_RTYPE_SGEU;
+--			elsif IR_func = RTYPE_ADDF	then	aluOpcode_i <= OP_ADDF;		IR_func_LABEL <= L_RTYPE_ADDF;
+--			elsif IR_func = RTYPE_SUBF	then	aluOpcode_i <= OP_SUBF;		IR_func_LABEL <= L_RTYPE_SUBF;
+--			elsif IR_func = RTYPE_MULTF	then	aluOpcode_i <= OP_MULTF;	IR_func_LABEL <= L_RTYPE_MULTF;
+--			elsif IR_func = RTYPE_DIVF	then	aluOpcode_i <= OP_DIVF;		IR_func_LABEL <= L_RTYPE_DIVF;
+--			elsif IR_func = RTYPE_ADDD	then	aluOpcode_i <= OP_ADDD;		IR_func_LABEL <= L_RTYPE_ADDD;
+--			elsif IR_func = RTYPE_SUBD	then	aluOpcode_i <= OP_SUBD;		IR_func_LABEL <= L_RTYPE_SUBD;
+--			elsif IR_func = RTYPE_MULTD	then	aluOpcode_i <= OP_MULTD;	IR_func_LABEL <= L_RTYPE_MULTD;
+--			elsif IR_func = RTYPE_DIVD	then	aluOpcode_i <= OP_DIVD;		IR_func_LABEL <= L_RTYPE_DIVD;
+--			elsif IR_func = RTYPE_CVTF2D	then	aluOpcode_i <= OP_CVTF2D;	IR_func_LABEL <= L_RTYPE_CVTF2D;
+--			elsif IR_func = RTYPE_CVTF2I	then	aluOpcode_i <= OP_CVTF2I;	IR_func_LABEL <= L_RTYPE_CVTF2I;
+--			elsif IR_func = RTYPE_CVTD2F	then	aluOpcode_i <= OP_CVTD2F;	IR_func_LABEL <= L_RTYPE_CVTD2F;
+--			elsif IR_func = RTYPE_CVTD2I	then	aluOpcode_i <= OP_CVTD2I;	IR_func_LABEL <= L_RTYPE_CVTD2I;
+--			elsif IR_func = RTYPE_CVTI2F	then	aluOpcode_i <= OP_CVTI2F;	IR_func_LABEL <= L_RTYPE_CVTI2F;
+--			elsif IR_func = RTYPE_CVTI2D	then	aluOpcode_i <= OP_CVTI2D;	IR_func_LABEL <= L_RTYPE_CVTI2D;
+--			elsif IR_func = RTYPE_MULT	then	aluOpcode_i <= OP_MULT;		IR_func_LABEL <= L_RTYPE_MUL;
+--			elsif IR_func = RTYPE_DIV	then	aluOpcode_i <= OP_DIV;		IR_func_LABEL <= L_RTYPE_DIV;
+--			elsif IR_func = RTYPE_EQF	then	aluOpcode_i <= OP_EQF;		IR_func_LABEL <= L_RTYPE_EQF;
+--			elsif IR_func = RTYPE_NEF	then	aluOpcode_i <= OP_NEF;		IR_func_LABEL <= L_RTYPE_NEF;
+--			elsif IR_func = RTYPE_LTF	then	aluOpcode_i <= OP_LTF;		IR_func_LABEL <= L_RTYPE_LTF;
+--			elsif IR_func = RTYPE_GTF	then	aluOpcode_i <= OP_GTF;		IR_func_LABEL <= L_RTYPE_GTF;
+--			elsif IR_func = RTYPE_LEF	then	aluOpcode_i <= OP_LEF;		IR_func_LABEL <= L_RTYPE_LEF;
+--			elsif IR_func = RTYPE_GEF	then	aluOpcode_i <= OP_GEF;		IR_func_LABEL <= L_RTYPE_GEF;
+--			elsif IR_func = RTYPE_MULTU	then	aluOpcode_i <= OP_MULTU;	IR_func_LABEL <= L_RTYPE_MULTU;
+--			elsif IR_func = RTYPE_DIVU	then	aluOpcode_i <= OP_DIVU;		IR_func_LABEL <= L_RTYPE_DIVU;
+--			elsif IR_func = RTYPE_EQD	then	aluOpcode_i <= OP_EQD;		IR_func_LABEL <= L_RTYPE_EQD;
+--			elsif IR_func = RTYPE_NED	then	aluOpcode_i <= OP_NED;		IR_func_LABEL <= L_RTYPE_NED;
+--			elsif IR_func = RTYPE_LTD	then	aluOpcode_i <= OP_LTD;		IR_func_LABEL <= L_RTYPE_LTD;
+--			elsif IR_func = RTYPE_GTD	then	aluOpcode_i <= OP_GTD;		IR_func_LABEL <= L_RTYPE_GTD;
+--			elsif IR_func = RTYPE_LED	then	aluOpcode_i <= OP_LED;		IR_func_LABEL <= L_RTYPE_LED;
+--			elsif IR_func = RTYPE_GED	then	aluOpcode_i <= OP_GED;		IR_func_LABEL <= L_RTYPE_GED;
+			else					aluOpcode_i <= OP_NOP;		IR_func_LABEL <= L_RTYPE_NOP;
+			end if;
 
-			-- R-Type instructions
-			when RTYPE =>
-				case IR_func is
-					when RTYPE_SLL		=> aluOpcode_i <= OP_SLL;
-					when RTYPE_SRL		=> aluOpcode_i <= OP_SRL;
---					when RTYPE_SRA		=> aluOpcode_i <= OP_SRA;
-					when RTYPE_ADD		=> aluOpcode_i <= OP_ADD;
---					when RTYPE_ADDU		=> aluOpcode_i <= OP_ADDU;
-					when RTYPE_SUB		=> aluOpcode_i <= OP_SUB;
---					when RTYPE_SUBU		=> aluOpcode_i <= OP_SUBU;
-					when RTYPE_AND		=> aluOpcode_i <= OP_AND;
-					when RTYPE_OR		=> aluOpcode_i <= OP_OR;
-					when RTYPE_XOR		=> aluOpcode_i <= OP_XOR;
---					when RTYPE_SEQ		=> aluOpcode_i <= OP_SEQ;
-					when RTYPE_SNE		=> aluOpcode_i <= OP_SNE;
---					when RTYPE_SLT		=> aluOpcode_i <= OP_SLT;
---					when RTYPE_SGT		=> aluOpcode_i <= OP_SGT;
-					when RTYPE_SLE		=> aluOpcode_i <= OP_SLE;
-					when RTYPE_SGE		=> aluOpcode_i <= OP_SGE;
---					when RTYPE_MOVI2S	=> aluOpcode_i <= OP_MOVI2S;
---					when RTYPE_MOVS2I	=> aluOpcode_i <= OP_MOVS2I;
---					when RTYPE_MOVF	 	=> aluOpcode_i <= OP_MOVF;
---					when RTYPE_MOVD	 	=> aluOpcode_i <= OP_MOVD;
---					when RTYPE_MOVFP2I	=> aluOpcode_i <= OP_MOVFP2I;
---					when RTYPE_MOVI2FP	=> aluOpcode_i <= OP_MOVI2FP;
---					when RTYPE_MOVI2T	=> aluOpcode_i <= OP_MOVI2T;
---					when RTYPE_MOVT2I	=> aluOpcode_i <= OP_MOVT2I;
---					when RTYPE_SLTU		=> aluOpcode_i <= OP_SLTU;
---					when RTYPE_SGTU		=> aluOpcode_i <= OP_SGTU;
---					when RTYPE_SLEU		=> aluOpcode_i <= OP_SLEU;
---					when RTYPE_SGEU		=> aluOpcode_i <= OP_SGEU;
---					when RTYPE_ADDF		=> aluOpcode_i <= OP_ADDF;
---					when RTYPE_SUBF		=> aluOpcode_i <= OP_SUBF;
---					when RTYPE_MULTF	=> aluOpcode_i <= OP_MULTF;
---					when RTYPE_DIVF		=> aluOpcode_i <= OP_DIVF;
---					when RTYPE_ADDD		=> aluOpcode_i <= OP_ADDD;
---					when RTYPE_SUBD		=> aluOpcode_i <= OP_SUBD;
---					when RTYPE_MULTD	=> aluOpcode_i <= OP_MULTD;
---					when RTYPE_DIVD		=> aluOpcode_i <= OP_DIVD;
---					when RTYPE_CVTF2D	=> aluOpcode_i <= OP_CVTF2D;
---					when RTYPE_CVTF2I	=> aluOpcode_i <= OP_CVTF2I;
---					when RTYPE_CVTD2F	=> aluOpcode_i <= OP_CVTD2F;
---					when RTYPE_CVTD2I	=> aluOpcode_i <= OP_CVTD2I;
---					when RTYPE_CVTI2F	=> aluOpcode_i <= OP_CVTI2F;
---					when RTYPE_CVTI2D	=> aluOpcode_i <= OP_CVTI2D;
---					when RTYPE_MULT		=> aluOpcode_i <= OP_MULT;
---					when RTYPE_DIV		=> aluOpcode_i <= OP_DIV;
---					when RTYPE_EQF		=> aluOpcode_i <= OP_EQF;
---					when RTYPE_NEF		=> aluOpcode_i <= OP_NEF;
---					when RTYPE_LTF		=> aluOpcode_i <= OP_LTF;
---					when RTYPE_GTF		=> aluOpcode_i <= OP_GTF;
---					when RTYPE_LEF		=> aluOpcode_i <= OP_LEF;
---					when RTYPE_GEF		=> aluOpcode_i <= OP_GEF;
---					when RTYPE_MULTU	=> aluOpcode_i <= OP_MULTU;
---					when RTYPE_DIVU		=> aluOpcode_i <= OP_DIVU;
---					when RTYPE_EQD		=> aluOpcode_i <= OP_EQD;
---					when RTYPE_NED		=> aluOpcode_i <= OP_NED;
---					when RTYPE_LTD		=> aluOpcode_i <= OP_LTD;
---					when RTYPE_GTD		=> aluOpcode_i <= OP_GTD;
---					when RTYPE_LED		=> aluOpcode_i <= OP_LED;
---					when RTYPE_GED		=> aluOpcode_i <= OP_GED;
-					when others		=> aluOpcode_i <= OP_NOP;
-				end case;
+		-- I-Type instructions			-- ALU Operations		-- Operation Labels
+		elsif IR_opcode = ITYPE_BEQZ	then	aluOpcode_i <= OP_BEQZ;		IR_opcode_LABEL <= L_ITYPE_BEQZ;
+		elsif IR_opcode = ITYPE_BNEZ	then	aluOpcode_i <= OP_BNEZ;		IR_opcode_LABEL <= L_ITYPE_BNEZ;
+--		elsif IR_opcode = ITYPE_BFPT	then	aluOpcode_i <= OP_BFPT;		IR_opcode_LABEL <= L_ITYPE_BFPT;
+--		elsif IR_opcode = ITYPE_BFPF	then	aluOpcode_i <= OP_BFPF;		IR_opcode_LABEL <= L_ITYPE_BFPF;
+		elsif IR_opcode = ITYPE_ADDI	then	aluOpcode_i <= OP_ADDI;		IR_opcode_LABEL <= L_ITYPE_ADDI;
+--		elsif IR_opcode = ITYPE_ADDUI	then	aluOpcode_i <= OP_ADDUI;	IR_opcode_LABEL <= L_ITYPE_ADDUI;
+		elsif IR_opcode = ITYPE_SUBI	then	aluOpcode_i <= OP_SUBI;		IR_opcode_LABEL <= L_ITYPE_SUBI;
+--		elsif IR_opcode = ITYPE_SUBUI	then	aluOpcode_i <= OP_SUBUI;	IR_opcode_LABEL <= L_ITYPE_SUBUI;
+		elsif IR_opcode = ITYPE_ANDI	then	aluOpcode_i <= OP_ANDI;		IR_opcode_LABEL <= L_ITYPE_ANDI;
+		elsif IR_opcode = ITYPE_ORI	then	aluOpcode_i <= OP_ORI;		IR_opcode_LABEL <= L_ITYPE_ORI;
+		elsif IR_opcode = ITYPE_XORI	then	aluOpcode_i <= OP_XORI;		IR_opcode_LABEL <= L_ITYPE_XORI;
+--		elsif IR_opcode = ITYPE_LHI	then	aluOpcode_i <= OP_LHI;		IR_opcode_LABEL <= L_ITYPE_LHI;
+--		elsif IR_opcode = ITYPE_RFE	then	aluOpcode_i <= OP_RFE;		IR_opcode_LABEL <= L_ITYPE_RFE;
+--		elsif IR_opcode = ITYPE_TRAP	then	aluOpcode_i <= OP_TRAP;		IR_opcode_LABEL <= L_ITYPE_TRAP;
+--		elsif IR_opcode = ITYPE_JR	then	aluOpcode_i <= OP_JR;		IR_opcode_LABEL <= L_ITYPE_JR;
+--		elsif IR_opcode = ITYPE_JALR	then	aluOpcode_i <= OP_JALR;		IR_opcode_LABEL <= L_ITYPE_JALR;
+		elsif IR_opcode = ITYPE_SLLI	then	aluOpcode_i <= OP_SLLI;		IR_opcode_LABEL <= L_ITYPE_SLLI;
+		elsif IR_opcode = ITYPE_NOP	then	aluOpcode_i <= OP_NOP;		IR_opcode_LABEL <= L_ITYPE_NOP;
+		elsif IR_opcode = ITYPE_SRLI	then	aluOpcode_i <= OP_SRLI;		IR_opcode_LABEL <= L_ITYPE_SRLI;
+--		elsif IR_opcode = ITYPE_SRAI	then	aluOpcode_i <= OP_SRAI;		IR_opcode_LABEL <= L_ITYPE_SRAI;
+--		elsif IR_opcode = ITYPE_SEQI	then	aluOpcode_i <= OP_SEQI;		IR_opcode_LABEL <= L_ITYPE_SEQI;
+		elsif IR_opcode = ITYPE_SNEI	then	aluOpcode_i <= OP_SNEI;		IR_opcode_LABEL <= L_ITYPE_SNEI;
+--		elsif IR_opcode = ITYPE_SLTI	then	aluOpcode_i <= OP_SLTI;		IR_opcode_LABEL <= L_ITYPE_SLTI;
+--		elsif IR_opcode = ITYPE_SGTI	then	aluOpcode_i <= OP_SGTI;		IR_opcode_LABEL <= L_ITYPE_SGTI;
+		elsif IR_opcode = ITYPE_SLEI	then	aluOpcode_i <= OP_SLEI;		IR_opcode_LABEL <= L_ITYPE_SLEI;
+		elsif IR_opcode = ITYPE_SGEI	then	aluOpcode_i <= OP_SGEI;		IR_opcode_LABEL <= L_ITYPE_SGEI;
+--		elsif IR_opcode = ITYPE_LB	then	aluOpcode_i <= OP_LB;		IR_opcode_LABEL <= L_ITYPE_LB;
+--		elsif IR_opcode = ITYPE_LH	then	aluOpcode_i <= OP_LH;		IR_opcode_LABEL <= L_ITYPE_LH;
+		elsif IR_opcode = ITYPE_LW	then	aluOpcode_i <= OP_LW;		IR_opcode_LABEL <= L_ITYPE_LW;
+--		elsif IR_opcode = ITYPE_LBU	then	aluOpcode_i <= OP_LBU;		IR_opcode_LABEL <= L_ITYPE_LBU;
+--		elsif IR_opcode = ITYPE_LHU	then	aluOpcode_i <= OP_LHU;		IR_opcode_LABEL <= L_ITYPE_LHU;
+--		elsif IR_opcode = ITYPE_LF	then	aluOpcode_i <= OP_LF;		IR_opcode_LABEL <= L_ITYPE_LF;
+--		elsif IR_opcode = ITYPE_LD	then	aluOpcode_i <= OP_LD;		IR_opcode_LABEL <= L_ITYPE_LD;
+--		elsif IR_opcode = ITYPE_SB	then	aluOpcode_i <= OP_SB;		IR_opcode_LABEL <= L_ITYPE_SB;
+--		elsif IR_opcode = ITYPE_SH	then	aluOpcode_i <= OP_SH;		IR_opcode_LABEL <= L_ITYPE_SH;
+		elsif IR_opcode = ITYPE_SW	then	aluOpcode_i <= OP_SW;		IR_opcode_LABEL <= L_ITYPE_SW;
+--		elsif IR_opcode = ITYPE_SF	then	aluOpcode_i <= OP_SF;		IR_opcode_LABEL <= L_ITYPE_SF;
+--		elsif IR_opcode = ITYPE_SD	then	aluOpcode_i <= OP_SD;		IR_opcode_LABEL <= L_ITYPE_SD;
+--		elsif IR_opcode = ITYPE_ITLB	then	aluOpcode_i <= OP_ITLB;		IR_opcode_LABEL <= L_ITYPE_ITLB;
+--		elsif IR_opcode = ITYPE_SLTUI	then	aluOpcode_i <= OP_SLTUI;	IR_opcode_LABEL <= L_ITYPE_SLTUI;
+--		elsif IR_opcode = ITYPE_SGTUI	then	aluOpcode_i <= OP_SGTUI;	IR_opcode_LABEL <= L_ITYPE_SGTUI;
+--		elsif IR_opcode = ITYPE_SLEUI	then	aluOpcode_i <= OP_SLEUI;	IR_opcode_LABEL <= L_ITYPE_SLEUI;
+--		elsif IR_opcode = ITYPE_SGEUI	then	aluOpcode_i <= OP_SGEUI;	IR_opcode_LABEL <= L_ITYPE_SGEUI;
 
-			-- I-Type instructions
-			when ITYPE_BEQZ		=> aluOpcode_i <= OP_BEQZ;
-			when ITYPE_BNEZ		=> aluOpcode_i <= OP_BNEZ;
---			when ITYPE_BFPT		=> aluOpcode_i <= OP_BFPT;
---			when ITYPE_BFPF		=> aluOpcode_i <= OP_BFPF;
-			when ITYPE_ADDI		=> aluOpcode_i <= OP_ADDI;
---			when ITYPE_ADDUI	=> aluOpcode_i <= OP_ADDUI;
-			when ITYPE_SUBI		=> aluOpcode_i <= OP_SUBI;
---			when ITYPE_SUBUI	=> aluOpcode_i <= OP_SUBUI;
-			when ITYPE_ANDI		=> aluOpcode_i <= OP_ANDI;
-			when ITYPE_ORI		=> aluOpcode_i <= OP_ORI;
-			when ITYPE_XORI		=> aluOpcode_i <= OP_XORI;
---			when ITYPE_LHI		=> aluOpcode_i <= OP_LHI;
---			when ITYPE_RFE		=> aluOpcode_i <= OP_RFE;
---			when ITYPE_TRAP		=> aluOpcode_i <= OP_TRAP;
---			when ITYPE_JR		=> aluOpcode_i <= OP_JR;
---			when ITYPE_JALR		=> aluOpcode_i <= OP_JALR;
-			when ITYPE_SLLI		=> aluOpcode_i <= OP_SLLI;
-			when ITYPE_NOP		=> aluOpcode_i <= OP_NOP;
-			when ITYPE_SRLI		=> aluOpcode_i <= OP_SRLI;
---			when ITYPE_SRAI		=> aluOpcode_i <= OP_SRAI;
---			when ITYPE_SEQI		=> aluOpcode_i <= OP_SEQI;
-			when ITYPE_SNEI		=> aluOpcode_i <= OP_SNEI;
---			when ITYPE_SLTI		=> aluOpcode_i <= OP_SLTI;
---			when ITYPE_SGTI		=> aluOpcode_i <= OP_SGTI;
-			when ITYPE_SLEI		=> aluOpcode_i <= OP_SLEI;
-			when ITYPE_SGEI		=> aluOpcode_i <= OP_SGEI;
---			when ITYPE_LB		=> aluOpcode_i <= OP_LB;
---			when ITYPE_LH		=> aluOpcode_i <= OP_LH;
-			when ITYPE_LW		=> aluOpcode_i <= OP_LW;
---			when ITYPE_LBU		=> aluOpcode_i <= OP_LBU;
---			when ITYPE_LHU		=> aluOpcode_i <= OP_LHU;
---			when ITYPE_LF		=> aluOpcode_i <= OP_LF;
---			when ITYPE_LD		=> aluOpcode_i <= OP_LD;
---			when ITYPE_SB		=> aluOpcode_i <= OP_SB;
---			when ITYPE_SH		=> aluOpcode_i <= OP_SH;
-			when ITYPE_SW		=> aluOpcode_i <= OP_SW;
---			when ITYPE_SF		=> aluOpcode_i <= OP_SF;
---			when ITYPE_SD		=> aluOpcode_i <= OP_SD;
---			when ITYPE_ITLB		=> aluOpcode_i <= OP_ITLB;
---			when ITYPE_SLTUI	=> aluOpcode_i <= OP_SLTUI;
---			when ITYPE_SGTUI	=> aluOpcode_i <= OP_SGTUI;
---			when ITYPE_SLEUI	=> aluOpcode_i <= OP_SLEUI;
---			when ITYPE_SGEUI	=> aluOpcode_i <= OP_SGEUI;
+		-- J-Type instructions
+		elsif IR_opcode = JTYPE_J	then	aluOpcode_i <= OP_J;		IR_opcode_LABEL <= L_JTYPE_J;
+		elsif IR_opcode = JTYPE_JAL	then	aluOpcode_i <= OP_JAL;		IR_opcode_LABEL <= L_JTYPE_JAL;
 
-			-- J-Type instructions
-			when JTYPE_J		=> aluOpcode_i <= OP_J;
-			when JTYPE_JAL		=> aluOpcode_i <= OP_JAL;
+		else					aluOpcode_i <= OP_NOP;		IR_opcode_LABEL <= L_ITYPE_NOP;
+		end if;
 
-			when others		=> aluOpcode_i <= OP_NOP;
-
-		end case;
 	end process ALU_OP_CODE_P;
 
-	ALU_OP_CODE_L: process (IR_opcode, IR_func)
-	begin
-		case IR_opcode is
-
-			-- R-Type instructions
-			when RTYPE =>
-				case IR_func is
-					when RTYPE_SLL		=> IR_func_LABEL <= L_RTYPE_SLL;
-					when RTYPE_SRL		=> IR_func_LABEL <= L_RTYPE_SRL;
---					when RTYPE_SRA		=> IR_func_LABEL <= L_RTYPE_SRA;
-					when RTYPE_ADD		=> IR_func_LABEL <= L_RTYPE_ADD;
---					when RTYPE_ADDU		=> IR_func_LABEL <= L_RTYPE_ADDU;
-					when RTYPE_SUB		=> IR_func_LABEL <= L_RTYPE_SUB;
---					when RTYPE_SUBU		=> IR_func_LABEL <= L_RTYPE_SUBU;
-					when RTYPE_AND		=> IR_func_LABEL <= L_RTYPE_AND;
-					when RTYPE_OR		=> IR_func_LABEL <= L_RTYPE_OR;
-					when RTYPE_XOR		=> IR_func_LABEL <= L_RTYPE_XOR;
---					when RTYPE_SEQ		=> IR_func_LABEL <= L_RTYPE_SEQ;
-					when RTYPE_SNE		=> IR_func_LABEL <= L_RTYPE_SNE;
---					when RTYPE_SLT		=> IR_func_LABEL <= L_RTYPE_SLT;
---					when RTYPE_SGT		=> IR_func_LABEL <= L_RTYPE_SGT;
-					when RTYPE_SLE		=> IR_func_LABEL <= L_RTYPE_SLE;
-					when RTYPE_SGE		=> IR_func_LABEL <= L_RTYPE_SGE;
---					when RTYPE_MOVI2S	=> IR_func_LABEL <= L_RTYPE_MOVI2S;
---					when RTYPE_MOVS2I	=> IR_func_LABEL <= L_RTYPE_MOVS2I;
---					when RTYPE_MOVF		=> IR_func_LABEL <= L_RTYPE_MOVF;
---					when RTYPE_MOVD		=> IR_func_LABEL <= L_RTYPE_MOVD;
---					when RTYPE_MOVFP2I	=> IR_func_LABEL <= L_RTYPE_MOVFP2I;
---					when RTYPE_MOVI2FP	=> IR_func_LABEL <= L_RTYPE_MOVI2FP;
---					when RTYPE_MOVI2T	=> IR_func_LABEL <= L_RTYPE_MOVI2T;
---					when RTYPE_MOVT2I	=> IR_func_LABEL <= L_RTYPE_MOVT2I;
---					when RTYPE_SLTU		=> IR_func_LABEL <= L_RTYPE_SLTU;
---					when RTYPE_SGTU		=> IR_func_LABEL <= L_RTYPE_SGTU;
---					when RTYPE_SLEU		=> IR_func_LABEL <= L_RTYPE_SLEU;
---					when RTYPE_SGEU		=> IR_func_LABEL <= L_RTYPE_SGEU;
---					when RTYPE_ADDF		=> IR_func_LABEL <= L_RTYPE_ADDF;
---					when RTYPE_SUBF		=> IR_func_LABEL <= L_RTYPE_SUBF;
---					when RTYPE_MULTF	=> IR_func_LABEL <= L_RTYPE_MULTF;
---					when RTYPE_DIVF		=> IR_func_LABEL <= L_RTYPE_DIVF;
---					when RTYPE_ADDD		=> IR_func_LABEL <= L_RTYPE_ADDD;
---					when RTYPE_SUBD		=> IR_func_LABEL <= L_RTYPE_SUBD;
---					when RTYPE_MULTD	=> IR_func_LABEL <= L_RTYPE_MULTD;
---					when RTYPE_DIVD		=> IR_func_LABEL <= L_RTYPE_DIVD;
---					when RTYPE_CVTF2D	=> IR_func_LABEL <= L_RTYPE_CVTF2D;
---					when RTYPE_CVTF2I	=> IR_func_LABEL <= L_RTYPE_CVTF2I;
---					when RTYPE_CVTD2F	=> IR_func_LABEL <= L_RTYPE_CVTD2F;
---					when RTYPE_CVTD2I	=> IR_func_LABEL <= L_RTYPE_CVTD2I;
---					when RTYPE_CVTI2F	=> IR_func_LABEL <= L_RTYPE_CVTI2F;
---					when RTYPE_CVTI2D	=> IR_func_LABEL <= L_RTYPE_CVTI2D;
---					when RTYPE_MULT		=> IR_func_LABEL <= L_RTYPE_MUL;
---					when RTYPE_DIV		=> IR_func_LABEL <= L_RTYPE_DIV;
---					when RTYPE_EQF		=> IR_func_LABEL <= L_RTYPE_EQF;
---					when RTYPE_NEF		=> IR_func_LABEL <= L_RTYPE_NEF;
---					when RTYPE_LTF		=> IR_func_LABEL <= L_RTYPE_LTF;
---					when RTYPE_GTF		=> IR_func_LABEL <= L_RTYPE_GTF;
---					when RTYPE_LEF		=> IR_func_LABEL <= L_RTYPE_LEF;
---					when RTYPE_GEF		=> IR_func_LABEL <= L_RTYPE_GEF;
---					when RTYPE_MULTU	=> IR_func_LABEL <= L_RTYPE_MULTU;
---					when RTYPE_DIVU		=> IR_func_LABEL <= L_RTYPE_DIVU;
---					when RTYPE_EQD		=> IR_func_LABEL <= L_RTYPE_EQD;
---					when RTYPE_NED		=> IR_func_LABEL <= L_RTYPE_NED;
---					when RTYPE_LTD		=> IR_func_LABEL <= L_RTYPE_LTD;
---					when RTYPE_GTD		=> IR_func_LABEL <= L_RTYPE_GTD;
---					when RTYPE_LED		=> IR_func_LABEL <= L_RTYPE_LED;
---					when RTYPE_GED		=> IR_func_LABEL <= L_RTYPE_GED;
-					when others		=> IR_func_LABEL <= L_RTYPE_NOP;
-				end case;
-				IR_opcode_LABEL <= L_RTYPE;
-
-			-- I-Type instructions
-			when ITYPE_BEQZ		=> IR_opcode_LABEL <= L_ITYPE_BEQZ;
-			when ITYPE_BNEZ		=> IR_opcode_LABEL <= L_ITYPE_BNEZ;
---			when ITYPE_BFPT		=> IR_opcode_LABEL <= L_ITYPE_BFPT;
---			when ITYPE_BFPF		=> IR_opcode_LABEL <= L_ITYPE_BFPF;
-			when ITYPE_ADDI		=> IR_opcode_LABEL <= L_ITYPE_ADDI;
---			when ITYPE_ADDUI	=> IR_opcode_LABEL <= L_ITYPE_ADDUI;
-			when ITYPE_SUBI		=> IR_opcode_LABEL <= L_ITYPE_SUBI;
---			when ITYPE_SUBUI	=> IR_opcode_LABEL <= L_ITYPE_SUBUI;
-			when ITYPE_ANDI		=> IR_opcode_LABEL <= L_ITYPE_ANDI;
-			when ITYPE_ORI		=> IR_opcode_LABEL <= L_ITYPE_ORI;
-			when ITYPE_XORI		=> IR_opcode_LABEL <= L_ITYPE_XORI;
---			when ITYPE_LHI		=> IR_opcode_LABEL <= L_ITYPE_LHI;
---			when ITYPE_RFE		=> IR_opcode_LABEL <= L_ITYPE_RFE;
---			when ITYPE_TRAP		=> IR_opcode_LABEL <= L_ITYPE_TRAP;
---			when ITYPE_JR		=> IR_opcode_LABEL <= L_ITYPE_JR;
---			when ITYPE_JALR		=> IR_opcode_LABEL <= L_ITYPE_JALR;
-			when ITYPE_SLLI		=> IR_opcode_LABEL <= L_ITYPE_SLLI;
-			when ITYPE_NOP		=> IR_opcode_LABEL <= L_ITYPE_NOP;
-			when ITYPE_SRLI		=> IR_opcode_LABEL <= L_ITYPE_SRLI;
---			when ITYPE_SRAI		=> IR_opcode_LABEL <= L_ITYPE_SRAI;
---			when ITYPE_SEQI		=> IR_opcode_LABEL <= L_ITYPE_SEQI;
-			when ITYPE_SNEI		=> IR_opcode_LABEL <= L_ITYPE_SNEI;
---			when ITYPE_SLTI		=> IR_opcode_LABEL <= L_ITYPE_SLTI;
---			when ITYPE_SGTI		=> IR_opcode_LABEL <= L_ITYPE_SGTI;
-			when ITYPE_SLEI		=> IR_opcode_LABEL <= L_ITYPE_SLEI;
-			when ITYPE_SGEI		=> IR_opcode_LABEL <= L_ITYPE_SGEI;
---			when ITYPE_LB		=> IR_opcode_LABEL <= L_ITYPE_LB;
---			when ITYPE_LH		=> IR_opcode_LABEL <= L_ITYPE_LH;
-			when ITYPE_LW		=> IR_opcode_LABEL <= L_ITYPE_LW;
---			when ITYPE_LBU		=> IR_opcode_LABEL <= L_ITYPE_LBU;
---			when ITYPE_LHU		=> IR_opcode_LABEL <= L_ITYPE_LHU;
---			when ITYPE_LF		=> IR_opcode_LABEL <= L_ITYPE_LF;
---			when ITYPE_LD		=> IR_opcode_LABEL <= L_ITYPE_LD;
---			when ITYPE_SB		=> IR_opcode_LABEL <= L_ITYPE_SB;
---			when ITYPE_SH		=> IR_opcode_LABEL <= L_ITYPE_SH;
-			when ITYPE_SW		=> IR_opcode_LABEL <= L_ITYPE_SW;
---			when ITYPE_SF		=> IR_opcode_LABEL <= L_ITYPE_SF;
---			when ITYPE_SD		=> IR_opcode_LABEL <= L_ITYPE_SD;
---			when ITYPE_ITLB		=> IR_opcode_LABEL <= L_ITYPE_ITLB;
---			when ITYPE_SLTUI	=> IR_opcode_LABEL <= L_ITYPE_SLTUI;
---			when ITYPE_SGTUI	=> IR_opcode_LABEL <= L_ITYPE_SGTUI;
---			when ITYPE_SLEUI	=> IR_opcode_LABEL <= L_ITYPE_SLEUI;
---			when ITYPE_SGEUI	=> IR_opcode_LABEL <= L_ITYPE_SGEUI;
-
-			-- J-Type instructions
-			when JTYPE_J		=> IR_opcode_LABEL <= L_JTYPE_J;
-			when JTYPE_JAL		=> IR_opcode_LABEL <= L_JTYPE_JAL;
-
-			when others		=> IR_opcode_LABEL <= L_ITYPE_NOP;
-
-		end case;
-	end process ALU_OP_CODE_L;
-
-
 	-- process to pipeline control words
-	CW_PIPE: process (Clk, Rst)
+	CW_PIPE: process (CLK, RST)
 	begin
-		if Rst = '0' then			-- asynchronous reset (active low)
+		if RST = '0' then			-- Asynchronous Reset (active low)
 
 			cw1 <= (others => '0');
 			cw2 <= (others => '0');
@@ -450,7 +323,7 @@ begin
 			aluOpcode2 <= OP_NOP;
 			aluOpcode3 <= OP_NOP;
 
-		elsif Clk'event and Clk = '1' then	-- rising clock edge
+		elsif CLK'event and CLK = '1' then	-- Rising Clock Edge
 
 			cw1 <= cw_mem(conv_integer(IR_opcode));
 			cw2 <= cw1(CW_SIZE - 1 - 2 downto 0);
