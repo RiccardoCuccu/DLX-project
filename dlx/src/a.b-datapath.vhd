@@ -254,7 +254,7 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 	signal NPC_BUS : std_logic_vector(PC_SIZE - 1 downto 0);							-- Next Program Counter Bus		/ 32 bits
 
 	-- FETCH-DECODE (IF_ID) Pipeline signals
-	signal IF_ID_PC, IF_ID_PC_NEXT : std_logic_vector(PC_SIZE - 1 downto 0);					-- Program Counter signal		/ 32 bits
+	signal IF_ID_NPC, IF_ID_NPC_NEXT : std_logic_vector(PC_SIZE - 1 downto 0);					-- Program Counter signal		/ 32 bits
 	signal IF_ID_IR, IF_ID_IR_NEXT : std_logic_vector(IR_SIZE - 1 downto 0);					-- Instruction Register signal		/ 32 bits
 --	signal IF_ID_RegA_LATCH_EN, IF_ID_RegA_LATCH_EN_NEXT : std_logic;						-- Register A Latch Enable
 --	signal IF_ID_RegB_LATCH_EN, IF_ID_RegB_LATCH_EN_NEXT : std_logic;						-- Register B Latch Enable
@@ -264,7 +264,7 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 --	signal IF_ID_ALU_OPCODE, IF_ID_ALU_OPCODE_NEXT : aluOp;								-- ALU Operation Code
 
 	-- DECODE-EXECUTE (DE_EX) Pipeline signals
-	signal ID_EX_PC, ID_EX_PC_NEXT : std_logic_vector(PC_SIZE - 1 downto 0);					-- Program Counter signal		/ 32 bits
+	signal ID_EX_NPC, ID_EX_NPC_NEXT : std_logic_vector(PC_SIZE - 1 downto 0);					-- Program Counter signal		/ 32 bits
 --	signal ID_EX_IR, ID_EX_IR_NEXT : std_logic_vector(IR_SIZE - 1 downto 0);					-- Instruction Register signal		/ 32 bits
 	signal ID_EX_RD, ID_EX_RD_NEXT : std_logic_vector(RF_ADDRESSES_GLOBAL - 1 downto 0);				-- Register File - Write address	/  5 bits
 	signal ID_EX_RF_DATAIN, ID_EX_RF_DATAIN_NEXT : std_logic_vector(RF_SIZE_GLOBAL - 1 downto 0);			-- Register File - Write data		/ 32 bits
@@ -276,7 +276,7 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 --	signal ID_EX_ALU_OPCODE, ID_EX_ALU_OPCODE_NEXT : aluOp;								-- ALU Operation Code
 
 	-- EXECUTE-MEMORY (EX_MEM) Pipeline signals
-	signal EX_MEM_PC, EX_MEM_PC_NEXT : std_logic_vector(PC_SIZE - 1 downto 0);					-- Program Counter signal		/ 32 bits
+	signal EX_MEM_NPC, EX_MEM_NPC_NEXT : std_logic_vector(PC_SIZE - 1 downto 0);					-- Program Counter signal		/ 32 bits
 	signal EX_MEM_BRANCH_COND, EX_MEM_BRANCH_COND_NEXT : std_logic;							-- Branch Condition
 	signal EX_MEM_RD, EX_MEM_RD_NEXT : std_logic_vector(RF_ADDRESSES_GLOBAL - 1 downto 0);				-- Register File - Write address	/  5 bits
 	signal EX_MEM_RF_OUT2, EX_MEM_RF_OUT2_NEXT : std_logic_vector(RF_SIZE_GLOBAL - 1 downto 0);			-- Register File - Read data 2		/ 32 bits
@@ -324,11 +324,11 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 			if (CLK'event and CLK = '1') then
 				if (RST = '0') then
 					-- FETCH-DECODE
-					IF_ID_PC		<= (others => '0');			-- Program Counter signal
+					IF_ID_NPC		<= (others => '0');			-- Program Counter signal
 					IF_ID_IR		<= (others => '0');			-- Instruction Register signal
 
 					-- DECODE-EXECUTE
-					ID_EX_PC		<= (others => '0');			-- Program Counter signal
+					ID_EX_NPC		<= (others => '0');			-- Program Counter signal
 --					ID_EX_IR		<= (others => '0');			-- Instruction Register signal
 					ID_EX_RD		<= (others => '0');			-- Register File - Write address
 					ID_EX_RF_DATAIN		<= (others => '0');			-- Register File - Write data
@@ -340,7 +340,7 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 --					ID_EX_ALU_OPCODE 	<= OP_NOP;				-- ALU Operation Code
 
 					-- EXECUTE-MEMORY
-					EX_MEM_PC		<= (others => '0');			-- Program Counter signal
+					EX_MEM_NPC		<= (others => '0');			-- Program Counter signal
 					EX_MEM_RF_OUT2		<= (others => '0');			-- Register File - Read data 2
 					EX_MEM_ALU_OUT		<= (others => '0');			-- ALU Output
 					EX_MEM_BRANCH_COND	<= '0';					-- Branch Condition
@@ -350,11 +350,11 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 					MEM_WB_DRAM_OUT		<= (others => '0');			-- DRAM Output
 				else
 					-- FETCH-DECODE
-					IF_ID_PC		<= IF_ID_PC_NEXT;			-- Program Counter signal
+					IF_ID_NPC		<= IF_ID_NPC_NEXT;			-- Program Counter signal
 					IF_ID_IR		<= IF_ID_IR_NEXT;			-- Instruction Register signal
 
 					-- DECODE-EXECUTE
-					ID_EX_PC		<= ID_EX_PC_NEXT;			-- Program Counter signal
+					ID_EX_NPC		<= ID_EX_NPC_NEXT;			-- Program Counter signal
 --					ID_EX_IR		<= ID_EX_IR_NEXT;			-- Instruction Register signal
 					ID_EX_RD		<= ID_EX_RD_NEXT;			-- Register File - Write address
 					ID_EX_RF_DATAIN		<= ID_EX_RF_DATAIN_NEXT;		-- Register File - Write data
@@ -366,7 +366,7 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 --					ID_EX_ALU_OPCODE 	<= ID_EX_ALU_OPCODE_NEXT;		-- ALU Operation Code
 
 					-- EXECUTE-MEMORY
-					EX_MEM_PC		<= EX_MEM_PC_NEXT;			-- Program Counter signal
+					EX_MEM_NPC		<= EX_MEM_NPC_NEXT;			-- Program Counter signal
 					EX_MEM_RF_OUT2		<= EX_MEM_RF_OUT2_NEXT;			-- Register File - Read data 2
 					EX_MEM_ALU_OUT		<= EX_MEM_ALU_OUT_NEXT;			-- ALU Output
 					EX_MEM_BRANCH_COND	<= EX_MEM_BRANCH_COND_NEXT;		-- Branch Condition
@@ -377,7 +377,6 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 				end if;
 			end if;
 		end process PIPELINES;
-
 
 		------------------------------------------------------------------------------------------------------------------------
 		-- FETCH (IF)
@@ -426,14 +425,25 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 					REGIN		=> PC_BUS,
 					REGOUT		=> PC_OUT);
 
-		NEW_PROGRAM_COUNTER: LDR
+		NPC_BUS			<= std_logic_vector(unsigned(PC_OUT) + 4);
+
+		PC_MUX: MUX21
+
+			generic map (	N		=> PC_SIZE_GLOBAL)
+
+			port map (	A		=> NPC_BUS,
+					B		=> EX_MEM_ALU_OUT,
+					S		=> PC_MUX_SEL,
+					Y		=> PC_BUS);
+
+		NEXT_PROGRAM_COUNTER: LDR
 
 			generic map (	N		=> PC_SIZE_GLOBAL)
 
 			port map (	--CLK		=> CLK,
 					RST		=> RST,
 					EN		=> NPC_LATCH_EN,
-					REGIN		=> NPC_BUS,
+					REGIN		=> PC_BUS,
 					REGOUT		=> NPC_OUT);
 
 		INSTRUCTION_MEMORY: IRAM
@@ -472,11 +482,9 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 					EN		=> IR_LATCH_EN,
 					REGIN		=> IR_BUS,
 					REGOUT		=> IR_OUT);
-
-		NPC_BUS			<= std_logic_vector(unsigned(PC_OUT) + 4);
 		
 		-- IF-ID PIPELINE
-		IF_ID_PC_NEXT		<= PC_OUT;
+		IF_ID_NPC_NEXT		<= NPC_OUT;
 		IF_ID_IR_NEXT		<= IR_OUT;
 
 		------------------------------------------------------------------------------------------------------------------------
@@ -578,7 +586,7 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 		LATCH_REGIMM: LDR	generic map (RF_SIZE_GLOBAL)	port map (RST, RegIMM_LATCH_EN, IMM_OUT, ID_EX_IMM_NEXT);
 
 		-- ID-EX PIPELINE
-		ID_EX_PC_NEXT		<= IF_ID_PC;
+		ID_EX_NPC_NEXT		<= IF_ID_NPC;
 --		ID_EX_IR_NEXT		<= IF_ID_IR;
 --		ID_EX_OFFSET_NEXT	<= ID_EX_OFFSET;
 
@@ -610,7 +618,7 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 			generic map (	N	=> RF_SIZE_GLOBAL)
 
 			port map (	A	=> ID_EX_RF_DATAIN,
-					B	=> ID_EX_PC,
+					B	=> ID_EX_NPC,
 					S	=> '0',
 					Y	=> ALU_PREOP1);
 
@@ -742,7 +750,7 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 		LATCH_BRANCH: LD						port map (RST, ALU_OUTREG_EN, BRANCH_COND, EX_MEM_BRANCH_COND_NEXT);
 
 		-- EX-MEM PIPELINE
-		EX_MEM_PC_NEXT		<= ID_EX_PC;
+		EX_MEM_NPC_NEXT		<= ID_EX_NPC;
 		EX_MEM_RD_NEXT		<= ID_EX_RD;
 --		EX_MEM_ALU_OUT_NEXT	<= ALU_OUT;
 		EX_MEM_RF_OUT2_NEXT	<= ID_EX_RF_OUT2;
@@ -753,15 +761,6 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 		------------------------------------------------------------------------------------------------------------------------
 
 		PC_MUX_SEL		<= EX_MEM_BRANCH_COND or JUMP_EN;
-
-		PC_MUX: MUX21
-
-			generic map (	N	=> PC_SIZE_GLOBAL)
-
-			port map (	A	=> EX_MEM_ALU_OUT,
-					B	=> EX_MEM_PC,
-					S	=> PC_MUX_SEL,
-					Y	=> PC_BUS);
 
 		DATA_MEMORY: DRAM
 

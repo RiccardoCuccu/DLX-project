@@ -3,7 +3,7 @@
 #------------------------------------------------------------------------------------------------------------------------
 
 set tb_waves 2		; # 0 = Default; 1 = DLX; 2 = DATAPATH
-set pipe_stage 2 	; # 1 = Fetch; 2 = Decode; 3 = Execute; 4 = Memory; 5 = Write Back
+set pipe_stage 1 	; # 1 = Fetch; 2 = Decode; 3 = Execute; 4 = Memory; 5 = Write Back
 
 #------------------------------------------------------------------------------------------------------------------------
 
@@ -202,25 +202,30 @@ if {$tb_waves eq 2} {
 		sim:/tb_datapath/U1/IR_LATCH_EN \
 		sim:/tb_datapath/U1/NPC_LATCH_EN
 
-#		add wave -divider {PC_MUX} -position insertpoint \
-#		sim:/tb_datapath/U1/PC_MUX/*
+		add wave -divider {PC_MUX} -position insertpoint \
+		sim:/tb_datapath/U1/NPC_BUS \
+		sim:/tb_datapath/U1/EX_MEM_ALU_OUT \
+		sim:/tb_datapath/U1/PC_MUX_SEL \
+		sim:/tb_datapath/U1/PC_BUS
 
 		add wave -divider {PROGRAM_COUNTER} -position insertpoint \
-		sim:/tb_datapath/U1/PC_MUXA \
-		sim:/tb_datapath/U1/PC_MUXB \
 		sim:/tb_datapath/U1/PC_BUS \
-		sim:/tb_datapath/U1/PC_SIGNAL
+		sim:/tb_datapath/U1/PC_OUT
 
-		add wave -divider {INSTRUCTION_RAM} -position insertpoint \
-		sim:/tb_datapath/U1/PC_SIGNAL \
+		add wave -divider {NEXT_PROGRAM_COUNTER} -position insertpoint \
+		sim:/tb_datapath/U1/PC_BUS \
+		sim:/tb_datapath/U1/NPC_OUT
+
+		add wave -divider {INSTRUCTION_MEMORY} -position insertpoint \
+		sim:/tb_datapath/U1/PC_OUT \
 		sim:/tb_datapath/U1/IR_BUS
 
 		add wave -divider {INSTRUCTION_REGISTER} -position insertpoint \
 		sim:/tb_datapath/U1/IR_BUS \
-		sim:/tb_datapath/U1/IR_SIGNAL
+		sim:/tb_datapath/U1/IR_OUT
 
 		add wave -divider {IF-ID Pipeline} -position insertpoint \
-		sim:/tb_datapath/U1/IF_ID_PC \
+		sim:/tb_datapath/U1/IF_ID_NPC \
 		sim:/tb_datapath/U1/IF_ID_IR
 
 	}
