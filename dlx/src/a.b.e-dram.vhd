@@ -24,28 +24,27 @@ end DRAM;
 architecture BEHAVIORAL of DRAM is
 
 	type RAMtype is array (0 to N - 1) of std_logic_vector(NW-1 downto 0);
-
 	signal DRAM_mem : RAMtype;
 
-begin
-
-	WRITE: process(RST, CLK)		-- synchronous
 	begin
-		if RST = '1' then
-			DRAM_mem <= (others => (others => '0'));
-		elsif rising_edge(CLK) then
-			if(WE = '1' ) then
-				DRAM_mem(to_integer(unsigned(ADDR))) <= DIN;
+
+		REGISTER_WRITE: process(CLK, RST)			-- Synchronous
+		begin
+			if RST = '0' then
+				DRAM_mem <= (others => (others => '0'));
+			elsif rising_edge(CLK) then
+				if(WE = '1' ) then
+					DRAM_mem(to_integer(unsigned(ADDR))) <= DIN;
+				end if;
 			end if;
-		end if;
-	end process;
+		end process;
 
-	READ: process(RE, ADDR)			-- asynchronous
-	begin
-		if RE = '1' then
-			DOUT <= DRAM_mem(to_integer(unsigned(ADDR)));
-		end if;
-	end process;
+		REGISTER_READ: process(RE, ADDR)			-- Asynchronous
+		begin
+			if RE = '1' then
+				DOUT <= DRAM_mem(to_integer(unsigned(ADDR)));
+			end if;
+		end process;
 
 end BEHAVIORAL;
 

@@ -48,7 +48,7 @@ package constants is
 				OP_J, OP_JAL
 			);
 	-- FUNC labels
-	type funcL is (		
+	type ALU_label is (	-- FUNC labels
 				L_RTYPE_SLL,
 				L_RTYPE_SRL,
 				L_RTYPE_SRA,
@@ -107,12 +107,9 @@ package constants is
 				L_RTYPE_GTD,
 				L_RTYPE_LED,
 				L_RTYPE_GED,
-				L_RTYPE_NOP
+				L_RTYPE_NOP,
 
-			);
-
-	-- OPCODE labels
-	type opcodeL is (	
+				-- OPCODE labels
 				L_RTYPE,
 				L_ITYPE_BEQZ,
 				L_ITYPE_BNEZ,
@@ -158,7 +155,10 @@ package constants is
 				L_ITYPE_SLEUI,
 				L_ITYPE_SGEUI,
 				L_JTYPE_J,
-				L_JTYPE_JAL
+				L_JTYPE_JAL,
+
+				-- NOP label
+				L_NOP
 
 			);
 

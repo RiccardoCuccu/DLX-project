@@ -1,3 +1,12 @@
+--------------------------------------------------------------------------------
+-- Description:	This module is designed to handle the sign extension of the
+--		IMMEDIATE field based on the type of instruction (J-Type, R-Type,
+--		or I-Type). It differentiates the instruction types using the opcode
+--		(IR_OPC).
+-- Author:	Riccardo Cuccu
+-- Date:	2023/09/01
+--------------------------------------------------------------------------------
+
 library ieee;
 use ieee.std_logic_1164.all;
 --use ieee.numeric_std.all;
@@ -9,24 +18,36 @@ entity SIGNEX is
 			OPC	: integer := OPC_SIZE_GLOBAL;			-- /  6 bits
 			REG	: integer := REG_SIZE_GLOBAL);			-- /  5 bits
 
-	port (		INSTR	: in  std_logic_vector(N - 1 downto 0);
-			IMM	: out std_logic_vector(N - 1 downto 0));
+	port (		INSTR	: in  std_logic_vector(N - 1 downto 0);		-- 32-bit instruction input
+			IMM	: out std_logic_vector(N - 1 downto 0));	-- 32-bit output immediate field with sign extension
 
 end SIGNEX;
 
 
 architecture BEHAVIORAL of SIGNEX is
 
+	-- Local signal to hold the opcode portion of the instruction
 	signal IR_OPC : std_logic_vector(5 downto 0);
 
 begin
-	
+
+	-- Extract the opcode from the input instruction
 	IR_OPC <= INSTR(N - 1 downto N - OPC);
 
-	process(INSTR)
+	-- Process to perform sign extension based on instruction type
+	process(IR_OPC)
 	begin
 
-		if IR_OPC = (JTYPE_J or JTYPE_JAL) then
+		-- R-Type instructions
+		if IR_OPC = RTYPE then
+
+			-- Zero out the IMM field as R-Type doesn't have immediate values
+			IMM <= (others => '0');
+
+		-- J-Type instructions
+		elsif IR_OPC = JTYPE_J or IR_OPC = JTYPE_JAL then
+
+			-- Copy the immediate value and sign-extend
 			IMM(N - OPC - 1 downto 0) <= INSTR(N - OPC - 1 downto 0);
 			IMM(N - 1 downto N - OPC) <= (others => INSTR(N - OPC));
 
@@ -34,14 +55,11 @@ begin
 --			IMM(N - OPC - REG*2 - 1 downto 0) <= (others => '0');
 --			IMM(N - 1 downto N - OPC - REG*2) <= INSTR(N - OPC - REG*2 - 1 downto 0);
 
---		elsif IR_OPC = (ITYPE_ADDU or ITYPE_SLTU or ITYPE_SGTU or ITYPE_SGEU or ITYPE_SLEU or ITYPE_SUBU) then
+--		elsif IR_OPC = ITYPE_ADDU or IR_OPC = ITYPE_SLTU or IR_OPC = ITYPE_SGTU or IR_OPC = ITYPE_SGEU or IR_OPC = ITYPE_SLEU or IR_OPC = ITYPE_SUBU then
 --			IMM(N - OPC - REG*2 - 1 downto 0) <= INSTR(N - OPC - REG*2 - 1 downto 0);
 --			IMM(N - 1 downto N - OPC - REG*2) <= (others => '0');
 
-		elsif IR_OPC = RTYPE then
-			IMM <= (others => '0');
-
---		elsif IR_OPC = (ITYPE_LB or ITYPE_LBU) then
+--		elsif IR_OPC = ITYPE_LB or IR_OPC = ITYPE_LBU then
 --			IMM(1  downto  0) <= (others => '0');
 --			IMM(N - OPC - REG*2 - 1 downto  2) <= INSTR(N - OPC - REG*2 - 1 downto 2);
 --			IMM(N - 1 downto N - OPC - REG*2) <= (others => INSTR(N - OPC - REG*2 - 1));
@@ -51,7 +69,10 @@ begin
 --			IMM(N - OPC - REG*2 - 1 downto  1) <= INSTR(N - OPC - REG*2 - 1 downto 1);
 --			IMM(N - 1 downto N - OPC - REG*2) <= (others => INSTR(N - OPC - REG*2 - 1));
 
-		else  
+		-- I-Type and other instructions
+		else
+
+			-- Copy the immediate value and sign-extend
 			IMM(N - OPC - REG*2 - 1 downto 0) <= INSTR(N - OPC - REG*2 - 1 downto 0);
 			IMM(N - 1 downto N - OPC - REG*2) <= (others => INSTR(N - OPC - REG*2 - 1));
 		

@@ -1,11 +1,27 @@
-#------------------------------------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------
+# Description:	This module is responsible for setting up the simulation 
+#		environment in QuestaSim for the DLX microarchitecture. 
+#		It compiles VHDL files related to the various components of DLX
+#		and, additionally, it sets up simulation waveforms based on
+#		user-specified configurations for better debugging.
+#		User can select between different waveform settings and focus on
+#		specific pipeline stages for detailed observations.
+#
+# Author:	Riccardo Cuccu
+# Date:		2023/09/01
+#----------------------------------------------------------------------------------------------------
+
+#----------------------------------------------------------------------------------------------------
 # Control Panel
-#------------------------------------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------
 
-set tb_waves 2		; # 0 = Default; 1 = DLX; 2 = DATAPATH
-set pipe_stage 1 	; # 1 = Fetch; 2 = Decode; 3 = Execute; 4 = Memory; 5 = Write Back
+# User-configurable settings for simulation
+quietly set tb_waves 2		; # 0 = Default; 1 = DLX; 2 = DATAPATH
+quietly set pipe_stage 3	; # 1 = Fetch; 2 = Decode; 3 = Execute; 4 = Memory; 5 = Write Back
 
-#------------------------------------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------
+# Compile VHDL files
+#----------------------------------------------------------------------------------------------------
 
 # Constants & functions (000)
 vcom -quiet ../src/000-functions.vhd
@@ -47,6 +63,7 @@ vcom -quiet ../src/a.b.f-iram.vhd
 #vcom -quiet ../src/a.b.g-pc.vhd
 #vcom -quiet ../src/a.b.h-ir.vhd
 vcom -quiet ../src/a.b.i-signextend.vhd
+vcom -quiet ../src/a.b.j-registeraddresser.vhd
 
 ### ALU (a.b.d)
 vcom -quiet ../src/a.b.d-alu.vhd
@@ -97,10 +114,11 @@ if {$tb_waves eq 2} {
 # Simulation
 vsim -quiet -t 10ps work.CFG_TB -voptargs=+acc
 
-#------------------------------------------------------------------------------------------------------------------------
-# Default Waves
-#------------------------------------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------
+# Waveform Setup
+#----------------------------------------------------------------------------------------------------
 
+# Default wave settings
 if {$tb_waves eq 0} {
 
 	#view -undock wave
@@ -108,10 +126,8 @@ if {$tb_waves eq 0} {
 
 }
 
-#------------------------------------------------------------------------------------------------------------------------
-# DLX Waves
-#------------------------------------------------------------------------------------------------------------------------
 
+# DLX-specific waves
 if {$tb_waves eq 1} {
 
 	#view -undock wave
@@ -127,9 +143,9 @@ if {$tb_waves eq 1} {
 	sim:/tb_dlx/U1/CU_I/IR_opcode \
 	sim:/tb_dlx/U1/CU_I/IR_func
 
-	add wave -position insertpoint  \
-	sim:/tb_dlx/U1/CU_I/IR_opcode_LABEL \
-	sim:/tb_dlx/U1/CU_I/IR_func_LABEL
+	add wave -position insertpoint \
+	sim:/tb_dlx/U1/CU_I/IR_opcode_LABEL_i \
+	sim:/tb_dlx/U1/CU_I/IR_func_LABEL_i
 
 	# HARDWIRED CU
 	#add wave -divider {CU - ALU} -position insertpoint \
@@ -181,10 +197,8 @@ if {$tb_waves eq 1} {
 
 }
 
-#------------------------------------------------------------------------------------------------------------------------
-# Datapath Waves
-#------------------------------------------------------------------------------------------------------------------------
 
+# Datapath-specific waves
 if {$tb_waves eq 2} {
 
 	#view -undock wave
@@ -201,6 +215,12 @@ if {$tb_waves eq 2} {
 		add wave -divider {IF Control Signals} -position insertpoint \
 		sim:/tb_datapath/U1/IR_LATCH_EN \
 		sim:/tb_datapath/U1/NPC_LATCH_EN
+
+		add wave -divider {STAGE} -position insertpoint -radix binary \
+		sim:/tb_datapath/U1/IR_OUT
+
+		add wave -position insertpoint \
+		sim:/tb_datapath/U1/IF_ALU_LABEL
 
 		add wave -divider {PC_MUX} -position insertpoint \
 		sim:/tb_datapath/U1/NPC_BUS \
@@ -239,37 +259,36 @@ if {$tb_waves eq 2} {
 		sim:/tb_datapath/U1/RegB_LATCH_EN \
 		sim:/tb_datapath/U1/RegIMM_LATCH_EN
 
+		add wave -divider {STAGE} -position insertpoint \
+		sim:/tb_datapath/U1/IF_ID_IR \
+		sim:/tb_datapath/U1/ID_ALU_LABEL
+
+		add wave -divider {REGISTER_ADDRESSER} -position insertpoint \
+		sim:/tb_datapath/U1/IF_ID_IR \
+		sim:/tb_datapath/U1/RS1 \
+		sim:/tb_datapath/U1/RS2 \
+		sim:/tb_datapath/U1/RD \
+
 		add wave -divider {REGISTER_FILE} -position insertpoint \
 		sim:/tb_datapath/U1/RF_WE \
 		sim:/tb_datapath/U1/RS1 \
 		sim:/tb_datapath/U1/RS2 \
-		sim:/tb_datapath/U1/RD \
+		sim:/tb_datapath/U1/MEM_WB_RD \
 		sim:/tb_datapath/U1/WB_MUX_OUT \
 		sim:/tb_datapath/U1/RF_OUT1 \
 		sim:/tb_datapath/U1/RF_OUT2
 
-		add wave -divider {IMMEDIATE_GENERATOR} -position insertpoint \
+		add wave -divider {SIGN_EXTEND} -position insertpoint \
 		sim:/tb_datapath/U1/IF_ID_IR \
+		sim:/tb_datapath/U1/SIGN_EXTEND/IR_OPC \
 		sim:/tb_datapath/U1/IMM_OUT
 
-		add wave -divider {REL_JUMP} -position insertpoint \
-		sim:/tb_datapath/U1/IF_ID_PC \
-		sim:/tb_datapath/U1/SIGN_EXTEND/IR_OPC \
-		sim:/tb_datapath/U1/ID_EX_IMM_NEXT
-
-		add wave -divider {JUMP_MUX} -position insertpoint \
-		sim:/tb_datapath/U1/REL_JUMP \
-		sim:/tb_datapath/U1/ID_EX_RF_OUT1_NEXT \
-		sim:/tb_datapath/U1/NPC_LATCH_EN \
-		sim:/tb_datapath/U1/PC_JUMP
-
 		add wave -divider {IF-ID Pipeline} -position insertpoint \
-		sim:/tb_datapath/U1/IF_ID_PC \
+		sim:/tb_datapath/U1/IF_ID_NPC \
 		sim:/tb_datapath/U1/IF_ID_IR
 
 		add wave -divider {ID-EX Pipeline} -position insertpoint \
-		sim:/tb_datapath/U1/ID_EX_PC \
-		sim:/tb_datapath/U1/ID_EX_IR \
+		sim:/tb_datapath/U1/ID_EX_NPC \
 		sim:/tb_datapath/U1/ID_EX_RD \
 		sim:/tb_datapath/U1/ID_EX_RF_DATAIN \
 		sim:/tb_datapath/U1/ID_EX_RF_OUT1 \
@@ -289,6 +308,55 @@ if {$tb_waves eq 2} {
 		sim:/tb_datapath/U1/EQ_COND \
 		sim:/tb_datapath/U1/ALU_OPCODE
 
+		add wave -divider {STAGE} -position insertpoint \
+		sim:/tb_datapath/U1/EX_ALU_LABEL
+
+		add wave -divider {ALU_PRE_MUX1} -position insertpoint \
+		sim:/tb_datapath/U1/ID_EX_RF_DATAIN \
+		sim:/tb_datapath/U1/ID_EX_NPC \
+		sim:/tb_datapath/U1/ALU_PREOP1
+
+		add wave -divider {ALU_MUX1} -position insertpoint \
+		sim:/tb_datapath/U1/ID_EX_RF_OUT1 \
+		sim:/tb_datapath/U1/ALU_PREOP1 \
+		sim:/tb_datapath/U1/ALU_OP1
+
+		add wave -divider {ALU_PRE_MUX2} -position insertpoint \
+		sim:/tb_datapath/U1/ID_EX_RF_DATAIN \
+		sim:/tb_datapath/U1/ID_EX_IMM_NEXT \
+		sim:/tb_datapath/U1/ALU_PREOP2
+
+		add wave -divider {ALU_MUX2} -position insertpoint \
+		sim:/tb_datapath/U1/ID_EX_RF_OUT2 \
+		sim:/tb_datapath/U1/ALU_PREOP2 \
+		sim:/tb_datapath/U1/ALU_OP2
+
+		add wave -divider {ALU} -position insertpoint \
+		sim:/tb_datapath/U1/ALU_OP1 \
+		sim:/tb_datapath/U1/ALU_OP2 \
+		sim:/tb_datapath/U1/ALU_OPCODE \
+		sim:/tb_datapath/U1/ALU_OUT \
+		sim:/tb_datapath/U1/ALU_ZERO
+
+		add wave -divider {ZERO_DETECTOR} -position insertpoint \
+		sim:/tb_datapath/U1/ID_EX_RF_OUT1 \
+		sim:/tb_datapath/U1/ZERO_OUT \
+		sim:/tb_datapath/U1/ZERO_OUT_NEG \
+		sim:/tb_datapath/U1/BRANCH_COND
+
+		add wave -divider {ID-EX Pipeline} -position insertpoint \
+		sim:/tb_datapath/U1/ID_EX_NPC \
+		sim:/tb_datapath/U1/ID_EX_RD \
+		sim:/tb_datapath/U1/ID_EX_RF_DATAIN \
+		sim:/tb_datapath/U1/ID_EX_RF_OUT1 \
+		sim:/tb_datapath/U1/ID_EX_RF_OUT2 \
+		sim:/tb_datapath/U1/ID_EX_IMM
+
+		add wave -divider {EX_MEM Pipeline} -position insertpoint \
+		sim:/tb_datapath/U1/EX_MEM_NPC \
+		sim:/tb_datapath/U1/EX_MEM_RD \
+		sim:/tb_datapath/U1/EX_MEM_RF_OUT2
+
 	}
 
 	# MEMORY (MEM)
@@ -302,6 +370,10 @@ if {$tb_waves eq 2} {
 		sim:/tb_datapath/U1/JUMP_EN \
 		sim:/tb_datapath/U1/PC_LATCH_EN
 
+		add wave -divider {STAGE} -position insertpoint \
+		sim:/tb_datapath/U1/EX_MEM_IR \
+		sim:/tb_datapath/U1/MEM_ALU_LABEL
+
 	}
 
 	# WRITE BACK (WB)
@@ -312,17 +384,25 @@ if {$tb_waves eq 2} {
 		sim:/tb_datapath/U1/WB_MUX_SEL \
 		sim:/tb_datapath/U1/RF_WE
 
+		add wave -divider {STAGE} -position insertpoint \
+		sim:/tb_datapath/U1/MEM_WB_IR \
+		sim:/tb_datapath/U1/WB_ALU_LABEL
+
 	}
 
 }
 
-#------------------------------------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------
+# Simulation Run
+#----------------------------------------------------------------------------------------------------
 
-# Run
+# Run the simulation
 run 60 ns
 
+# Restore cursor and zoom settings for better visibility in wave view
 WaveRestoreCursors {0 ns}
 #WaveRestoreZoom {0 fs} [simtime]
 WaveRestoreZoom {0 ns} {30 ns}
 
+# Uncomment to quit the simulation automatically
 #quit
