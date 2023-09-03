@@ -19,19 +19,23 @@ end SUM_GENERATOR;
 architecture STRUCTURAL of SUM_GENERATOR is
 
 	component CSB
-	generic (N : integer := ALU_OP_RCA_SIZE_GLOBAL);
-	port (	A:	in	std_logic_vector(N-1 downto 0);
-		B:	in	std_logic_vector(N-1 downto 0);
-		Ci:	in	std_logic;
-		S:	out	std_logic_vector(N-1 downto 0));
-		-- Ovf:	out	std_logic);
+		generic	(	N:	integer := ALU_OP_RCA_SIZE_GLOBAL);
+		port (		A:	in	std_logic_vector(N-1 downto 0);
+				B:	in	std_logic_vector(N-1 downto 0);
+				Ci:	in	std_logic;
+				S:	out	std_logic_vector(N-1 downto 0));
+				-- Ovf:	out	std_logic);
 	end component;
 
 begin
 
 	SUMGEN: for I in 1 to NB generate
-		CSBI : CSB
-		port map (A(I*ALU_OP_RCA_SIZE_GLOBAL-1 downto (I-1)*ALU_OP_RCA_SIZE_GLOBAL), B(I*ALU_OP_RCA_SIZE_GLOBAL-1 downto (I-1)*ALU_OP_RCA_SIZE_GLOBAL), Ci(I-1), S(I*ALU_OP_RCA_SIZE_GLOBAL-1 downto (I-1)*ALU_OP_RCA_SIZE_GLOBAL)); 
+		CSBI: CSB
+		port map (
+				A	=> A(I*ALU_OP_RCA_SIZE_GLOBAL-1 downto (I-1)*ALU_OP_RCA_SIZE_GLOBAL),
+				B	=> B(I*ALU_OP_RCA_SIZE_GLOBAL-1 downto (I-1)*ALU_OP_RCA_SIZE_GLOBAL),
+				Ci	=> Ci(I-1),
+				S	=> S(I*ALU_OP_RCA_SIZE_GLOBAL-1 downto (I-1)*ALU_OP_RCA_SIZE_GLOBAL)); 
 	end generate;
 
 end STRUCTURAL;

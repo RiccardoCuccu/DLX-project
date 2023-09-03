@@ -39,7 +39,7 @@ source ./assembler.sh asm_example/$filename > /dev/null
 sleep 1
 
 # Execute the simulation based on the background option; within the "QuestaSim" program
-# it is possible to re-run the simulation simply using the "do resim.tcl" command)
+# it is possible to re-run the simulation simply using the "do resim.tcl" command
 if [ $background == "y" ]
 then
 

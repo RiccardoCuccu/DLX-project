@@ -1,3 +1,10 @@
+----------------------------------------------------------------------------------------------------
+-- Description:	This testbench is responsible for validating the DLX processor's datapath.
+--
+-- Author:	Riccardo Cuccu
+-- Date:	2023/09/03
+----------------------------------------------------------------------------------------------------
+
 library ieee;
 use ieee.std_logic_1164.all;
 use work.constants.all;
@@ -111,9 +118,9 @@ begin
 	TB_RegB_LATCH_EN	<= '0', '1' after 6 ns;
 	TB_RegIMM_LATCH_EN	<= '0', '1' after 6 ns;
 
-	TB_MUXA_SEL		<= '0', '1' after 6 ns;
-	TB_MUXB_SEL		<= '0', '1' after 6 ns;
-	TB_ALU_OUTREG_EN	<= '0', '1' after 6 ns;
+	TB_MUXA_SEL		<= '0';
+	TB_MUXB_SEL		<= '0';
+	TB_ALU_OUTREG_EN	<= '0';
 	TB_EQ_COND		<= '0', '1' after 6 ns;
 
 	TB_ALU_OPCODE		<= OP_NOP, OP_ADD after 6 ns;
@@ -124,7 +131,7 @@ begin
 	TB_JUMP_EN		<= '0', '1' after 6 ns;
 	TB_PC_LATCH_EN		<= '0', '1' after 6 ns;
 
-	TB_WB_MUX_SEL		<= '0', '1' after 6 ns;
+	TB_WB_MUX_SEL		<= '0', '1' after 6 ns, '0' after 9 ns;
 	TB_RF_WE		<= '0', '1' after 6 ns;
 
 end TEST;

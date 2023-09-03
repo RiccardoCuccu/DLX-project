@@ -18,20 +18,20 @@ end CSB;
 architecture STRUCTURAL of CSB is
 
 	component RCA
-	generic (	N:	integer := ALU_OP_RCA_SIZE_GLOBAL);
-	port (		A:	in	std_logic_vector(N-1 downto 0);
-			B:	in	std_logic_vector(N-1 downto 0);
-			Ci:	in	std_logic;
-			S:	out	std_logic_vector(N-1 downto 0);
-			Co:	out	std_logic);
+		generic (	N:	integer := ALU_OP_RCA_SIZE_GLOBAL);
+		port (		A:	in	std_logic_vector(N-1 downto 0);
+				B:	in	std_logic_vector(N-1 downto 0);
+				Ci:	in	std_logic;
+				S:	out	std_logic_vector(N-1 downto 0);
+				Co:	out	std_logic);
 	end component;
 
 	component MUX21 
-	generic (	N:	integer := ALU_OP_MUX_SIZE_GLOBAL);
-	port (		A:	in  std_logic_vector (N-1 downto 0);
-			B:	in  std_logic_vector (N-1 downto 0);
-			S:	in  std_logic;
-			Y:	out std_logic_vector (N-1 downto 0));
+		generic (	N:	integer := ALU_OP_MUX_SIZE_GLOBAL);
+		port (		A:	in  std_logic_vector (N-1 downto 0);
+				B:	in  std_logic_vector (N-1 downto 0);
+				S:	in  std_logic;
+				Y:	out std_logic_vector (N-1 downto 0));
 	end component;
 
 	signal SUM0, SUM1: std_logic_vector (ALU_OP_RCA_SIZE_GLOBAL-1 downto 0);
@@ -52,13 +52,13 @@ end STRUCTURAL;
 configuration CFG_CSB_STRUCTURAL of CSB is
 	for STRUCTURAL
 		for RCA0 : RCA
-			use configuration WORK.CFG_RCA_STRUCTURAL;
+			use configuration WORK.CFG_RCA_GEN_STRUCTURAL;
 		end for;
 		for RCA1 : RCA
-			use configuration WORK.CFG_RCA_STRUCTURAL;
+			use configuration WORK.CFG_RCA_GEN_STRUCTURAL;
 		end for;
 		for MUX : MUX21
-			use configuration WORK.CFG_MUX21_BEHAVIORAL;
+			use configuration WORK.CFG_MUX21_GEN_BEHAVIORAL;
 		end for;
 	end for;
 end CFG_CSB_STRUCTURAL;

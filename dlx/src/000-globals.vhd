@@ -1,3 +1,15 @@
+----------------------------------------------------------------------------------------------------
+-- Description:	This package defines various constants and types which are
+--		used globally throughout the DLX project. The package includes
+--		constants for setting default sizes, register sizes, ALU
+--		operations, instruction types, etc. It serves as a single point
+--		of control for various parameters, thereby making the system
+--		easily configurable and maintainable.
+--
+-- Author:	Riccardo Cuccu
+-- Date:	2023/09/03
+----------------------------------------------------------------------------------------------------
+
 library ieee;
 use ieee.std_logic_1164.all;
 use work.functions.all;
@@ -38,7 +50,8 @@ package constants is
 
 	-- DRAM
 	constant DRAM_SIZE_GLOBAL		: integer := 2**8;					-- DRAM size
-	constant DRAM_WORD_SIZE_GLOBAL		: integer := ALU_OP_SIZE_GLOBAL;			-- DRAM registers size
+	--constant DRAM_SIZE_GLOBAL		: integer := 2**20;					-- DRAM size
+	constant DRAM_WORD_SIZE_GLOBAL		: integer := SIZE_GLOBAL;				-- DRAM registers size
 
 	-- ALU Operations
 	type aluOp is (		--NOP, ADDS, LLS, LRS --- to be completed

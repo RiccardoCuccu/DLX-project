@@ -5,15 +5,15 @@ use work.constants.all;
 
 entity P4_ADDER is 
 
-	generic (	N:	integer := ALU_OP_SIZE_GLOBAL;
-			NB:	integer := ALU_BLOCK_SIZE_GLOBAL);
+	generic (	N:	integer := ALU_OP_SIZE_GLOBAL;			-- / 32 bits
+			NB:	integer := ALU_BLOCK_SIZE_GLOBAL);		-- /  8 bits
 
-	port (		A:	in	std_logic_vector(N - 1 downto 0);
-			B:	in	std_logic_vector(N - 1 downto 0);
-			Ci:	in	std_logic;
-			S:	out	std_logic_vector(N - 1 downto 0);
-			Co:	out	std_logic);
-			--Ovf:	out	std_logic);
+	port (		A:	in	std_logic_vector(N - 1 downto 0);	-- Operand 1		/ 32 bit
+			B:	in	std_logic_vector(N - 1 downto 0);	-- Operand 2		/ 32 bit
+			Ci:	in	std_logic;				-- Carry in
+			S:	out	std_logic_vector(N - 1 downto 0);	-- Result		/ 32 bit
+			Co:	out	std_logic);				-- Carry out
+			-- Ovf:	out	std_logic);
 end P4_ADDER;
 
 
@@ -21,26 +21,26 @@ architecture STRUCTURAL of P4_ADDER is
 
 	component SUM_GENERATOR is -- Sum Generator
 
-		generic (	N:	integer := ALU_OP_SIZE_GLOBAL;
-				NB:	integer := ALU_BLOCK_SIZE_GLOBAL);
+		generic (	N:	integer := ALU_OP_SIZE_GLOBAL;			-- / 32 bits
+				NB:	integer := ALU_BLOCK_SIZE_GLOBAL);		-- /  8 bits
 
-		port	(	A:	in	std_logic_vector(N - 1 downto 0);
-				B:	in	std_logic_vector(N - 1 downto 0);
-				Ci:	in	std_logic_vector(NB - 1 downto 0);
-				S:	out	std_logic_vector(N - 1 downto 0));
+		port	(	A:	in	std_logic_vector(N - 1 downto 0);	-- Operand 1		/ 32 bit
+				B:	in	std_logic_vector(N - 1 downto 0);	-- Operand 2		/ 32 bit
+				Ci:	in	std_logic_vector(NB - 1 downto 0);	-- Carry in
+				S:	out	std_logic_vector(N - 1 downto 0));	-- Result		/ 32 bit
 				-- Ovf:	out	std_logic);
 
 	end component;
 
 	component CARRY_GENERATOR is -- Carry Generator
 
-		generic (	N:	integer := ALU_OP_SIZE_GLOBAL;
-				NB:	integer := ALU_BLOCK_SIZE_GLOBAL);
+		generic (	N:	integer := ALU_OP_SIZE_GLOBAL;			-- / 32 bits
+				NB:	integer := ALU_BLOCK_SIZE_GLOBAL);		-- /  8 bits
 
-		port 	(	A:	in	std_logic_vector(N - 1 downto 0);
-				B:	in	std_logic_vector(N - 1 downto 0);
-				Ci:	in	std_logic;
-				Co:	out	std_logic_vector(NB - 1 downto 0));
+		port 	(	A:	in	std_logic_vector(N - 1 downto 0);	-- Operand 1		/ 32 bit
+				B:	in	std_logic_vector(N - 1 downto 0);	-- Operand 2		/ 32 bit
+				Ci:	in	std_logic;				-- Carry in
+				Co:	out	std_logic_vector(NB - 1 downto 0));	-- Carry out		/  8 bit
 
 	end component;
 

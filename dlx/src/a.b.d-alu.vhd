@@ -7,14 +7,14 @@ use work.constants.all;
 
 entity ALU is
 
-	generic (	N:	integer := ALU_OP_SIZE_GLOBAL;
-			NB:	integer := ALU_BLOCK_SIZE_GLOBAL);
+	generic (	N:	integer := ALU_OP_SIZE_GLOBAL;			-- / 32 bits
+			NB:	integer := ALU_BLOCK_SIZE_GLOBAL);		-- /  8 bits
 
-	port (		OP1:	in	std_logic_vector(N - 1 downto 0);	-- Operand 1
-			OP2:	in	std_logic_vector(N - 1 downto 0);	-- Operand 2
+	port (		OP1:	in	std_logic_vector(N - 1 downto 0);	-- Operand 1		/ 32 bit
+			OP2:	in	std_logic_vector(N - 1 downto 0);	-- Operand 2		/ 32 bit
 			OPC:	in	aluOp;					-- Control Signal
-			Y:	out	std_logic_vector(N - 1 downto 0);	-- Result
-			Z:	out	std_logic);				-- Zero flag		
+			Y:	out	std_logic_vector(N - 1 downto 0);	-- Result		/ 32 bit
+			Z:	out	std_logic);				-- Zero flag
 			--Co:	out	std_logic);
 			--Ovf:	out	std_logic);
 end ALU;
@@ -24,13 +24,13 @@ architecture BEHAVIORAL of ALU is
 
 	component P4_ADDER is
 
-		generic (	N:	integer := ALU_OP_SIZE_GLOBAL;
-				NB:	integer := ALU_BLOCK_SIZE_GLOBAL);
+		generic (	N:	integer := ALU_OP_SIZE_GLOBAL;			-- / 32 bits
+				NB:	integer := ALU_BLOCK_SIZE_GLOBAL);		-- /  8 bits
 
-		port (		A:	in	std_logic_vector(N - 1 downto 0);	-- Operand 1
-				B:	in	std_logic_vector(N - 1 downto 0);	-- Operand 2
+		port (		A:	in	std_logic_vector(N - 1 downto 0);	-- Operand 1		/ 32 bit
+				B:	in	std_logic_vector(N - 1 downto 0);	-- Operand 2		/ 32 bit
 				Ci:	in	std_logic;				-- Carry in
-				S:	out	std_logic_vector(N - 1 downto 0);	-- Result
+				S:	out	std_logic_vector(N - 1 downto 0);	-- Result		/ 32 bit
 				Co:	out	std_logic);				-- Carry out
 				--Ovf:	out	std_logic);
 	end component;
@@ -45,16 +45,16 @@ architecture BEHAVIORAL of ALU is
 --
 --	end component;
 
-	component LOGIC is
-
-		generic (	N:	integer := ALU_OP_SIZE_GLOBAL);
-	
-		port (		A:	in	std_logic_vector(N - 1 downto 0);	-- Operand 1
-				B:	in	std_logic_vector(N - 1 downto 0);	-- Operand 2
-				OP:	in	std_logic_vector(1 downto 0);		-- Operation
-				S:	out	std_logic_vector(N - 1 downto 0));	-- Result
-
-	end component;
+--	component LOGIC is
+--
+--		generic (	N:	integer := ALU_OP_SIZE_GLOBAL);
+--	
+--		port (		A:	in	std_logic_vector(N - 1 downto 0);	-- Operand 1
+--				B:	in	std_logic_vector(N - 1 downto 0);	-- Operand 2
+--				OP:	in	std_logic_vector(1 downto 0);		-- Operation
+--				S:	out	std_logic_vector(N - 1 downto 0));	-- Result
+--
+--	end component;
 
 --	component BOOTHMUL is
 --		generic (
@@ -106,7 +106,7 @@ architecture BEHAVIORAL of ALU is
 		-- Processes
 		------------------------------------------------------------------------------------------------------------------------
 
-		COMPUTATION: process(OP1, OP2, OPC)
+		COMPUTATION: process(OP1, OP2, OP_S, OPC)
 		begin
 			case(OPC) is
 
@@ -206,7 +206,8 @@ architecture BEHAVIORAL of ALU is
 			end case;
 		end process;
 
-		BRANCHES: process (Y_TMP, OPC)
+
+		BRANCHES: process (OPC, Y_TMP)
 		begin
 			if (Y_TMP = std_logic_vector(to_unsigned(0, Y_TMP'length)) and OPC = OP_BEQZ) then
 				Z <= '1';

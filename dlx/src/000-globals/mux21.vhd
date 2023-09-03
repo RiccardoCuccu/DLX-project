@@ -17,6 +17,7 @@ end MUX21;
 architecture BEHAVIORAL of MUX21 is
 
 begin
+
 	process (A, B, S)
 	begin
 		if (S = '0') then

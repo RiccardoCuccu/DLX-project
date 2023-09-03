@@ -41,10 +41,10 @@ begin
 	ROW_i: for ROW in 0 to log2(N) generate
 		COL_i: for i in 0 to N/(2**ROW)-1 generate
 			lev_0: if(ROW = 0) generate
-				XOR0_i:	XNOR2 port map(A => A(i), B => '0', Y => M(ROW)(i));
+				XOR0_i: XNOR2 port map(A => A(i), B => '0', Y => M(ROW)(i));
 			end generate lev_0;
 			lev_i: if(ROW > 0) generate
-				AND_i:	AND2 port map(A => M(ROW-1)(2*i), B => M(ROW-1)(2*i+1), Y => M(ROW)(i));
+				AND_i: AND2 port map(A => M(ROW-1)(2*i), B => M(ROW-1)(2*i+1), Y => M(ROW)(i));
 			end generate lev_i;
 		end generate COL_i;
 	end generate ROW_i;

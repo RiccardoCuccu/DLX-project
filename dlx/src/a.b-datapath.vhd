@@ -5,8 +5,9 @@
 --		The module takes clock and reset signals, along with various control signals
 --		that manage the latching and forwarding of data through the pipeline
 --		and ensure synchronous operations across all stages.
+--
 -- Author:	Riccardo Cuccu
--- Date:	2023/09/01
+-- Date:	2023/09/03
 ----------------------------------------------------------------------------------------------------
 
 library ieee;
@@ -287,7 +288,7 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 --	signal IF_ID_MUXB_SEL, IF_ID_MUXB_SEL_NEXT : std_logic;								-- ALU MUX B selector
 --	signal IF_ID_ALU_LABEL, IF_ID_ALU_LABEL_NEXT : aluOp;								-- ALU Operation Code
 
-	-- DECODE-EXECUTE (DE_EX) Pipeline signals
+	-- DECODE-EXECUTE (ID_EX) Pipeline signals
 	signal ID_EX_NPC, ID_EX_NPC_NEXT : std_logic_vector(PC_SIZE - 1 downto 0);					-- Program Counter signal		/ 32 bits
 --	signal ID_EX_IR, ID_EX_IR_NEXT : std_logic_vector(IR_SIZE - 1 downto 0);					-- Instruction Register signal		/ 32 bits
 	signal ID_EX_RD, ID_EX_RD_NEXT : std_logic_vector(RF_ADDRESSES_GLOBAL - 1 downto 0);				-- Register File - Write address	/  5 bits
@@ -300,10 +301,11 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 --	signal ID_EX_ALU_LABEL, ID_EX_ALU_LABEL_NEXT : aluOp;								-- ALU Operation Code
 
 	-- EXECUTE-MEMORY (EX_MEM) Pipeline signals
-	signal EX_MEM_NPC, EX_MEM_NPC_NEXT : std_logic_vector(PC_SIZE - 1 downto 0);					-- Program Counter signal		/ 32 bits
+--	signal EX_MEM_NPC, EX_MEM_NPC_NEXT : std_logic_vector(PC_SIZE - 1 downto 0);					-- Program Counter signal		/ 32 bits
 	signal EX_MEM_BRANCH_COND, EX_MEM_BRANCH_COND_NEXT : std_logic;							-- Branch Condition
 	signal EX_MEM_RD, EX_MEM_RD_NEXT : std_logic_vector(RF_ADDRESSES_GLOBAL - 1 downto 0);				-- Register File - Write address	/  5 bits
-	signal EX_MEM_RF_OUT2, EX_MEM_RF_OUT2_NEXT : std_logic_vector(RF_SIZE_GLOBAL - 1 downto 0);			-- Register File - Read data 2		/ 32 bits
+	signal EX_MEM_RF_DATAIN, EX_MEM_RF_DATAIN_NEXT : std_logic_vector(RF_SIZE_GLOBAL - 1 downto 0);			-- Register File - Write data		/ 32 bits
+--	signal EX_MEM_RF_OUT2, EX_MEM_RF_OUT2_NEXT : std_logic_vector(RF_SIZE_GLOBAL - 1 downto 0);			-- Register File - Read data 2		/ 32 bits
 	signal EX_MEM_ALU_OUT, EX_MEM_ALU_OUT_NEXT : std_logic_vector(RF_SIZE_GLOBAL - 1 downto 0);			-- ALU Output				/ 32 bits
 
 	-- MEMORY-WRITE BACK (MEM_WB) Pipeline signals
@@ -528,8 +530,9 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 --					ID_EX_ALU_LABEL 	<= OP_NOP;				-- ALU Operation Code
 
 					-- EXECUTE-MEMORY
-					EX_MEM_NPC		<= (others => '0');			-- Program Counter signal
-					EX_MEM_RF_OUT2		<= (others => '0');			-- Register File - Read data 2
+--					EX_MEM_NPC		<= (others => '0');			-- Program Counter signal
+					EX_MEM_RF_DATAIN	<= (others => '0');			-- Register File - Write data
+--					EX_MEM_RF_OUT2		<= (others => '0');			-- Register File - Read data 2
 					EX_MEM_ALU_OUT		<= (others => '0');			-- ALU Output
 					EX_MEM_BRANCH_COND	<= '0';					-- Branch Condition
 					EX_MEM_RD		<= (others => '0');			-- Register File - Write address
@@ -556,8 +559,9 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 --					ID_EX_ALU_LABEL 	<= ID_EX_ALU_LABEL_NEXT;		-- ALU Operation Code
 
 					-- EXECUTE-MEMORY
-					EX_MEM_NPC		<= EX_MEM_NPC_NEXT;			-- Program Counter signal
-					EX_MEM_RF_OUT2		<= EX_MEM_RF_OUT2_NEXT;			-- Register File - Read data 2
+--					EX_MEM_NPC		<= EX_MEM_NPC_NEXT;			-- Program Counter signal
+					EX_MEM_RF_DATAIN	<= EX_MEM_RF_DATAIN_NEXT;		-- Register File - Write data
+--					EX_MEM_RF_OUT2		<= EX_MEM_RF_OUT2_NEXT;			-- Register File - Read data 2
 					EX_MEM_ALU_OUT		<= EX_MEM_ALU_OUT_NEXT;			-- ALU Output
 					EX_MEM_BRANCH_COND	<= EX_MEM_BRANCH_COND_NEXT;		-- Branch Condition
 					EX_MEM_RD		<= EX_MEM_RD_NEXT;			-- Register File - Write address
@@ -828,7 +832,7 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 			generic map (	N	=> RF_SIZE_GLOBAL)
 
 			port map (	A	=> ID_EX_RF_OUT1,
-					B	=> ALU_PREOP1,					-- Warnings
+					B	=> ALU_PREOP1,
 					S	=> MUXA_SEL,
 					Y	=> ALU_OP1);
 
@@ -846,7 +850,7 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 			generic map (	N	=> RF_SIZE_GLOBAL)
 
 			port map (	A	=> ID_EX_RF_OUT2,
-					B	=> ALU_PREOP2,					-- Warnings
+					B	=> ALU_PREOP2,
 					S	=> MUXB_SEL,
 					Y	=> ALU_OP2);
 
@@ -951,10 +955,11 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 		LATCH_BRANCH: LD						port map (RST, ALU_OUTREG_EN, BRANCH_COND, EX_MEM_BRANCH_COND_NEXT);
 
 		-- EX-MEM PIPELINE
-		EX_MEM_NPC_NEXT		<= ID_EX_NPC;
+--		EX_MEM_NPC_NEXT		<= ID_EX_NPC;
 		EX_MEM_RD_NEXT		<= ID_EX_RD;
 --		EX_MEM_ALU_OUT_NEXT	<= ALU_OUT;
-		EX_MEM_RF_OUT2_NEXT	<= ID_EX_RF_OUT2;
+		EX_MEM_RF_DATAIN_NEXT 	<= ID_EX_RF_DATAIN;
+--		EX_MEM_RF_OUT2_NEXT	<= ID_EX_RF_OUT2;
 
 
 		----------------------------------------------------------------------------------------------------
@@ -973,7 +978,8 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 					RE	=> DRAM_RE,				-- Read Enable
 					WE	=> DRAM_WE,				-- Write Enable
 					ADDR	=> EX_MEM_ALU_OUT,			-- Address
-					DIN	=> EX_MEM_RF_OUT2,			-- Data in
+					--DIN	=> EX_MEM_RF_OUT2,			-- Data in
+					DIN	=> EX_MEM_RF_DATAIN,			-- Data in
 					DOUT	=> DRAM_OUT);				-- Data out
 
 		LATCH_LMD: LDR		generic map (DRAM_WORD_SIZE_GLOBAL)	port map (RST, LMD_LATCH_EN, DRAM_OUT, MEM_WB_DRAM_OUT_NEXT);
@@ -991,10 +997,10 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 
 			generic map (	N	=> DRAM_WORD_SIZE_GLOBAL)
 
-			port map (	A	=> MEM_WB_DRAM_OUT,
-					B	=> MEM_WB_ALU_OUT,
-					S	=> WB_MUX_SEL,
-					Y	=> WB_MUX_OUT);
+			port map (	A	=> MEM_WB_DRAM_OUT,			-- DRAM Data Out
+					B	=> MEM_WB_ALU_OUT,			-- ALU Data Out
+					S	=> WB_MUX_SEL,				-- Selector
+					Y	=> WB_MUX_OUT);				-- MUX Output
 
 		----------------------------------------------------------------------------------------------------
 		-- Components Mapping

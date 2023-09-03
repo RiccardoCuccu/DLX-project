@@ -2,11 +2,11 @@ library ieee;
 use ieee.std_logic_1164.all;
 
 entity FA is
-	Port (	A:	In	std_logic;
-		B:	In	std_logic;
-		Ci:	In	std_logic;
-		S:	Out	std_logic;
-		Co:	Out	std_logic);
+	Port (	A:	in	std_logic;
+		B:	in	std_logic;
+		Ci:	in	std_logic;
+		S:	out	std_logic;
+		Co:	out	std_logic);
 end FA;
 
 architecture BEHAVIORAL of FA is

@@ -8,7 +8,7 @@
 #		specific pipeline stages for detailed observations.
 #
 # Author:	Riccardo Cuccu
-# Date:		2023/09/01
+# Date:		2023/09/03
 #----------------------------------------------------------------------------------------------------
 
 #----------------------------------------------------------------------------------------------------
@@ -16,8 +16,8 @@
 #----------------------------------------------------------------------------------------------------
 
 # User-configurable settings for simulation
-quietly set tb_waves 2		; # 0 = Default; 1 = DLX; 2 = DATAPATH
-quietly set pipe_stage 3	; # 1 = Fetch; 2 = Decode; 3 = Execute; 4 = Memory; 5 = Write Back
+quietly set tb_waves 2		; # 0 = Default; 1 = DLX; 2 = DATAPATH ; 3 = ALU
+quietly set pipe_stage 2	; # 1 = Fetch; 2 = Decode; 3 = Execute; 4 = Memory; 5 = Write Back
 
 #----------------------------------------------------------------------------------------------------
 # Compile VHDL files
@@ -27,7 +27,7 @@ quietly set pipe_stage 3	; # 1 = Fetch; 2 = Decode; 3 = Execute; 4 = Memory; 5 =
 vcom -quiet ../src/000-functions.vhd
 vcom -quiet ../src/000-globals.vhd
 
-## Logic Ports
+## Basic Logic Gates
 vcom -quiet ../src/000-globals/and.vhd
 vcom -quiet ../src/000-globals/nand.vhd
 #vcom -quiet ../src/000-globals/xand.vhd
@@ -37,15 +37,19 @@ vcom -quiet ../src/000-globals/nor.vhd
 vcom -quiet ../src/000-globals/xor.vhd
 vcom -quiet ../src/000-globals/xnor.vhd
 
-## Latch, flip-flop and registers
+## Memory Elements
 vcom -quiet ../src/000-globals/ffd.vhd
 vcom -quiet ../src/000-globals/ffdr.vhd
 vcom -quiet ../src/000-globals/ld.vhd
 vcom -quiet ../src/000-globals/ldr.vhd
 
-## Generic Logic Components
+## Multiplexers
 vcom -quiet ../src/000-globals/mux21.vhd
 vcom -quiet ../src/000-globals/mux41.vhd
+
+# Arithmetic Components
+vcom -quiet ../src/000-globals/fa.vhd
+vcom -quiet ../src/000-globals/rca.vhd
 vcom -quiet ../src/000-globals/zerodetector.vhd
 
 ## Control Unit (a.a)
@@ -79,9 +83,9 @@ vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4adder/a.b.d.a.a.a-pg_row.vhd
 vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4adder/a.b.d.a.a-carry_generator.vhd
 
 ##### Sum Generator (a.b.d.a.b)
-vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4adder/a.b.d.a.b.a.b-mux21.vhd
-vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4adder/a.b.d.a.b.a.a.a-fa.vhd
-vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4adder/a.b.d.a.b.a.a-rca.vhd
+#vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4adder/a.b.d.a.b.a.b-mux21.vhd
+#vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4adder/a.b.d.a.b.a.a.a-fa.vhd
+#vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4adder/a.b.d.a.b.a.a-rca.vhd
 vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4adder/a.b.d.a.b.a-carry_select_block.vhd
 vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4adder/a.b.d.a.b-sum_generator.vhd
 
@@ -105,10 +109,17 @@ vcom -quiet ../src/a-dlx.vhd
 
 # Testbench
 if {$tb_waves eq 1} {
+
 	vcom -quiet ../src/test_bench/tb-dlx.vhd
-}
-if {$tb_waves eq 2} {
+
+} elseif {$tb_waves eq 2} {
+
 	vcom -quiet ../src/test_bench/tb-datapath.vhd
+
+} else {
+
+	vcom -quiet ../src/test_bench/tb-datapath.vhd
+
 }
 
 # Simulation
@@ -117,6 +128,9 @@ vsim -quiet -t 10ps work.CFG_TB -voptargs=+acc
 #----------------------------------------------------------------------------------------------------
 # Waveform Setup
 #----------------------------------------------------------------------------------------------------
+
+# Configure signal name width in waveform for better readability
+config wave -signalnamewidth 1
 
 # Default wave settings
 if {$tb_waves eq 0} {
@@ -205,8 +219,8 @@ if {$tb_waves eq 2} {
 	#add wave -divider {TB_DATAPATH} /*
 
 	add wave -divider {TB_DATAPATH} -position insertpoint \
-	sim:/tb_datapath/U1/CLK \
-	sim:/tb_datapath/U1/RST
+	-color white sim:/tb_datapath/U1/CLK \
+	-color gray sim:/tb_datapath/U1/RST
 
 	# FETCH (IF)
 
@@ -331,7 +345,7 @@ if {$tb_waves eq 2} {
 		sim:/tb_datapath/U1/ALU_PREOP2 \
 		sim:/tb_datapath/U1/ALU_OP2
 
-		add wave -divider {ALU} -position insertpoint \
+		add wave -divider {ALU} -position insertpoint -radix decimal \
 		sim:/tb_datapath/U1/ALU_OP1 \
 		sim:/tb_datapath/U1/ALU_OP2 \
 		sim:/tb_datapath/U1/ALU_OPCODE \
@@ -352,10 +366,11 @@ if {$tb_waves eq 2} {
 		sim:/tb_datapath/U1/ID_EX_RF_OUT2 \
 		sim:/tb_datapath/U1/ID_EX_IMM
 
-		add wave -divider {EX_MEM Pipeline} -position insertpoint \
-		sim:/tb_datapath/U1/EX_MEM_NPC \
-		sim:/tb_datapath/U1/EX_MEM_RD \
-		sim:/tb_datapath/U1/EX_MEM_RF_OUT2
+		add wave -divider {EX-MEM Pipeline} -position insertpoint \
+		sim:/tb_datapath/U1/EX_MEM_BRANCH_COND \
+		sim:/tb_datapath/U1/EX_MEM_ALU_OUT \
+		sim:/tb_datapath/U1/EX_MEM_RF_DATAIN \
+		sim:/tb_datapath/U1/EX_MEM_RD
 
 	}
 
@@ -371,8 +386,34 @@ if {$tb_waves eq 2} {
 		sim:/tb_datapath/U1/PC_LATCH_EN
 
 		add wave -divider {STAGE} -position insertpoint \
-		sim:/tb_datapath/U1/EX_MEM_IR \
 		sim:/tb_datapath/U1/MEM_ALU_LABEL
+
+		add wave -divider {DRAM} -position insertpoint -radix decimal \
+		sim:/tb_datapath/U1/DRAM_RE \
+		sim:/tb_datapath/U1/DRAM_WE \
+		sim:/tb_datapath/U1/DATA_MEMORY/ADDR \
+		sim:/tb_datapath/U1/DATA_MEMORY/DIN \
+		sim:/tb_datapath/U1/DATA_MEMORY/DOUT \
+		sim:/tb_datapath/U1/DATA_MEMORY/DRAM_mem
+
+		add wave -divider {JUMP} -position insertpoint \
+		sim:/tb_datapath/U1/EX_MEM_BRANCH_COND \
+		sim:/tb_datapath/U1/JUMP_EN \
+		sim:/tb_datapath/U1/PC_MUX_SEL
+
+		add wave -divider {LATCHES} -position insertpoint \
+		sim:/tb_datapath/U1/MEM_WB_DRAM_OUT_NEXT
+
+		add wave -divider {EX-MEM Pipeline} -position insertpoint \
+		sim:/tb_datapath/U1/EX_MEM_BRANCH_COND \
+		sim:/tb_datapath/U1/EX_MEM_ALU_OUT \
+		sim:/tb_datapath/U1/EX_MEM_RF_DATAIN \
+		sim:/tb_datapath/U1/EX_MEM_RD
+
+		add wave -divider {MEM-WB Pipeline} -position insertpoint \
+		sim:/tb_datapath/U1/MEM_WB_DRAM_OUT \
+		sim:/tb_datapath/U1/MEM_WB_ALU_OUT \
+		sim:/tb_datapath/U1/MEM_WB_RD
 
 	}
 
@@ -385,10 +426,89 @@ if {$tb_waves eq 2} {
 		sim:/tb_datapath/U1/RF_WE
 
 		add wave -divider {STAGE} -position insertpoint \
-		sim:/tb_datapath/U1/MEM_WB_IR \
 		sim:/tb_datapath/U1/WB_ALU_LABEL
 
+		add wave -divider {MUX} -position insertpoint \
+		sim:/tb_datapath/U1/MEM_WB_DRAM_OUT \
+		sim:/tb_datapath/U1/MEM_WB_ALU_OUT \
+		sim:/tb_datapath/U1/WB_MUX_SEL \
+		sim:/tb_datapath/U1/WB_MUX_OUT
+
+		add wave -divider {MEM-WB Pipeline} -position insertpoint \
+		sim:/tb_datapath/U1/MEM_WB_DRAM_OUT \
+		sim:/tb_datapath/U1/MEM_WB_ALU_OUT \
+		sim:/tb_datapath/U1/MEM_WB_RD
+
 	}
+
+}
+
+
+# ALU-specific waves
+if {$tb_waves eq 3} {
+
+	add wave -divider {TB_DATAPATH} -position insertpoint \
+	sim:/tb_datapath/U1/CLK \
+	sim:/tb_datapath/U1/RST
+
+	#add wave -divider {EX CONTROL SIGNALS} -position insertpoint \
+	#sim:/tb_datapath/U1/MUXA_SEL \
+	#sim:/tb_datapath/U1/MUXB_SEL \
+	#sim:/tb_datapath/U1/ALU_OUTREG_EN \
+	#sim:/tb_datapath/U1/EQ_COND \
+	#sim:/tb_datapath/U1/ALU_OPCODE
+
+	add wave -divider {STAGE} -position insertpoint \
+	sim:/tb_datapath/U1/EX_ALU_LABEL
+
+	#add wave -divider {ALU_PRE_MUX1} -position insertpoint \
+	#sim:/tb_datapath/U1/ID_EX_RF_DATAIN \
+	#sim:/tb_datapath/U1/ID_EX_NPC \
+	#sim:/tb_datapath/U1/ALU_PREOP1
+
+	#add wave -divider {ALU_MUX1} -position insertpoint \
+	#sim:/tb_datapath/U1/ID_EX_RF_OUT1 \
+	#sim:/tb_datapath/U1/ALU_PREOP1 \
+	#sim:/tb_datapath/U1/ALU_OP1
+
+	#add wave -divider {ALU_PRE_MUX2} -position insertpoint \
+	#sim:/tb_datapath/U1/ID_EX_RF_DATAIN \
+	#sim:/tb_datapath/U1/ID_EX_IMM_NEXT \
+	#sim:/tb_datapath/U1/ALU_PREOP2
+
+	#add wave -divider {ALU_MUX2} -position insertpoint \
+	#sim:/tb_datapath/U1/ID_EX_RF_OUT2 \
+	#sim:/tb_datapath/U1/ALU_PREOP2 \
+	#sim:/tb_datapath/U1/ALU_OP2
+
+	add wave -divider {ALU I/O} -position insertpoint -radix decimal \
+	sim:/tb_datapath/U1/ARITHMETIC_LOGIC_UNIT/OP1 \
+	sim:/tb_datapath/U1/ARITHMETIC_LOGIC_UNIT/OP2 \
+	sim:/tb_datapath/U1/ARITHMETIC_LOGIC_UNIT/OPC \
+	sim:/tb_datapath/U1/ARITHMETIC_LOGIC_UNIT/Y_TMP \
+	sim:/tb_datapath/U1/ARITHMETIC_LOGIC_UNIT/Y \
+	sim:/tb_datapath/U1/ARITHMETIC_LOGIC_UNIT/Z
+
+	add wave -divider {P4 ADDER} -position insertpoint -radix decimal \
+	sim:/tb_datapath/U1/ARITHMETIC_LOGIC_UNIT/SUM/*
+
+	add wave -divider {P4 - CARRY GENERATOR} -position insertpoint \
+	sim:/tb_datapath/U1/ARITHMETIC_LOGIC_UNIT/SUM/CARRY_GENERATOR_INSTANCE/*
+
+	add wave -divider {P4 - SUM GENERATOR} -position insertpoint \
+	sim:/tb_datapath/U1/ARITHMETIC_LOGIC_UNIT/SUM/SUM_GENERATOR_INSTANCE/*
+
+	add wave -divider {CSBI} -position insertpoint \
+	sim:/tb_datapath/U1/ARITHMETIC_LOGIC_UNIT/SUM/SUM_GENERATOR_INSTANCE/SUMGEN(1)/CSBI/*
+
+	add wave -divider {CSBI/RCA0} -position insertpoint \
+	sim:/tb_datapath/U1/ARITHMETIC_LOGIC_UNIT/SUM/SUM_GENERATOR_INSTANCE/SUMGEN(1)/CSBI/RCA0/*
+
+	#add wave -divider {ZERO_DETECTOR} -position insertpoint \
+	#sim:/tb_datapath/U1/ID_EX_RF_OUT1 \
+	#sim:/tb_datapath/U1/ZERO_OUT \
+	#sim:/tb_datapath/U1/ZERO_OUT_NEG \
+	#sim:/tb_datapath/U1/BRANCH_COND
 
 }
 
@@ -396,7 +516,12 @@ if {$tb_waves eq 2} {
 # Simulation Run
 #----------------------------------------------------------------------------------------------------
 
+# Suppress Warning: CONV_INTEGER: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand
+quietly set StdArithNoWarnings 1
+run 0 ns;
+
 # Run the simulation
+quietly set StdArithNoWarnings 0
 run 60 ns
 
 # Restore cursor and zoom settings for better visibility in wave view

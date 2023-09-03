@@ -5,23 +5,23 @@ use work.constants.all;
 
 entity CARRY_GENERATOR is
 
-	generic (	N:	integer := ALU_OP_SIZE_GLOBAL;
-			NB:	integer := ALU_BLOCK_SIZE_GLOBAL);
+	generic (	N:	integer := ALU_OP_SIZE_GLOBAL;			-- / 32 bits
+			NB:	integer := ALU_BLOCK_SIZE_GLOBAL);		-- /  8 bits
 
-	port 	(	A:	in	std_logic_vector(N-1 downto 0);
-			B:	in	std_logic_vector(N-1 downto 0);
-			Ci:	in	std_logic;
-			Co:	out	std_logic_vector(NB-1 downto 0));
+	port 	(	A:	in	std_logic_vector(N-1 downto 0);		-- Operand 1		/ 32 bit
+			B:	in	std_logic_vector(N-1 downto 0);		-- Operand 2		/ 32 bit
+			Ci:	in	std_logic;				-- Carry in
+			Co:	out	std_logic_vector(NB-1 downto 0));	-- Carry out		/  8 bit
 
 end CARRY_GENERATOR;
 
 
 architecture STRUCTURAL of CARRY_GENERATOR is
 
-	constant NROW: integer := log2(N) + 1;
+	constant NROW: integer := log2(N) + 1;					-- log2(32) + 1 = 6
 
 	type SignalVector is array (NROW-1 downto 0) of std_logic_vector(N-1 downto 0);
-	signal P, G: SignalVector;
+	signal P, G: SignalVector := (others => (others => '0'));
 
 
 	component PG_ROW
@@ -95,13 +95,19 @@ architecture STRUCTURAL of CARRY_GENERATOR is
 						end generate;
 
 					end generate;
+
+--					IF_REG_NOT_NEED: if ((j+1)mod(2**i) /= 0) generate
+--						P(i)(j) <= '0';
+--						G(i)(j) <= '0';
+--					end generate;
+
 				end generate;
 
 				-- if we are in the second part of the tree we have an irregular structure
 				UREG_NETWORK: if (i > log2(ALU_BITBLOCK_SIZE_GLOBAL)) generate
 					
 					-- if we are in row "i" we need the same number of blocks as in row "i-1"
-					IF_UREG_NEED: if ((j mod (2**i)) >= 2**(i-1) and (j mod(2**i)) < 2**i) and (((j+1) mod ALU_BITBLOCK_SIZE_GLOBAL)=0) generate
+					IF_UREG_NEED: if ((j mod (2**i)) >= 2**(i-1) and (j mod(2**i)) < 2**i) and (((j+1) mod ALU_BITBLOCK_SIZE_GLOBAL) = 0) generate
 
 						-- "2**(i-ALU_BITBLOCK_SIZE_GLOBAL)" blocks in columns "j" with the lowest value meet the following condition
 						IF_UREG_G: if (j < 2**i) generate
@@ -125,28 +131,34 @@ architecture STRUCTURAL of CARRY_GENERATOR is
 									Pij => P(i)(j));			-- P_{i:j} = P_{i:k} * P_{k-1:j}
 						end generate;
 
-				end generate;
+					end generate;
 
-				-- if the signal must be passed to the next row, it is connected with the previous row
-				PASS_SIGNAL: if((j mod (2**i))<2**(i-1) and (j mod (2**i))>=0) and (((j+1) mod ALU_BITBLOCK_SIZE_GLOBAL)=0) generate
-					P(i)(j) <= P(i-1)(j);
-					G(i)(j) <= G(i-1)(j);
-				end generate;
+					-- if the signal must be passed to the next row, it is connected with the previous row
+					PASS_SIGNAL: if((j mod (2**i)) < 2**(i-1) and (j mod (2**i)) >= 0) and (((j+1) mod ALU_BITBLOCK_SIZE_GLOBAL) = 0) generate
+						P(i)(j) <= P(i-1)(j);
+						G(i)(j) <= G(i-1)(j);
+					end generate;
 
-			end generate;
-			
-			-- if it is the last row, it carries the G signal to the cout
-			LAST_ROW: if (i = NROW-1) generate
+--					IF_UREG_NOT_NEED: if ((((j mod(2**i)) < 2**i) or (j mod (2**i)) >= 0)) and (((j+1) mod ALU_BITBLOCK_SIZE_GLOBAL) /= 0) generate
+--						P(i)(j) <= '0';
+--						G(i)(j) <= '0';
+--					end generate;
+
+				end generate;
 				
-				COUT_SELECT: if ((j+1) mod ALU_BITBLOCK_SIZE_GLOBAL) = 0 generate
-					Co(j/ALU_BITBLOCK_SIZE_GLOBAL) <= G(i)(j);
-				end generate;
+				-- if it is the last row, it carries the G signal to the cout
+				LAST_ROW: if (i = NROW-1) generate
+					
+					COUT_SELECT: if ((j+1) mod ALU_BITBLOCK_SIZE_GLOBAL) = 0 generate
+						Co(j/ALU_BITBLOCK_SIZE_GLOBAL) <= G(i)(j);
+					end generate;
 
+				end generate;
 			end generate;
 		end generate;
-	end generate;
 
 end STRUCTURAL;
+
 
 configuration CFG_CARRY_GENERATOR of CARRY_GENERATOR is
 	for STRUCTURAL

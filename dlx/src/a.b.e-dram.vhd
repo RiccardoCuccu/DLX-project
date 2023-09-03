@@ -1,3 +1,10 @@
+----------------------------------------------------------------------------------------------------
+-- Description:	
+--
+-- Author:	Riccardo Cuccu
+-- Date:	2023/09/03
+----------------------------------------------------------------------------------------------------
+
 library ieee;
 use ieee.std_logic_1164.all;
 --use ieee.std_logic_unsigned.all;
@@ -7,8 +14,8 @@ use work.constants.all;
 
 entity DRAM is
 
-	generic (	N	: integer := DRAM_SIZE_GLOBAL;
-			NW	: integer := DRAM_WORD_SIZE_GLOBAL);
+	generic (	N	: integer := DRAM_SIZE_GLOBAL;			-- DRAM size			/ 256 addresses
+			NW	: integer := DRAM_WORD_SIZE_GLOBAL);		-- DRAM registers size		/ 32 bits
 
 	port (		CLK	: in std_logic;					-- Clock
 			RST	: in std_logic;					-- Reset:Active-Low
