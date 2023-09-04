@@ -51,13 +51,13 @@ architecture BEHAVIORAL of RF is
 			if RST = '0' then						-- Reset, active low
 --				OUT1 <= (others => '0');
 --				OUT2 <= (others => '0');
---				REG <= (others => (others => '0'));
-				REG <= (	"00000000000000000000000000001010",	-- Default Value: 10 (0xA)
-						"00000000000000000000000000001011",	-- Default Value: 11 (0xB)
-						"00000000000000000000000000001100",	-- Default Value: 12 (0xC)
-						"00000000000000000000000000001101",	-- Default Value: 13 (0xD)
-						"00000000000000000000000000001110",	-- Default Value: 14 (0xE)
-						others => (others =>'0'));
+				REG <= (others => (others => '0'));
+--				REG <= (	"00000000000000000000000000001010",	-- Default Value: 10 (0xA)
+--						"00000000000000000000000000001011",	-- Default Value: 11 (0xB)
+--						"00000000000000000000000000001100",	-- Default Value: 12 (0xC)
+--						"00000000000000000000000000001101",	-- Default Value: 13 (0xD)
+--						"00000000000000000000000000001110",	-- Default Value: 14 (0xE)
+--						others => (others =>'0'));
 --				REG <= (	"00000000000000000000101110101010",	-- Default Value: 2986 (0xBAA)
 --						"00000000000000000000101111101010",	-- Default Value: 3050 (0xBEA)
 --						"00000000000000000000111111101010",	-- Default Value: 4074 (0xFEA)

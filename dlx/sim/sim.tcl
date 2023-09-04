@@ -16,8 +16,8 @@
 #----------------------------------------------------------------------------------------------------
 
 # User-configurable settings for simulation
-quietly set tb_waves 2		; # 0 = Default; 1 = DLX; 2 = DATAPATH ; 3 = ALU
-quietly set pipe_stage 2	; # 1 = Fetch; 2 = Decode; 3 = Execute; 4 = Memory; 5 = Write Back
+quietly set tb_waves 1		; # 0 = Default; 1 = DLX; 2 = DATAPATH ; 3 = ALU
+quietly set pipe_stage 1	; # 1 = Fetch; 2 = Decode; 3 = Execute; 4 = Memory; 5 = Write Back
 
 #----------------------------------------------------------------------------------------------------
 # Compile VHDL files
@@ -145,62 +145,112 @@ if {$tb_waves eq 0} {
 if {$tb_waves eq 1} {
 
 	#view -undock wave
-	add wave -divider {TB_DLX} /*
+	#add wave -divider {TB_DLX} /*
 
-	#add wave -divider {DLX} -position insertpoint \
-	#sim:/tb_dlx/U1/IR \
+	add wave -divider {TB_DLX} -position insertpoint \
+	-color white sim:/tb_dlx/U1/CLK \
+	-color gray  sim:/tb_dlx/U1/RST \
+	sim:/tb_dlx/U1/IR
 	#sim:/tb_dlx/U1/PC \
 	#sim:/tb_dlx/U1/IRam_DOut
 	#sim:/tb_dlx/U1/PC_BUS
 
-	add wave -divider {CU - INPUTS} -position insertpoint -radix hex \
-	sim:/tb_dlx/U1/CU_I/IR_opcode \
-	sim:/tb_dlx/U1/CU_I/IR_func
+	# CONTROL UNIT
 
-	add wave -position insertpoint \
-	sim:/tb_dlx/U1/CU_I/IR_opcode_LABEL_i \
-	sim:/tb_dlx/U1/CU_I/IR_func_LABEL_i
+	if {$pipe_stage eq 0} {
 
-	# HARDWIRED CU
-	#add wave -divider {CU - ALU} -position insertpoint \
-	#sim:/tb_dlx/U1/CU_I/aluOpcode_i \
-	#sim:/tb_dlx/U1/CU_I/aluOpcode1 \
-	#sim:/tb_dlx/U1/CU_I/aluOpcode2 \
-	#sim:/tb_dlx/U1/CU_I/aluOpcode3 \
-	#sim:/tb_dlx/U1/CU_I/ALU_OPCODE
+		add wave -divider {CU - INPUTS} -position insertpoint -radix hex \
+		sim:/tb_dlx/U1/CU_I/IR_IN \
+		sim:/tb_dlx/U1/CU_I/IR_opcode \
+		sim:/tb_dlx/U1/CU_I/IR_func
 
-	#add wave -divider {CU - CONTROL WORDS} -position insertpoint -radix hex \
-	#sim:/tb_dlx/U1/CU_I/cw1 \
-	#sim:/tb_dlx/U1/CU_I/cw2 \
-	#sim:/tb_dlx/U1/CU_I/cw3 \
-	#sim:/tb_dlx/U1/CU_I/cw4 \
-	#sim:/tb_dlx/U1/CU_I/cw5
+		add wave -position insertpoint \
+		sim:/tb_dlx/U1/CU_I/IR_opcode_LABEL_i \
+		sim:/tb_dlx/U1/CU_I/IR_func_LABEL_i
 
-	add wave -divider {CU - OUTPUTS} -position insertpoint \
-	sim:/tb_dlx/U1/CU_I/IR_LATCH_EN \
-	sim:/tb_dlx/U1/CU_I/NPC_LATCH_EN
-	#sim:/tb_dlx/U1/CU_I/RegA_LATCH_EN 
-	#sim:/tb_dlx/U1/CU_I/RegB_LATCH_EN \
-	#sim:/tb_dlx/U1/CU_I/RegIMM_LATCH_EN \
-	#sim:/tb_dlx/U1/CU_I/MUXA_SEL \
-	#sim:/tb_dlx/U1/CU_I/MUXB_SEL \
-	#sim:/tb_dlx/U1/CU_I/ALU_OUTREG_EN \
-	#sim:/tb_dlx/U1/CU_I/EQ_COND \
-	#sim:/tb_dlx/U1/CU_I/DRAM_WE \
-	#sim:/tb_dlx/U1/CU_I/LMD_LATCH_EN \
-	#sim:/tb_dlx/U1/CU_I/JUMP_EN \
+		add wave -divider {CU - ALU} -position insertpoint \
+		sim:/tb_dlx/U1/CU_I/aluOpcode_i \
+		sim:/tb_dlx/U1/CU_I/aluOpcode1 \
+		sim:/tb_dlx/U1/CU_I/aluOpcode2 \
+		sim:/tb_dlx/U1/CU_I/aluOpcode3 \
+		sim:/tb_dlx/U1/CU_I/ALU_OPCODE
+
+		add wave -divider {CU - CONTROL WORDS} -position insertpoint -radix hex \
+		sim:/tb_dlx/U1/CU_I/cw1 \
+		sim:/tb_dlx/U1/CU_I/cw2 \
+		sim:/tb_dlx/U1/CU_I/cw3 \
+		sim:/tb_dlx/U1/CU_I/cw4 \
+		sim:/tb_dlx/U1/CU_I/cw5
+
+		add wave -divider {CU - OUTPUTS} -position insertpoint \
+		sim:/tb_dlx/U1/CU_I/IR_LATCH_EN \
+		sim:/tb_dlx/U1/CU_I/NPC_LATCH_EN \
+		sim:/tb_dlx/U1/CU_I/RegA_LATCH_EN \
+		sim:/tb_dlx/U1/CU_I/RegB_LATCH_EN \
+		sim:/tb_dlx/U1/CU_I/RegIMM_LATCH_EN \
+		sim:/tb_dlx/U1/CU_I/MUXA_SEL \
+		sim:/tb_dlx/U1/CU_I/MUXB_SEL \
+		sim:/tb_dlx/U1/CU_I/ALU_OUTREG_EN \
+		sim:/tb_dlx/U1/CU_I/EQ_COND \
+		sim:/tb_dlx/U1/CU_I/DRAM_WE \
+		sim:/tb_dlx/U1/CU_I/LMD_LATCH_EN \
+		sim:/tb_dlx/U1/CU_I/JUMP_EN \
+		sim:/tb_dlx/U1/CU_I/PC_LATCH_EN \
+		sim:/tb_dlx/U1/CU_I/WB_MUX_SEL \
+		sim:/tb_dlx/U1/CU_I/RF_WE
+
+	}
+
+	# FETCH (IF)
+
+	if {$pipe_stage eq 1} { 
+
+		add wave -divider {IF Control Signals} -position insertpoint \
+		sim:/tb_dlx/U1/DATAPATH_I/IR_LATCH_EN \
+		sim:/tb_dlx/U1/DATAPATH_I/NPC_LATCH_EN
+
+		add wave -divider {STAGE} -position insertpoint -radix binary \
+		sim:/tb_dlx/U1/DATAPATH_I/IR_OUT
+
+		add wave -position insertpoint \
+		sim:/tb_dlx/U1/DATAPATH_I/IF_ALU_LABEL
+
+		add wave -divider {PC_MUX} -position insertpoint \
+		sim:/tb_dlx/U1/DATAPATH_I/NPC_BUS \
+		sim:/tb_dlx/U1/DATAPATH_I/EX_MEM_ALU_OUT \
+		sim:/tb_dlx/U1/DATAPATH_I/PC_MUX_SEL \
+		sim:/tb_dlx/U1/DATAPATH_I/PC_BUS
+
+		add wave -divider {PROGRAM_COUNTER} -position insertpoint \
+		sim:/tb_dlx/U1/DATAPATH_I/PC_LATCH_EN \
+		sim:/tb_dlx/U1/DATAPATH_I/PC_BUS \
+		sim:/tb_dlx/U1/DATAPATH_I/PC_OUT
+
+		add wave -divider {NEXT_PROGRAM_COUNTER} -position insertpoint \
+		sim:/tb_dlx/U1/DATAPATH_I/NPC_LATCH_EN \
+		sim:/tb_dlx/U1/DATAPATH_I/PC_BUS \
+		sim:/tb_dlx/U1/DATAPATH_I/NPC_OUT
+
+		add wave -divider {INSTRUCTION_MEMORY} -position insertpoint \
+		sim:/tb_dlx/U1/DATAPATH_I/PC_OUT \
+		sim:/tb_dlx/U1/DATAPATH_I/IR_BUS
+
+		add wave -divider {INSTRUCTION_REGISTER} -position insertpoint \
+		sim:/tb_dlx/U1/DATAPATH_I/IR_BUS \
+		sim:/tb_dlx/U1/DATAPATH_I/IR_OUT
+
+		add wave -divider {IF-ID Pipeline} -position insertpoint \
+		sim:/tb_dlx/U1/DATAPATH_I/IF_ID_NPC \
+		sim:/tb_dlx/U1/DATAPATH_I/IF_ID_IR
+
+	}
+
+
+
+	#add wave -divider -position insertpoint \
 	#sim:/tb_dlx/U1/CU_I/PC_LATCH_EN \
-	#sim:/tb_dlx/U1/CU_I/WB_MUX_SEL \
-	#sim:/tb_dlx/U1/CU_I/RF_WE
-
-	add wave -divider {DATAPATH} -position insertpoint \
-	sim:/tb_dlx/U1/DATAPATH_I/IR \
-	sim:/tb_dlx/U1/DATAPATH_I/PC \
-	sim:/tb_dlx/U1/DATAPATH_I/PC_BUS
-
-	add wave -divider {DATAPATH PIPE IF_ID} -position insertpoint \
-	sim:/tb_dlx/U1/DATAPATH_I/IF_ID_PC \
-	sim:/tb_dlx/U1/DATAPATH_I/IF_ID_PC_NEXT
+	#sim:/tb_dlx/U1/DATAPATH_I/PC_BUS \
+	#sim:/tb_dlx/U1/DATAPATH_I/PC_OUT
 
 	#add wave -divider {CU} -position insertpoint sim:/tb_dlx/U1/CU_I/*
 	#add wave -divider {IRAM} -position insertpoint sim:/tb_dlx/U1/IRAM_I/*
@@ -243,10 +293,12 @@ if {$tb_waves eq 2} {
 		sim:/tb_datapath/U1/PC_BUS
 
 		add wave -divider {PROGRAM_COUNTER} -position insertpoint \
+		sim:/tb_datapath/U1/PC_LATCH_EN \
 		sim:/tb_datapath/U1/PC_BUS \
 		sim:/tb_datapath/U1/PC_OUT
 
 		add wave -divider {NEXT_PROGRAM_COUNTER} -position insertpoint \
+		sim:/tb_datapath/U1/NPC_LATCH_EN \
 		sim:/tb_datapath/U1/PC_BUS \
 		sim:/tb_datapath/U1/NPC_OUT
 
@@ -516,12 +568,18 @@ if {$tb_waves eq 3} {
 # Simulation Run
 #----------------------------------------------------------------------------------------------------
 
-# Suppress Warning: CONV_INTEGER: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand
-quietly set StdArithNoWarnings 1
+# Suppress warnings 
+quietly set StdArithNoWarnings 1			; # Warning: CONV_INTEGER: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand
+quietly set NumericStdNoWarnings 1			; # Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+
+# Run 0 ns of simulation
 run 0 ns;
 
-# Run the simulation
-quietly set StdArithNoWarnings 0
+# Re-enable warnings
+quietly set StdArithNoWarnings 0			; # Warning: CONV_INTEGER: There is an 'U'|'X'|'W'|'Z'|'-' in an arithm
+quietly set NumericStdNoWarnings 0			; # Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
+
+# Run the real simulation
 run 60 ns
 
 # Restore cursor and zoom settings for better visibility in wave view

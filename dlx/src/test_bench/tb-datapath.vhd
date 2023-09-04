@@ -118,9 +118,9 @@ begin
 	TB_RegB_LATCH_EN	<= '0', '1' after 6 ns;
 	TB_RegIMM_LATCH_EN	<= '0', '1' after 6 ns;
 
-	TB_MUXA_SEL		<= '0';
+	TB_MUXA_SEL		<= '0', '1' after 6 ns;
 	TB_MUXB_SEL		<= '0';
-	TB_ALU_OUTREG_EN	<= '0';
+	TB_ALU_OUTREG_EN	<= '0', '1' after 6 ns;
 	TB_EQ_COND		<= '0', '1' after 6 ns;
 
 	TB_ALU_OPCODE		<= OP_NOP, OP_ADD after 6 ns;

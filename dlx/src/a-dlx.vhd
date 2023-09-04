@@ -249,7 +249,7 @@ architecture DLX_RTL of DLX is
 					ALU_OUTREG_EN	=> ALU_OUTREG_EN_i,
 					EQ_COND		=> EQ_COND_i,
 					ALU_OPCODE	=> ALU_OPCODE_i,
-					DRAM_RE		=> DRAM_WE_i,
+					DRAM_RE		=> DRAM_RE_i,
 					DRAM_WE		=> DRAM_WE_i,
 					LMD_LATCH_EN	=> LMD_LATCH_EN_i,
 					JUMP_EN		=> JUMP_EN_i,
