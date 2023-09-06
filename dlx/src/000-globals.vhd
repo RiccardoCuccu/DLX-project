@@ -7,7 +7,7 @@
 --		easily configurable and maintainable.
 --
 -- Author:	Riccardo Cuccu
--- Date:	2023/09/03
+-- Date:	2023/09/05
 ----------------------------------------------------------------------------------------------------
 
 library ieee;
@@ -28,7 +28,7 @@ package constants is
 	constant PC_SIZE_GLOBAL			: integer := SIZE_GLOBAL;				-- Program Counter size
 	constant MMEM_SIZE_GLOBAL		: integer := 64;					-- Microcode Memory size
 	--constant RMEM_SIZE_GLOBAL		: integer := 64;					-- Microcode Relocation
-	constant CW_SIZE_GLOBAL			: integer := 16;					-- Control Word size
+	constant CW_SIZE_GLOBAL			: integer := 19;					-- Control Word size
 
 	-- Instruction memory
 	constant IRAM_SIZE_GLOBAL		: integer := 2**8;					-- Instruction Memory size

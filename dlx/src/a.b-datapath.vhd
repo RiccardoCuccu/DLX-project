@@ -7,7 +7,7 @@
 --		and ensure synchronous operations across all stages.
 --
 -- Author:	Riccardo Cuccu
--- Date:	2023/09/03
+-- Date:	2023/09/05
 ----------------------------------------------------------------------------------------------------
 
 library ieee;
@@ -37,6 +37,8 @@ entity DLX_DATAPATH is
 			RegIMM_LATCH_EN		: in  std_logic;				-- Immediate Register Latch Enable
 
 			-- EX Control Signals
+			MUXA_PRE_SEL		: in  std_logic;				-- MUX-A Pre Sel
+			MUXB_PRE_SEL		: in  std_logic;				-- MUX-B Pre Sel
 			MUXA_SEL		: in  std_logic;				-- MUX-A Sel
 			MUXB_SEL		: in  std_logic;				-- MUX-B Sel
 			ALU_OUTREG_EN		: in  std_logic;				-- ALU Output Register Enable
@@ -51,6 +53,7 @@ entity DLX_DATAPATH is
 			DRAM_WE			: in  std_logic;				-- Data RAM Write Enable
 			LMD_LATCH_EN		: in  std_logic;				-- LMD Register Latch Enable
 			JUMP_EN			: in  std_logic;				-- JUMP Enable Signal for PC input MUX
+			JUMP_COND		: in std_logic;					-- JUMP Condition
 			PC_LATCH_EN		: in  std_logic;				-- Program Counte Latch Enable
 
 			-- WB Control signals
@@ -302,7 +305,7 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 
 	-- EXECUTE-MEMORY (EX_MEM) Pipeline signals
 --	signal EX_MEM_NPC, EX_MEM_NPC_NEXT : std_logic_vector(PC_SIZE - 1 downto 0);					-- Program Counter signal		/ 32 bits
-	signal EX_MEM_BRANCH_COND, EX_MEM_BRANCH_COND_NEXT : std_logic;							-- Branch Condition
+	signal EX_MEM_BRANCH_DETECT, EX_MEM_BRANCH_DETECT_NEXT : std_logic;							-- Branch Condition
 	signal EX_MEM_RD, EX_MEM_RD_NEXT : std_logic_vector(RF_ADDRESSES_GLOBAL - 1 downto 0);				-- Register File - Write address	/  5 bits
 	signal EX_MEM_RF_DATAIN, EX_MEM_RF_DATAIN_NEXT : std_logic_vector(RF_SIZE_GLOBAL - 1 downto 0);			-- Register File - Write data		/ 32 bits
 --	signal EX_MEM_RF_OUT2, EX_MEM_RF_OUT2_NEXT : std_logic_vector(RF_SIZE_GLOBAL - 1 downto 0);			-- Register File - Read data 2		/ 32 bits
@@ -323,12 +326,13 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 
 	-- EXECUTE signals
 	signal ZERO_OUT, ZERO_OUT_NEG : std_logic;
-	signal BRANCH_COND : std_logic;
+	signal BRANCH_DETECT : std_logic;
 	signal ALU_ZERO : std_logic;
 	signal ALU_PREOP1, ALU_PREOP2, ALU_OP1, ALU_OP2, ALU_OUT : std_logic_vector(RF_SIZE_GLOBAL - 1 downto 0);	-- / 32 bits
 
 	-- MEMORY signals
 	signal PC_MUX_SEL : std_logic;
+	signal BRANCH_COND : std_logic;
 	signal PC_MUXA, PC_MUXB : std_logic_vector(PC_SIZE - 1 downto 0);						-- / 32 bits
 --	signal PC_JUMP, REL_JUMP : std_logic_vector(PC_SIZE - 1 downto 0);						-- / 32 bits
 	signal DRAM_OUT : std_logic_vector(DRAM_WORD_SIZE_GLOBAL - 1 downto 0);						-- / 32 bits
@@ -534,7 +538,7 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 					EX_MEM_RF_DATAIN	<= (others => '0');			-- Register File - Write data
 --					EX_MEM_RF_OUT2		<= (others => '0');			-- Register File - Read data 2
 					EX_MEM_ALU_OUT		<= (others => '0');			-- ALU Output
-					EX_MEM_BRANCH_COND	<= '0';					-- Branch Condition
+					EX_MEM_BRANCH_DETECT	<= '0';					-- Branch Condition
 					EX_MEM_RD		<= (others => '0');			-- Register File - Write address
 
 					-- MEMORY-WRITE BACK
@@ -563,7 +567,7 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 					EX_MEM_RF_DATAIN	<= EX_MEM_RF_DATAIN_NEXT;		-- Register File - Write data
 --					EX_MEM_RF_OUT2		<= EX_MEM_RF_OUT2_NEXT;			-- Register File - Read data 2
 					EX_MEM_ALU_OUT		<= EX_MEM_ALU_OUT_NEXT;			-- ALU Output
-					EX_MEM_BRANCH_COND	<= EX_MEM_BRANCH_COND_NEXT;		-- Branch Condition
+					EX_MEM_BRANCH_DETECT	<= EX_MEM_BRANCH_DETECT_NEXT;		-- Branch Condition
 					EX_MEM_RD		<= EX_MEM_RD_NEXT;			-- Register File - Write address
 
 					-- MEMORY-WRITE BACK
@@ -824,7 +828,7 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 
 			port map (	A	=> ID_EX_RF_DATAIN,
 					B	=> ID_EX_NPC,
-					S	=> '0',
+					S	=> MUXA_PRE_SEL,
 					Y	=> ALU_PREOP1);
 
 		ALU_MUX1: MUX21
@@ -842,7 +846,7 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 
 			port map (	A	=> ID_EX_RF_DATAIN,
 					B	=> ID_EX_IMM_NEXT,
-					S	=> '0',
+					S	=> MUXB_PRE_SEL,
 					Y	=> ALU_PREOP2);
 
 		ALU_MUX2: MUX21
@@ -926,14 +930,14 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 --			port map (	A	=> ZERO_OUT,
 --					B	=> ZERO_OUT_NEG,
 --					S	=> EQ_COND,
---					Y	=> BRANCH_COND);
+--					Y	=> BRANCH_DETECT);
 
 		BRANCH_MUX: process(ZERO_OUT, EQ_COND)
 		begin
 			if (EQ_COND = '0') then
-				BRANCH_COND <= ZERO_OUT;
+				BRANCH_DETECT <= ZERO_OUT;
 			else
-				BRANCH_COND <= ZERO_OUT_NEG;
+				BRANCH_DETECT <= ZERO_OUT_NEG;
 			end if;
 		end process;
 
@@ -952,7 +956,7 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 --				ForwardB        => ForwardBmuxSelector);
 
 		LATCH_ALUOUT: LDR	generic map (ALU_OP_SIZE_GLOBAL)	port map (RST, ALU_OUTREG_EN, ALU_OUT, EX_MEM_ALU_OUT_NEXT);
-		LATCH_BRANCH: LD						port map (RST, ALU_OUTREG_EN, BRANCH_COND, EX_MEM_BRANCH_COND_NEXT);
+		LATCH_BRANCH: LD						port map (RST, ALU_OUTREG_EN, BRANCH_DETECT, EX_MEM_BRANCH_DETECT_NEXT);
 
 		-- EX-MEM PIPELINE
 --		EX_MEM_NPC_NEXT		<= ID_EX_NPC;
@@ -966,7 +970,8 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 		-- MEMORY (MEM)
 		----------------------------------------------------------------------------------------------------
 
-		PC_MUX_SEL		<= EX_MEM_BRANCH_COND or JUMP_EN;
+		BRANCH_COND		<= EX_MEM_BRANCH_DETECT and JUMP_EN;
+		PC_MUX_SEL		<= BRANCH_COND or JUMP_COND;
 
 		DATA_MEMORY: DRAM
 

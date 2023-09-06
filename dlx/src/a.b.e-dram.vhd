@@ -1,8 +1,10 @@
 ----------------------------------------------------------------------------------------------------
--- Description:	
+-- Description:	This DRAM module is designed to act as a memory unit in a DLX architecture. 
+--		The DRAM can be both read from and written to but is only accessible via
+--		specific load and store commands.
 --
 -- Author:	Riccardo Cuccu
--- Date:	2023/09/03
+-- Date:	2023/09/05
 ----------------------------------------------------------------------------------------------------
 
 library ieee;
@@ -30,15 +32,19 @@ end DRAM;
 
 architecture BEHAVIORAL of DRAM is
 
+	-- Define DRAM as an array of std_logic_vector
 	type RAMtype is array (0 to N - 1) of std_logic_vector(NW-1 downto 0);
 	signal DRAM_mem : RAMtype;
 
 	begin
 
-		REGISTER_WRITE: process(CLK, RST)			-- Synchronous
+		-- Process for handling synchronous write operations
+		REGISTER_WRITE: process(CLK, RST)
 		begin
+			-- Reset all memory locations to zero when RST is low
 			if RST = '0' then
 				DRAM_mem <= (others => (others => '0'));
+			-- Write data to DRAM when clock rises and WE is high
 			elsif rising_edge(CLK) then
 				if(WE = '1' ) then
 					DRAM_mem(to_integer(unsigned(ADDR))) <= DIN;
@@ -46,9 +52,14 @@ architecture BEHAVIORAL of DRAM is
 			end if;
 		end process;
 
-		REGISTER_READ: process(RE, ADDR)			-- Asynchronous
+		-- Process for handling asynchronous read operations
+		REGISTER_READ: process(RST, RE, ADDR)
 		begin
-			if RE = '1' then
+			-- Reset the output to zero when RST is low
+			if RST = '0' then
+				DOUT <= (others => '0');
+			-- Read data from DRAM when RE is high
+			elsif RE = '1' then
 				DOUT <= DRAM_mem(to_integer(unsigned(ADDR)));
 			end if;
 		end process;

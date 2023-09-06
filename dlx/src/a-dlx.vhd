@@ -1,7 +1,8 @@
 ----------------------------------------------------------------------------------------------------
 -- Description: This is the top-level module for the DLX architecture.
+--
 -- Author:	Riccardo Cuccu
--- Date:	2023/09/01
+-- Date:	2023/09/05
 ----------------------------------------------------------------------------------------------------
 
 library ieee;
@@ -59,6 +60,8 @@ architecture DLX_RTL of DLX is
 				RegIMM_LATCH_EN		: out std_logic;		-- Immediate Register Latch Enable
 
 				-- EX Control Signals
+				MUXA_PRE_SEL		: out std_logic;		-- MUX-A Pre Sel
+				MUXB_PRE_SEL		: out std_logic;		-- MUX-B Pre Sel
 				MUXA_SEL		: out std_logic;		-- MUX-A Sel
 				MUXB_SEL		: out std_logic;		-- MUX-B Sel
 				ALU_OUTREG_EN		: out std_logic;		-- ALU Output Register Enable
@@ -73,6 +76,7 @@ architecture DLX_RTL of DLX is
 				DRAM_WE			: out std_logic;		-- Data RAM Write Enable
 				LMD_LATCH_EN		: out std_logic;		-- LMD Register Latch Enable
 				JUMP_EN			: out std_logic;		-- JUMP Enable Signal for PC input MUX
+				JUMP_COND		: out std_logic;		-- JUMP Condition
 				PC_LATCH_EN		: out std_logic;		-- Program Counte Latch Enable
 
 				-- WB Control signals
@@ -103,6 +107,8 @@ architecture DLX_RTL of DLX is
 				RegIMM_LATCH_EN		: in std_logic;			-- Immediate Register Latch Enable
 
 				-- EX Control Signals
+				MUXA_PRE_SEL		: in std_logic;			-- MUX-A Pre Sel
+				MUXB_PRE_SEL		: in std_logic;			-- MUX-B Pre Sel
 				MUXA_SEL		: in std_logic;			-- MUX-A Sel
 				MUXB_SEL		: in std_logic;			-- MUX-B Sel
 				ALU_OUTREG_EN		: in std_logic;			-- ALU Output Register Enable
@@ -117,6 +123,7 @@ architecture DLX_RTL of DLX is
 				DRAM_WE			: in std_logic;			-- Data RAM Write Enable
 				LMD_LATCH_EN		: in std_logic;			-- LMD Register Latch Enable
 				JUMP_EN			: in std_logic;			-- JUMP Enable Signal for PC input MUX
+				JUMP_COND		: in std_logic;			-- JUMP Condition
 				PC_LATCH_EN		: in std_logic;			-- Program Counte Latch Enable
 
 				-- WB Control signals
@@ -162,20 +169,28 @@ architecture DLX_RTL of DLX is
 	-- Control Unit Bus signals
 	signal IR_LATCH_EN_i : std_logic;
 	signal NPC_LATCH_EN_i : std_logic;
+
 	signal RegA_LATCH_EN_i : std_logic;
 	signal RegB_LATCH_EN_i : std_logic;
 	signal RegIMM_LATCH_EN_i : std_logic;
-	signal EQ_COND_i : std_logic;
-	signal JUMP_EN_i : std_logic;
-	signal ALU_OPCODE_i : aluOp;
-	--signal ALU_OPCODE_i : std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0);
+
+	signal MUXA_PRE_SEL_i : std_logic;
+	signal MUXB_PRE_SEL_i : std_logic;
 	signal MUXA_SEL_i : std_logic;
 	signal MUXB_SEL_i : std_logic;
 	signal ALU_OUTREG_EN_i : std_logic;
+	signal EQ_COND_i : std_logic;
+
+	signal ALU_OPCODE_i : aluOp;
+	--signal ALU_OPCODE_i : std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0);
+
 	signal DRAM_RE_i : std_logic;
 	signal DRAM_WE_i : std_logic;
 	signal LMD_LATCH_EN_i : std_logic;
+	signal JUMP_EN_i : std_logic;
+	signal JUMP_COND_i : std_logic;
 	signal PC_LATCH_EN_i : std_logic;
+
 	signal WB_MUX_SEL_i : std_logic;
 	signal RF_WE_i : std_logic;
 
@@ -244,6 +259,8 @@ architecture DLX_RTL of DLX is
 					RegA_LATCH_EN	=> RegA_LATCH_EN_i,
 					RegB_LATCH_EN	=> RegB_LATCH_EN_i,
 					RegIMM_LATCH_EN	=> RegIMM_LATCH_EN_i,
+					MUXA_PRE_SEL	=> MUXA_PRE_SEL_i,
+					MUXB_PRE_SEL	=> MUXB_PRE_SEL_i,
 					MUXA_SEL	=> MUXA_SEL_i,
 					MUXB_SEL	=> MUXB_SEL_i,
 					ALU_OUTREG_EN	=> ALU_OUTREG_EN_i,
@@ -253,6 +270,7 @@ architecture DLX_RTL of DLX is
 					DRAM_WE		=> DRAM_WE_i,
 					LMD_LATCH_EN	=> LMD_LATCH_EN_i,
 					JUMP_EN		=> JUMP_EN_i,
+					JUMP_COND	=> JUMP_COND_i,
 					PC_LATCH_EN	=> PC_LATCH_EN_i,
 					WB_MUX_SEL	=> WB_MUX_SEL_i,
 					RF_WE		=> RF_WE_i);
@@ -267,6 +285,8 @@ architecture DLX_RTL of DLX is
 					RegA_LATCH_EN	=> RegA_LATCH_EN_i,
 					RegB_LATCH_EN	=> RegB_LATCH_EN_i,
 					RegIMM_LATCH_EN	=> RegIMM_LATCH_EN_i,
+					MUXA_PRE_SEL	=> MUXA_PRE_SEL_i,
+					MUXB_PRE_SEL	=> MUXB_PRE_SEL_i,					
 					MUXA_SEL	=> MUXA_SEL_i,
 					MUXB_SEL	=> MUXB_SEL_i,
 					ALU_OUTREG_EN	=> ALU_OUTREG_EN_i,
@@ -276,6 +296,7 @@ architecture DLX_RTL of DLX is
 					DRAM_WE		=> DRAM_WE_i,
 					LMD_LATCH_EN	=> LMD_LATCH_EN_i,
 					JUMP_EN		=> JUMP_EN_i,
+					JUMP_COND	=> JUMP_COND_i,
 					PC_LATCH_EN	=> PC_LATCH_EN_i,
 					WB_MUX_SEL	=> WB_MUX_SEL_i,
 					RF_WE		=> RF_WE_i,

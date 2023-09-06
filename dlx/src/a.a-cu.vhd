@@ -5,7 +5,7 @@
 --		These control signals are generated based on opcode and function fields.
 --
 -- Author:	Riccardo Cuccu
--- Date:	2023/09/04
+-- Date:	2023/09/05
 --------------------------------------------------------------------------------
 
 library ieee;
@@ -41,6 +41,8 @@ entity DLX_CU is
 			RegIMM_LATCH_EN		: out std_logic;	-- Immediate Register Latch Enable
 
 			-- EX Control Signals
+			MUXA_PRE_SEL		: out std_logic;	-- MUX-A Pre Sel
+			MUXB_PRE_SEL		: out std_logic;	-- MUX-B Pre Sel
 			MUXA_SEL		: out std_logic;	-- MUX-A Sel
 			MUXB_SEL		: out std_logic;	-- MUX-B Sel
 			ALU_OUTREG_EN		: out std_logic;	-- ALU Output Register Enable
@@ -55,6 +57,7 @@ entity DLX_CU is
 			DRAM_WE			: out std_logic;	-- Data RAM Write Enable
 			LMD_LATCH_EN		: out std_logic;	-- LMD Register Latch Enable
 			JUMP_EN			: out std_logic;	-- JUMP Enable Signal for PC input MUX
+			JUMP_COND		: out std_logic;	-- JUMP Condition
 			PC_LATCH_EN		: out std_logic;	-- Program Counter Latch Enable
 
 			-- WB Control signals
@@ -71,73 +74,73 @@ architecture DLX_CU_HW of DLX_CU is
 	-- look-up table
 	signal cw_mem : mem_array := (	
 
-					"11" & "110" & "0010" & "00001" & "11",		-- x"00" RTYPE	*
-					"00" & "000" & "0000" & "00000" & "00",		-- x"01"
-					"11" & "001" & "1111" & "00011" & "00",		-- x"02" J	*
-					"11" & "001" & "0000" & "00011" & "00",		-- x"03" JAL
-					"11" & "101" & "0101" & "00010" & "00",		-- x"04" BEQZ	*
-					"11" & "101" & "0000" & "00001" & "00",		-- x"05" BNEZ
-					"00" & "000" & "0000" & "00000" & "00",		-- x"06" BFPT	/
-					"00" & "000" & "0000" & "00000" & "00",		-- x"07" BFPF	/
-					"11" & "101" & "0110" & "00001" & "11",		-- x"08" ADDI	*
-					"00" & "000" & "0000" & "00000" & "00",		-- x"09" ADDUI	/
-					"11" & "101" & "0000" & "00001" & "00",		-- x"0A" SUBI
-					"00" & "000" & "0000" & "00000" & "00",		-- x"0B" SUBUI	/
-					"11" & "101" & "0000" & "00001" & "00",		-- x"0C" ANDI
-					"11" & "101" & "0000" & "00001" & "00",		-- x"0D" ORI
-					"11" & "101" & "0000" & "00001" & "00",		-- x"0E" XORI
-					"00" & "000" & "0000" & "00000" & "00",		-- x"0F" LHI	/
+					"11" & "110" & "000010" & "000001" & "11",		-- x"00" RTYPE	*
+					"00" & "000" & "000000" & "000000" & "00",		-- x"01"
+					"11" & "001" & "111110" & "000011" & "10",		-- x"02" J	*
+					"11" & "001" & "111110" & "000011" & "11",		-- x"03" JAL	*
+					"11" & "101" & "111110" & "000101" & "10",		-- x"04" BEQZ	*
+					"11" & "101" & "111111" & "000101" & "10",		-- x"05" BNEZ	*
+					"00" & "000" & "000000" & "000000" & "00",		-- x"06" BFPT	/
+					"00" & "000" & "000000" & "000000" & "00",		-- x"07" BFPF	/
+					"11" & "101" & "010110" & "000001" & "11",		-- x"08" ADDI	*
+					"00" & "000" & "000000" & "000000" & "00",		-- x"09" ADDUI	/
+					"11" & "101" & "010110" & "000001" & "11",		-- x"0A" SUBI	*
+					"00" & "000" & "000000" & "000000" & "00",		-- x"0B" SUBUI	/
+					"11" & "101" & "010110" & "000001" & "11",		-- x"0C" ANDI	*
+					"11" & "101" & "010110" & "000001" & "11",		-- x"0D" ORI	*
+					"11" & "101" & "010110" & "000001" & "11",		-- x"0E" XORI	*
+					"00" & "000" & "000000" & "000000" & "00",		-- x"0F" LHI	/
 
-					"00" & "000" & "0000" & "00000" & "00",		-- x"10" RFE	/
-					"00" & "000" & "0000" & "00000" & "00",		-- x"11" TRAP	/
-					"00" & "000" & "0000" & "00000" & "00",		-- x"12" JR	/
-					"00" & "000" & "0000" & "00000" & "00",		-- x"13" JALR	/
-					"11" & "101" & "0000" & "00001" & "00",		-- x"14" SLLI
-					"11" & "000" & "0000" & "00001" & "00",		-- x"15" NOP
-					"11" & "101" & "0000" & "00001" & "00",		-- x"16" SRLI
-					"00" & "000" & "0000" & "00000" & "00",		-- x"17" SRAI	/
-					"00" & "000" & "0000" & "00000" & "00",		-- x"18" SEQI	/
-					"11" & "101" & "0000" & "00001" & "00",		-- x"19" SNEI
-					"00" & "000" & "0000" & "00000" & "00",		-- x"1A" SLTI	/
-					"00" & "000" & "0000" & "00000" & "00",		-- x"1B" SGTI	/
-					"11" & "101" & "0000" & "00001" & "00",		-- x"1C" SLEI
-					"11" & "101" & "0000" & "00001" & "00",		-- x"1D" SGEI
-					"00" & "000" & "0000" & "00000" & "00",		-- x"1E"
-					"00" & "000" & "0000" & "00000" & "00",		-- x"1F"
+					"00" & "000" & "000000" & "000000" & "00",		-- x"10" RFE	/
+					"00" & "000" & "000000" & "000000" & "00",		-- x"11" TRAP	/
+					"00" & "000" & "000000" & "000000" & "00",		-- x"12" JR	/
+					"00" & "000" & "000000" & "000000" & "00",		-- x"13" JALR	/
+					"11" & "101" & "010110" & "000001" & "11",		-- x"14" SLLI	*
+					"11" & "000" & "000000" & "000001" & "10",		-- x"15" NOP	*
+					"11" & "101" & "010110" & "000001" & "11",		-- x"16" SRLI	*
+					"00" & "000" & "000000" & "000000" & "00",		-- x"17" SRAI	/
+					"00" & "000" & "000000" & "000000" & "00",		-- x"18" SEQI	/
+					"11" & "101" & "010110" & "000001" & "11",		-- x"19" SNEI	*
+					"00" & "000" & "000000" & "000000" & "00",		-- x"1A" SLTI	/
+					"00" & "000" & "000000" & "000000" & "00",		-- x"1B" SGTI	/
+					"11" & "101" & "010110" & "000001" & "11",		-- x"1C" SLEI	*
+					"11" & "101" & "010110" & "000001" & "11",		-- x"1D" SGEI	*
+					"00" & "000" & "000000" & "000000" & "00",		-- x"1E"
+					"00" & "000" & "000000" & "000000" & "00",		-- x"1F"
 
-					"00" & "000" & "0000" & "00000" & "00",		-- x"20" LB	/
-					"00" & "000" & "0000" & "00000" & "00",		-- x"21" LH	/
-					"00" & "000" & "0000" & "00000" & "00",		-- x"22"
-					"11" & "101" & "0000" & "00001" & "00",		-- x"23" LW
-					"00" & "000" & "0000" & "00000" & "00",		-- x"24" LBU	/
-					"00" & "000" & "0000" & "00000" & "00",		-- x"25" LHU	/
-					"00" & "000" & "0000" & "00000" & "00",		-- x"26" LF	/
-					"00" & "000" & "0000" & "00000" & "00",		-- x"27" LD	/
-					"00" & "000" & "0000" & "00000" & "00",		-- x"28" SB	/
-					"00" & "000" & "0000" & "00000" & "00",		-- x"29" SH	/
-					"00" & "000" & "0000" & "00000" & "00",		-- x"2A"
-					"11" & "101" & "0000" & "00001" & "00",		-- x"2B" SW
-					"00" & "000" & "0000" & "00000" & "00",		-- x"2C"
-					"00" & "000" & "0000" & "00000" & "00",		-- x"2D"
-					"00" & "000" & "0000" & "00000" & "00",		-- x"2E" SF	/
-					"00" & "000" & "0000" & "00000" & "00",		-- x"2F" SD	/
+					"00" & "000" & "000000" & "000000" & "00",		-- x"20" LB	/
+					"00" & "000" & "000000" & "000000" & "00",		-- x"21" LH	/
+					"00" & "000" & "000000" & "000000" & "00",		-- x"22"
+					"11" & "101" & "010110" & "101001" & "01",		-- x"23" LW	*
+					"00" & "000" & "000000" & "000000" & "00",		-- x"24" LBU	/
+					"00" & "000" & "000000" & "000000" & "00",		-- x"25" LHU	/
+					"00" & "000" & "000000" & "000000" & "00",		-- x"26" LF	/
+					"00" & "000" & "000000" & "000000" & "00",		-- x"27" LD	/
+					"00" & "000" & "000000" & "000000" & "00",		-- x"28" SB	/
+					"00" & "000" & "000000" & "000000" & "00",		-- x"29" SH	/
+					"00" & "000" & "000000" & "000000" & "00",		-- x"2A"
+					"11" & "101" & "010110" & "010001" & "10",		-- x"2B" SW	*
+					"00" & "000" & "000000" & "000000" & "00",		-- x"2C"
+					"00" & "000" & "000000" & "000000" & "00",		-- x"2D"
+					"00" & "000" & "000000" & "000000" & "00",		-- x"2E" SF	/
+					"00" & "000" & "000000" & "000000" & "00",		-- x"2F" SD	/
 
-					"00" & "000" & "0000" & "00000" & "00",		-- x"30"
-					"00" & "000" & "0000" & "00000" & "00",		-- x"31"
-					"00" & "000" & "0000" & "00000" & "00",		-- x"32"
-					"00" & "000" & "0000" & "00000" & "00",		-- x"33"
-					"00" & "000" & "0000" & "00000" & "00",		-- x"34"
-					"00" & "000" & "0000" & "00000" & "00",		-- x"35"
-					"00" & "000" & "0000" & "00000" & "00",		-- x"36"
-					"00" & "000" & "0000" & "00000" & "00",		-- x"37"
-					"00" & "000" & "0000" & "00000" & "00",		-- x"38" ITLB	/
-					"00" & "000" & "0000" & "00000" & "00",		-- x"39"
-					"00" & "000" & "0000" & "00000" & "00",		-- x"3A" SLTUI	/
-					"00" & "000" & "0000" & "00000" & "00",		-- x"3B" SGTUI	/
-					"00" & "000" & "0000" & "00000" & "00",		-- x"3C" SLEUI	/
-					"00" & "000" & "0000" & "00000" & "00",		-- x"3D" SGEUI	/
-					"00" & "000" & "0000" & "00000" & "00",		-- x"3E"
-					"00" & "000" & "0000" & "00000" & "00");	-- x"3F"
+					"00" & "000" & "000000" & "000000" & "00",		-- x"30"
+					"00" & "000" & "000000" & "000000" & "00",		-- x"31"
+					"00" & "000" & "000000" & "000000" & "00",		-- x"32"
+					"00" & "000" & "000000" & "000000" & "00",		-- x"33"
+					"00" & "000" & "000000" & "000000" & "00",		-- x"34"
+					"00" & "000" & "000000" & "000000" & "00",		-- x"35"
+					"00" & "000" & "000000" & "000000" & "00",		-- x"36"
+					"00" & "000" & "000000" & "000000" & "00",		-- x"37"
+					"00" & "000" & "000000" & "000000" & "00",		-- x"38" ITLB	/
+					"00" & "000" & "000000" & "000000" & "00",		-- x"39"
+					"00" & "000" & "000000" & "000000" & "00",		-- x"3A" SLTUI	/
+					"00" & "000" & "000000" & "000000" & "00",		-- x"3B" SGTUI	/
+					"00" & "000" & "000000" & "000000" & "00",		-- x"3C" SLEUI	/
+					"00" & "000" & "000000" & "000000" & "00",		-- x"3D" SGEUI	/
+					"00" & "000" & "000000" & "000000" & "00",		-- x"3E"
+					"00" & "000" & "000000" & "000000" & "00");		-- x"3F"
 
 	--signal IR_opcode : std_logic_vector(OP_CODE_SIZE - 1 downto 0);		-- OpCode part of IR
 	--signal IR_func   : std_logic_vector(FUNC_SIZE - 1 downto 0);			-- Func part of IR when Rtype
@@ -147,11 +150,11 @@ architecture DLX_CU_HW of DLX_CU is
 	--signal cw        : std_logic_vector(CW_SIZE - 1 downto 0);			-- full control word read from cw_mem
 
 	-- control words
-	signal cw1 : std_logic_vector(CW_SIZE - 1 downto 0);				-- fiRST stage
-	signal cw2 : std_logic_vector(CW_SIZE - 1 - 2 downto 0);			-- second stage
-	signal cw3 : std_logic_vector(CW_SIZE - 1 - 5 downto 0);			-- third stage
-	signal cw4 : std_logic_vector(CW_SIZE - 1 - 9 downto 0);			-- fourth stage
-	signal cw5 : std_logic_vector(CW_SIZE - 1 - 13 downto 0);			-- fifth stage
+	signal cw1 : std_logic_vector(CW_SIZE - 1 downto 0);				-- first stage		/ 2 signals
+	signal cw2 : std_logic_vector(CW_SIZE - 1 - 2 downto 0);			-- second stage		/ 3 signals
+	signal cw3 : std_logic_vector(CW_SIZE - 1 - 5 downto 0);			-- third stage		/ 6 signals
+	signal cw4 : std_logic_vector(CW_SIZE - 1 - 11 downto 0);			-- fourth stage		/ 6 signals
+	signal cw5 : std_logic_vector(CW_SIZE - 1 - 17 downto 0);			-- fifth stage		/ 2 signals
 
 	signal aluOpcode_i : aluOp := OP_NOP;	-- ALUOP defined in package
 	signal aluOpcode1  : aluOp := OP_NOP;
@@ -191,21 +194,24 @@ begin
 	RegIMM_LATCH_EN	<= cw2(CW_SIZE - 5);
 
 	-- Generate EX stage control signals
-	MUXA_SEL	<= cw3(CW_SIZE - 6);
-	MUXB_SEL	<= cw3(CW_SIZE - 7);
-	ALU_OUTREG_EN	<= cw3(CW_SIZE - 8);
-	EQ_COND		<= cw3(CW_SIZE - 9);
+	MUXA_PRE_SEL	<= cw3(CW_SIZE - 6);
+	MUXB_PRE_SEL	<= cw3(CW_SIZE - 7);
+	MUXA_SEL	<= cw3(CW_SIZE - 8);
+	MUXB_SEL	<= cw3(CW_SIZE - 9);
+	ALU_OUTREG_EN	<= cw3(CW_SIZE - 10);
+	EQ_COND		<= cw3(CW_SIZE - 11);
 
 	-- Generate MEM stage control signals
-	DRAM_RE		<= cw4(CW_SIZE - 10);
-	DRAM_WE		<= cw4(CW_SIZE - 11);
-	LMD_LATCH_EN	<= cw4(CW_SIZE - 12);
-	JUMP_EN		<= cw4(CW_SIZE - 13);
-	PC_LATCH_EN	<= cw4(CW_SIZE - 14);
+	DRAM_RE		<= cw4(CW_SIZE - 12);
+	DRAM_WE		<= cw4(CW_SIZE - 13);
+	LMD_LATCH_EN	<= cw4(CW_SIZE - 14);
+	JUMP_EN		<= cw4(CW_SIZE - 15);
+	JUMP_COND	<= cw4(CW_SIZE - 16);
+	PC_LATCH_EN	<= cw4(CW_SIZE - 17);
 
 	-- Generate WB stage control signals
-	WB_MUX_SEL	<= cw5(CW_SIZE - 15);
-	RF_WE		<= cw5(CW_SIZE - 16);
+	WB_MUX_SEL	<= cw5(CW_SIZE - 18);
+	RF_WE		<= cw5(CW_SIZE - 19);
 
 
 	-- Process for generating ALU operations and labels
@@ -354,11 +360,11 @@ begin
 
 		elsif CLK'event and CLK = '1' then	-- Rising Clock Edge
 
-			cw1 <= cw_mem(conv_integer(IR_opcode));
-			cw2 <= cw1(CW_SIZE - 1 - 2 downto 0);
-			cw3 <= cw2(CW_SIZE - 1 - 5 downto 0);
-			cw4 <= cw3(CW_SIZE - 1 - 9 downto 0);
-			cw5 <= cw4(CW_SIZE - 1 - 13 downto 0);
+			cw1 <= cw_mem(conv_integer(IR_opcode));			-- first stage
+			cw2 <= cw1(CW_SIZE - 1 - 2 downto 0);			-- second stage
+			cw3 <= cw2(CW_SIZE - 1 - 5 downto 0);			-- third stage
+			cw4 <= cw3(CW_SIZE - 1 - 11 downto 0);			-- fourth stage
+			cw5 <= cw4(CW_SIZE - 1 - 17 downto 0);			-- fifth stage
 
 			aluOpcode1 <= aluOpcode_i;
 			aluOpcode2 <= aluOpcode1;
