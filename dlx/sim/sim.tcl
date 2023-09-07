@@ -59,7 +59,7 @@ vcom -quiet ../src/a.a-cu.vhd
 ## Datapath (a.b)
 vcom -quiet ../src/a.b-datapath.vhd
 vcom -quiet ../src/a.b.a-registerfile.vhd
-#vcom -quiet ../src/a.b.c-forwardingunit.vhd
+vcom -quiet ../src/a.b.c-forwardingunit.vhd
 vcom -quiet ../src/a.b.e-dram.vhd
 vcom -quiet ../src/a.b.f-iram.vhd
 #vcom -quiet ../src/a.b.g-pc.vhd
@@ -175,17 +175,14 @@ if {$tb_waves eq 1} {
 		sim:/tb_dlx/U1/CU_I/IR_opcode \
 		sim:/tb_dlx/U1/CU_I/IR_func
 
-		add wave -position insertpoint \
-		sim:/tb_dlx/U1/CU_I/IR_opcode_LABEL_i \
-		sim:/tb_dlx/U1/CU_I/IR_func_LABEL_i
-
 		add wave -divider {ALU} -position insertpoint \
-		sim:/tb_dlx/U1/CU_I/aluOpcode_i \
 		sim:/tb_dlx/U1/CU_I/aluOpcode1 \
 		sim:/tb_dlx/U1/CU_I/aluOpcode2 \
+		sim:/tb_dlx/U1/CU_I/aluOpcode3 \
 		sim:/tb_dlx/U1/CU_I/ALU_OPCODE
 
 		add wave -divider {CONTROL WORDS} -position insertpoint -radix binary \
+		sim:/tb_dlx/U1/CU_I/cw1 \
 		sim:/tb_dlx/U1/CU_I/cw2 \
 		sim:/tb_dlx/U1/CU_I/cw3 \
 		sim:/tb_dlx/U1/CU_I/cw4 \
@@ -193,16 +190,16 @@ if {$tb_waves eq 1} {
 
 		add wave -divider {OUTPUTS - FETCH} -position insertpoint \
 		sim:/tb_dlx/U1/CU_I/IR_LATCH_EN \
+		sim:/tb_dlx/U1/CU_I/PC_LATCH_EN \
 		sim:/tb_dlx/U1/CU_I/NPC_LATCH_EN
 
 		add wave -divider {OUTPUTS - DECODE} -position insertpoint \
+		sim:/tb_dlx/U1/CU_I/RF_WE \
 		sim:/tb_dlx/U1/CU_I/RegA_LATCH_EN \
 		sim:/tb_dlx/U1/CU_I/RegB_LATCH_EN \
 		sim:/tb_dlx/U1/CU_I/RegIMM_LATCH_EN
 
 		add wave -divider {OUTPUTS - EXECUTE} -position insertpoint \
-		sim:/tb_dlx/U1/CU_I/MUXA_PRE_SEL \
-		sim:/tb_dlx/U1/CU_I/MUXB_PRE_SEL \
 		sim:/tb_dlx/U1/CU_I/MUXA_SEL \
 		sim:/tb_dlx/U1/CU_I/MUXB_SEL \
 		sim:/tb_dlx/U1/CU_I/ALU_OUTREG_EN \
@@ -213,12 +210,10 @@ if {$tb_waves eq 1} {
 		sim:/tb_dlx/U1/CU_I/DRAM_WE \
 		sim:/tb_dlx/U1/CU_I/LMD_LATCH_EN \
 		sim:/tb_dlx/U1/CU_I/JUMP_EN \
-		sim:/tb_dlx/U1/CU_I/JUMP_COND \
-		sim:/tb_dlx/U1/CU_I/PC_LATCH_EN
+		sim:/tb_dlx/U1/CU_I/JUMP_COND
 
 		add wave -divider {OUTPUTS - WRITE BACK} -position insertpoint \
-		sim:/tb_dlx/U1/CU_I/WB_MUX_SEL \
-		sim:/tb_dlx/U1/CU_I/RF_WE
+		sim:/tb_dlx/U1/CU_I/WB_MUX_SEL
 
 	}
 
@@ -237,6 +232,7 @@ if {$tb_waves eq 1} {
 
 		add wave -divider {IF Control Signals} -position insertpoint \
 		sim:/tb_dlx/U1/DATAPATH_I/IR_LATCH_EN \
+		sim:/tb_dlx/U1/DATAPATH_I/PC_LATCH_EN \
 		sim:/tb_dlx/U1/DATAPATH_I/NPC_LATCH_EN
 
 		add wave -divider {STAGE} -position insertpoint -radix binary \
@@ -300,18 +296,20 @@ if {$tb_waves eq 1} {
 
 		add wave -divider {REGISTER_ADDRESSER} -position insertpoint \
 		sim:/tb_dlx/U1/DATAPATH_I/IF_ID_IR \
+		sim:/tb_dlx/U1/DATAPATH_I/REGISTER_ADDRESSER/IR_OPC \
 		sim:/tb_dlx/U1/DATAPATH_I/RS1 \
 		sim:/tb_dlx/U1/DATAPATH_I/RS2 \
-		sim:/tb_dlx/U1/DATAPATH_I/RD \
+		sim:/tb_dlx/U1/DATAPATH_I/RD
 
-		add wave -divider {REGISTER_FILE} -position insertpoint \
-		sim:/tb_dlx/U1/DATAPATH_I/RF_WE \
+		add wave -divider {REGISTER_FILE} -position insertpoint -radix decimal \
+		sim:/tb_dlx/U1/DATAPATH_I/MEM_WB_RF_WE \
 		sim:/tb_dlx/U1/DATAPATH_I/RS1 \
 		sim:/tb_dlx/U1/DATAPATH_I/RS2 \
 		sim:/tb_dlx/U1/DATAPATH_I/MEM_WB_RD \
 		sim:/tb_dlx/U1/DATAPATH_I/WB_MUX_OUT \
 		sim:/tb_dlx/U1/DATAPATH_I/RF_OUT1 \
-		sim:/tb_dlx/U1/DATAPATH_I/RF_OUT2
+		sim:/tb_dlx/U1/DATAPATH_I/RF_OUT2 \
+		sim:/tb_dlx/U1/DATAPATH_I/REGISTER_FILE/REG
 
 		add wave -divider {SIGN_EXTEND} -position insertpoint \
 		sim:/tb_dlx/U1/DATAPATH_I/IF_ID_IR \
@@ -324,6 +322,9 @@ if {$tb_waves eq 1} {
 
 		add wave -divider {ID-EX Pipeline} -position insertpoint \
 		sim:/tb_dlx/U1/DATAPATH_I/ID_EX_NPC \
+		sim:/tb_dlx/U1/DATAPATH_I/ID_EX_RF_WE \
+		sim:/tb_dlx/U1/DATAPATH_I/ID_EX_RS1 \
+		sim:/tb_dlx/U1/DATAPATH_I/ID_EX_RS2 \
 		sim:/tb_dlx/U1/DATAPATH_I/ID_EX_RD \
 		sim:/tb_dlx/U1/DATAPATH_I/ID_EX_RF_DATAIN \
 		sim:/tb_dlx/U1/DATAPATH_I/ID_EX_RF_OUT1 \
@@ -346,8 +347,6 @@ if {$tb_waves eq 1} {
 		}
 
 		add wave -divider {EX CONTROL SIGNALS} -position insertpoint \
-		sim:/tb_dlx/U1/DATAPATH_I/MUXA_PRE_SEL \
-		sim:/tb_dlx/U1/DATAPATH_I/MUXB_PRE_SEL \
 		sim:/tb_dlx/U1/DATAPATH_I/MUXA_SEL \
 		sim:/tb_dlx/U1/DATAPATH_I/MUXB_SEL \
 		sim:/tb_dlx/U1/DATAPATH_I/ALU_OUTREG_EN \
@@ -357,27 +356,39 @@ if {$tb_waves eq 1} {
 		add wave -divider {STAGE} -position insertpoint \
 		sim:/tb_dlx/U1/DATAPATH_I/EX_ALU_LABEL
 
-		add wave -divider {ALU_PRE_MUX1} -position insertpoint \
-		sim:/tb_dlx/U1/DATAPATH_I/ID_EX_RF_DATAIN \
-		sim:/tb_dlx/U1/DATAPATH_I/ID_EX_NPC \
-		sim:/tb_dlx/U1/DATAPATH_I/MUXA_PRE_SEL \
+		add wave -divider {FORWARDING UNIT} -position insertpoint \
+		sim:/tb_dlx/U1/DATAPATH_I/ID_EX_RS1 \
+		sim:/tb_dlx/U1/DATAPATH_I/ID_EX_RS2 \
+		sim:/tb_dlx/U1/DATAPATH_I/EX_MEM_RD \
+		sim:/tb_dlx/U1/DATAPATH_I/MEM_WB_RD \
+		sim:/tb_dlx/U1/DATAPATH_I/EX_MEM_RF_WE \
+		sim:/tb_dlx/U1/DATAPATH_I/MEM_WB_RF_WE \
+		sim:/tb_dlx/U1/DATAPATH_I/FORWARD_A \
+		sim:/tb_dlx/U1/DATAPATH_I/FORWARD_B
+
+		add wave -divider {ALU_PRE_MUX1} -position insertpoint -radix decimal \
+		sim:/tb_dlx/U1/DATAPATH_I/ID_EX_RF_OUT1 \
+		sim:/tb_dlx/U1/DATAPATH_I/EX_MEM_ALU_OUT \
+		sim:/tb_dlx/U1/DATAPATH_I/WB_MUX_OUT \
+		sim:/tb_dlx/U1/DATAPATH_I/FORWARD_A \
 		sim:/tb_dlx/U1/DATAPATH_I/ALU_PREOP1
 
-		add wave -divider {ALU_MUX1} -position insertpoint \
-		sim:/tb_dlx/U1/DATAPATH_I/ID_EX_RF_OUT1 \
+		add wave -divider {ALU_MUX1} -position insertpoint -radix decimal \
 		sim:/tb_dlx/U1/DATAPATH_I/ALU_PREOP1 \
+		sim:/tb_dlx/U1/DATAPATH_I/ID_EX_NPC \
 		sim:/tb_dlx/U1/DATAPATH_I/MUXA_SEL \
 		sim:/tb_dlx/U1/DATAPATH_I/ALU_OP1
 
-		add wave -divider {ALU_PRE_MUX2} -position insertpoint \
-		sim:/tb_dlx/U1/DATAPATH_I/ID_EX_RF_DATAIN \
-		sim:/tb_dlx/U1/DATAPATH_I/ID_EX_IMM_NEXT \
-		sim:/tb_dlx/U1/DATAPATH_I/MUXB_PRE_SEL \
+		add wave -divider {ALU_PRE_MUX2} -position insertpoint -radix decimal \
+		sim:/tb_dlx/U1/DATAPATH_I/ID_EX_RF_OUT2 \
+		sim:/tb_dlx/U1/DATAPATH_I/EX_MEM_ALU_OUT \
+		sim:/tb_dlx/U1/DATAPATH_I/WB_MUX_OUT \
+		sim:/tb_dlx/U1/DATAPATH_I/FORWARD_B \
 		sim:/tb_dlx/U1/DATAPATH_I/ALU_PREOP2
 
-		add wave -divider {ALU_MUX2} -position insertpoint \
-		sim:/tb_dlx/U1/DATAPATH_I/ID_EX_RF_OUT2 \
+		add wave -divider {ALU_MUX2} -position insertpoint -radix decimal \
 		sim:/tb_dlx/U1/DATAPATH_I/ALU_PREOP2 \
+		sim:/tb_dlx/U1/DATAPATH_I/ID_EX_IMM \
 		sim:/tb_dlx/U1/DATAPATH_I/MUXB_SEL \
 		sim:/tb_dlx/U1/DATAPATH_I/ALU_OP2
 
@@ -396,6 +407,9 @@ if {$tb_waves eq 1} {
 
 		add wave -divider {ID-EX Pipeline} -position insertpoint \
 		sim:/tb_dlx/U1/DATAPATH_I/ID_EX_NPC \
+		sim:/tb_dlx/U1/DATAPATH_I/ID_EX_RF_WE \
+		sim:/tb_dlx/U1/DATAPATH_I/ID_EX_RS1 \
+		sim:/tb_dlx/U1/DATAPATH_I/ID_EX_RS2 \
 		sim:/tb_dlx/U1/DATAPATH_I/ID_EX_RD \
 		sim:/tb_dlx/U1/DATAPATH_I/ID_EX_RF_DATAIN \
 		sim:/tb_dlx/U1/DATAPATH_I/ID_EX_RF_OUT1 \
@@ -405,6 +419,7 @@ if {$tb_waves eq 1} {
 		add wave -divider {EX-MEM Pipeline} -position insertpoint \
 		sim:/tb_dlx/U1/DATAPATH_I/EX_MEM_BRANCH_DETECT \
 		sim:/tb_dlx/U1/DATAPATH_I/EX_MEM_ALU_OUT \
+		sim:/tb_dlx/U1/DATAPATH_I/EX_MEM_RF_WE \
 		sim:/tb_dlx/U1/DATAPATH_I/EX_MEM_RF_DATAIN \
 		sim:/tb_dlx/U1/DATAPATH_I/EX_MEM_RD
 
@@ -426,8 +441,7 @@ if {$tb_waves eq 1} {
 		sim:/tb_dlx/U1/DATAPATH_I/DRAM_WE \
 		sim:/tb_dlx/U1/DATAPATH_I/LMD_LATCH_EN\
 		sim:/tb_dlx/U1/DATAPATH_I/JUMP_EN \
-		sim:/tb_dlx/U1/DATAPATH_I/JUMP_COND \
-		sim:/tb_dlx/U1/DATAPATH_I/PC_LATCH_EN
+		sim:/tb_dlx/U1/DATAPATH_I/JUMP_COND
 
 		add wave -divider {STAGE} -position insertpoint \
 		sim:/tb_dlx/U1/DATAPATH_I/MEM_ALU_LABEL
@@ -453,12 +467,14 @@ if {$tb_waves eq 1} {
 		add wave -divider {EX-MEM Pipeline} -position insertpoint \
 		sim:/tb_dlx/U1/DATAPATH_I/EX_MEM_BRANCH_DETECT \
 		sim:/tb_dlx/U1/DATAPATH_I/EX_MEM_ALU_OUT \
+		sim:/tb_dlx/U1/DATAPATH_I/EX_MEM_RF_WE \
 		sim:/tb_dlx/U1/DATAPATH_I/EX_MEM_RF_DATAIN \
 		sim:/tb_dlx/U1/DATAPATH_I/EX_MEM_RD
 
 		add wave -divider {MEM-WB Pipeline} -position insertpoint \
 		sim:/tb_dlx/U1/DATAPATH_I/MEM_WB_DRAM_OUT \
 		sim:/tb_dlx/U1/DATAPATH_I/MEM_WB_ALU_OUT \
+		sim:/tb_dlx/U1/DATAPATH_I/MEM_WB_RF_WE \
 		sim:/tb_dlx/U1/DATAPATH_I/MEM_WB_RD
 
 	}
@@ -475,8 +491,7 @@ if {$tb_waves eq 1} {
 		}
 
 		add wave -divider {WB CONTROL SIGNALS} -position insertpoint \
-		sim:/tb_dlx/U1/DATAPATH_I/WB_MUX_SEL \
-		sim:/tb_dlx/U1/DATAPATH_I/RF_WE
+		sim:/tb_dlx/U1/DATAPATH_I/WB_MUX_SEL
 
 		add wave -divider {STAGE} -position insertpoint \
 		sim:/tb_dlx/U1/DATAPATH_I/WB_ALU_LABEL
@@ -490,12 +505,12 @@ if {$tb_waves eq 1} {
 		add wave -divider {MEM-WB Pipeline} -position insertpoint \
 		sim:/tb_dlx/U1/DATAPATH_I/MEM_WB_DRAM_OUT \
 		sim:/tb_dlx/U1/DATAPATH_I/MEM_WB_ALU_OUT \
+		sim:/tb_dlx/U1/DATAPATH_I/MEM_WB_RF_WE \
 		sim:/tb_dlx/U1/DATAPATH_I/MEM_WB_RD
 
 	}
 
 	#add wave -divider -position insertpoint \
-	#sim:/tb_dlx/U1/CU_I/PC_LATCH_EN \
 	#sim:/tb_dlx/U1/DATAPATH_I/PC_BUS \
 	#sim:/tb_dlx/U1/DATAPATH_I/PC_OUT
 
@@ -521,10 +536,11 @@ if {$tb_waves eq 2} {
 
 	# FETCH (IF)
 
-	if {$pipe_stage eq 1} { 
+	if {$pipe_stage eq 1} {
 
 		add wave -divider {IF Control Signals} -position insertpoint \
 		sim:/tb_datapath/U1/IR_LATCH_EN \
+		sim:/tb_datapath/U1/PC_LATCH_EN \
 		sim:/tb_datapath/U1/NPC_LATCH_EN
 
 		add wave -divider {STAGE} -position insertpoint -radix binary \
@@ -565,7 +581,7 @@ if {$tb_waves eq 2} {
 
 	# DECODE (ID)
 
-	if {$pipe_stage eq 2} { 
+	if {$pipe_stage eq 2} {
 
 		add wave -divider {ID CONTROL SIGNALS} -position insertpoint \
 		sim:/tb_datapath/U1/RegA_LATCH_EN \
@@ -580,10 +596,10 @@ if {$tb_waves eq 2} {
 		sim:/tb_datapath/U1/IF_ID_IR \
 		sim:/tb_datapath/U1/RS1 \
 		sim:/tb_datapath/U1/RS2 \
-		sim:/tb_datapath/U1/RD \
+		sim:/tb_datapath/U1/RD
 
 		add wave -divider {REGISTER_FILE} -position insertpoint \
-		sim:/tb_datapath/U1/RF_WE \
+		sim:/tb_datapath/U1/MEM_WB_RF_WE \
 		sim:/tb_datapath/U1/RS1 \
 		sim:/tb_datapath/U1/RS2 \
 		sim:/tb_datapath/U1/MEM_WB_RD \
@@ -615,8 +631,6 @@ if {$tb_waves eq 2} {
 	if {$pipe_stage eq 3} {
 
 		add wave -divider {EX CONTROL SIGNALS} -position insertpoint \
-		sim:/tb_datapath/U1/MUXA_PRE_SEL \
-		sim:/tb_datapath/U1/MUXB_PRE_SEL \
 		sim:/tb_datapath/U1/MUXA_SEL \
 		sim:/tb_datapath/U1/MUXB_SEL \
 		sim:/tb_datapath/U1/ALU_OUTREG_EN \
@@ -629,7 +643,7 @@ if {$tb_waves eq 2} {
 		add wave -divider {ALU_PRE_MUX1} -position insertpoint \
 		sim:/tb_datapath/U1/ID_EX_RF_DATAIN \
 		sim:/tb_datapath/U1/ID_EX_NPC \
-		sim:/tb_datapath/U1/MUXA_PRE_SEL \
+		sim:/tb_datapath/U1/MUXA_SEL \
 		sim:/tb_datapath/U1/ALU_PREOP1
 
 		add wave -divider {ALU_MUX1} -position insertpoint \
@@ -641,7 +655,7 @@ if {$tb_waves eq 2} {
 		add wave -divider {ALU_PRE_MUX2} -position insertpoint \
 		sim:/tb_datapath/U1/ID_EX_RF_DATAIN \
 		sim:/tb_datapath/U1/ID_EX_IMM_NEXT \
-		sim:/tb_datapath/U1/MUXB_PRE_SEL \
+		sim:/tb_datapath/U1/MUXB_SEL \
 		sim:/tb_datapath/U1/ALU_PREOP2
 
 		add wave -divider {ALU_MUX2} -position insertpoint \
@@ -687,8 +701,7 @@ if {$tb_waves eq 2} {
 		sim:/tb_datapath/U1/DRAM_RE \
 		sim:/tb_datapath/U1/DRAM_WE \
 		sim:/tb_datapath/U1/LMD_LATCH_EN\
-		sim:/tb_datapath/U1/JUMP_EN \
-		sim:/tb_datapath/U1/PC_LATCH_EN
+		sim:/tb_datapath/U1/JUMP_EN
 
 		add wave -divider {STAGE} -position insertpoint \
 		sim:/tb_datapath/U1/MEM_ALU_LABEL
@@ -727,8 +740,7 @@ if {$tb_waves eq 2} {
 	if {$pipe_stage eq 5} {
 
 		add wave -divider {WB CONTROL SIGNALS} -position insertpoint \
-		sim:/tb_datapath/U1/WB_MUX_SEL \
-		sim:/tb_datapath/U1/RF_WE
+		sim:/tb_datapath/U1/WB_MUX_SEL
 
 		add wave -divider {STAGE} -position insertpoint \
 		sim:/tb_datapath/U1/WB_ALU_LABEL
@@ -757,8 +769,6 @@ if {$tb_waves eq 3} {
 	sim:/tb_dlx/U1/DATAPATH_I/RST
 
 	add wave -divider {EX CONTROL SIGNALS} -position insertpoint \
-	sim:/tb_dlx/U1/DATAPATH_I/MUXA_PRE_SEL \
-	sim:/tb_dlx/U1/DATAPATH_I/MUXB_PRE_SEL \
 	sim:/tb_dlx/U1/DATAPATH_I/MUXA_SEL \
 	sim:/tb_dlx/U1/DATAPATH_I/MUXB_SEL \
 	sim:/tb_dlx/U1/DATAPATH_I/ALU_OUTREG_EN \
@@ -771,7 +781,7 @@ if {$tb_waves eq 3} {
 	add wave -divider {ALU_PRE_MUX1} -position insertpoint \
 	sim:/tb_dlx/U1/DATAPATH_I/ID_EX_RF_DATAIN \
 	sim:/tb_dlx/U1/DATAPATH_I/ID_EX_NPC \
-	sim:/tb_dlx/U1/DATAPATH_I/MUXA_PRE_SEL \
+	sim:/tb_dlx/U1/DATAPATH_I/MUXA_SEL \
 	sim:/tb_dlx/U1/DATAPATH_I/ALU_PREOP1
 
 	add wave -divider {ALU_MUX1} -position insertpoint \
@@ -783,7 +793,7 @@ if {$tb_waves eq 3} {
 	add wave -divider {ALU_PRE_MUX2} -position insertpoint \
 	sim:/tb_dlx/U1/DATAPATH_I/ID_EX_RF_DATAIN \
 	sim:/tb_dlx/U1/DATAPATH_I/ID_EX_IMM_NEXT \
-	sim:/tb_dlx/U1/DATAPATH_I/MUXB_PRE_SEL \
+	sim:/tb_dlx/U1/DATAPATH_I/MUXB_SEL \
 	sim:/tb_dlx/U1/DATAPATH_I/ALU_PREOP2
 
 	add wave -divider {ALU_MUX2} -position insertpoint \

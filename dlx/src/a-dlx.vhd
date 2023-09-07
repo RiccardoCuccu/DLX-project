@@ -52,16 +52,18 @@ architecture DLX_RTL of DLX is
 
 				-- IF Control Signal
 				IR_LATCH_EN		: out std_logic;		-- Instruction Register Latch Enable
-				NPC_LATCH_EN		: out std_logic;
+				PC_LATCH_EN		: out std_logic;		-- Program Counte Latch Enable
+				NPC_LATCH_EN		: out std_logic;		-- Next Program Counter Register Latch Enable
 
 				-- ID Control Signals
+				RF_WE			: out std_logic;		-- Register File Write Enable
 				RegA_LATCH_EN		: out std_logic;		-- Register A Latch Enable
 				RegB_LATCH_EN		: out std_logic;		-- Register B Latch Enable
 				RegIMM_LATCH_EN		: out std_logic;		-- Immediate Register Latch Enable
 
 				-- EX Control Signals
-				MUXA_PRE_SEL		: out std_logic;		-- MUX-A Pre Sel
-				MUXB_PRE_SEL		: out std_logic;		-- MUX-B Pre Sel
+--				MUXA_PRE_SEL		: out std_logic;		-- MUX-A Pre Sel
+--				MUXB_PRE_SEL		: out std_logic;		-- MUX-B Pre Sel
 				MUXA_SEL		: out std_logic;		-- MUX-A Sel
 				MUXB_SEL		: out std_logic;		-- MUX-B Sel
 				ALU_OUTREG_EN		: out std_logic;		-- ALU Output Register Enable
@@ -77,11 +79,10 @@ architecture DLX_RTL of DLX is
 				LMD_LATCH_EN		: out std_logic;		-- LMD Register Latch Enable
 				JUMP_EN			: out std_logic;		-- JUMP Enable Signal for PC input MUX
 				JUMP_COND		: out std_logic;		-- JUMP Condition
-				PC_LATCH_EN		: out std_logic;		-- Program Counte Latch Enable
 
 				-- WB Control signals
-				WB_MUX_SEL		: out std_logic;		-- Write Back MUX Sel
-				RF_WE			: out std_logic);		-- Register File Write Enable
+				WB_MUX_SEL		: out std_logic);		-- Write Back MUX Sel
+
 
 		end component;
 
@@ -99,16 +100,18 @@ architecture DLX_RTL of DLX is
 
 				-- IF Control Signal
 				IR_LATCH_EN		: in std_logic;			-- Instruction Register Latch Enable
-				NPC_LATCH_EN		: in std_logic;
+				PC_LATCH_EN		: in std_logic;			-- Program Counte Latch Enable
+				NPC_LATCH_EN		: in std_logic;			-- Next Program Counter Register Latch Enable
 
 				-- ID Control Signals
+				RF_WE			: in std_logic;			-- Register File Write Enable
 				RegA_LATCH_EN		: in std_logic;			-- Register A Latch Enable
 				RegB_LATCH_EN		: in std_logic;			-- Register B Latch Enable
 				RegIMM_LATCH_EN		: in std_logic;			-- Immediate Register Latch Enable
 
 				-- EX Control Signals
-				MUXA_PRE_SEL		: in std_logic;			-- MUX-A Pre Sel
-				MUXB_PRE_SEL		: in std_logic;			-- MUX-B Pre Sel
+--				MUXA_PRE_SEL		: in std_logic;			-- MUX-A Pre Sel
+--				MUXB_PRE_SEL		: in std_logic;			-- MUX-B Pre Sel
 				MUXA_SEL		: in std_logic;			-- MUX-A Sel
 				MUXB_SEL		: in std_logic;			-- MUX-B Sel
 				ALU_OUTREG_EN		: in std_logic;			-- ALU Output Register Enable
@@ -124,11 +127,9 @@ architecture DLX_RTL of DLX is
 				LMD_LATCH_EN		: in std_logic;			-- LMD Register Latch Enable
 				JUMP_EN			: in std_logic;			-- JUMP Enable Signal for PC input MUX
 				JUMP_COND		: in std_logic;			-- JUMP Condition
-				PC_LATCH_EN		: in std_logic;			-- Program Counte Latch Enable
 
 				-- WB Control signals
 				WB_MUX_SEL		: in std_logic;			-- Write Back MUX Sel
-				RF_WE			: in std_logic;			-- Register File Write Enable
 
 				IR_OUTPUT		: out std_logic_vector(IR_SIZE -1 downto 0));
 --				PC_OUTPUT		: out std_logic_vector(PC_SIZE -1 downto 0));
@@ -168,14 +169,16 @@ architecture DLX_RTL of DLX is
 
 	-- Control Unit Bus signals
 	signal IR_LATCH_EN_i : std_logic;
+	signal PC_LATCH_EN_i : std_logic;
 	signal NPC_LATCH_EN_i : std_logic;
 
+	signal RF_WE_i : std_logic;
 	signal RegA_LATCH_EN_i : std_logic;
 	signal RegB_LATCH_EN_i : std_logic;
 	signal RegIMM_LATCH_EN_i : std_logic;
 
-	signal MUXA_PRE_SEL_i : std_logic;
-	signal MUXB_PRE_SEL_i : std_logic;
+--	signal MUXA_PRE_SEL_i : std_logic;
+--	signal MUXB_PRE_SEL_i : std_logic;
 	signal MUXA_SEL_i : std_logic;
 	signal MUXB_SEL_i : std_logic;
 	signal ALU_OUTREG_EN_i : std_logic;
@@ -189,11 +192,8 @@ architecture DLX_RTL of DLX is
 	signal LMD_LATCH_EN_i : std_logic;
 	signal JUMP_EN_i : std_logic;
 	signal JUMP_COND_i : std_logic;
-	signal PC_LATCH_EN_i : std_logic;
 
 	signal WB_MUX_SEL_i : std_logic;
-	signal RF_WE_i : std_logic;
-
 
 	-- Data Ram Bus signals
 
@@ -255,12 +255,14 @@ architecture DLX_RTL of DLX is
 					RST		=> RST,
 					IR_IN		=> IR,
 					IR_LATCH_EN	=> IR_LATCH_EN_i,
+					PC_LATCH_EN	=> PC_LATCH_EN_i,
 					NPC_LATCH_EN	=> NPC_LATCH_EN_i,
+					RF_WE		=> RF_WE_i,
 					RegA_LATCH_EN	=> RegA_LATCH_EN_i,
 					RegB_LATCH_EN	=> RegB_LATCH_EN_i,
 					RegIMM_LATCH_EN	=> RegIMM_LATCH_EN_i,
-					MUXA_PRE_SEL	=> MUXA_PRE_SEL_i,
-					MUXB_PRE_SEL	=> MUXB_PRE_SEL_i,
+--					MUXA_PRE_SEL	=> MUXA_PRE_SEL_i,
+--					MUXB_PRE_SEL	=> MUXB_PRE_SEL_i,
 					MUXA_SEL	=> MUXA_SEL_i,
 					MUXB_SEL	=> MUXB_SEL_i,
 					ALU_OUTREG_EN	=> ALU_OUTREG_EN_i,
@@ -271,9 +273,8 @@ architecture DLX_RTL of DLX is
 					LMD_LATCH_EN	=> LMD_LATCH_EN_i,
 					JUMP_EN		=> JUMP_EN_i,
 					JUMP_COND	=> JUMP_COND_i,
-					PC_LATCH_EN	=> PC_LATCH_EN_i,
-					WB_MUX_SEL	=> WB_MUX_SEL_i,
-					RF_WE		=> RF_WE_i);
+					WB_MUX_SEL	=> WB_MUX_SEL_i);
+
 
 		-- Datapath Instantiation
 		DATAPATH_I: DLX_DATAPATH
@@ -281,12 +282,14 @@ architecture DLX_RTL of DLX is
 					RST		=> RST,
 --					IRam_DIn	=> IRam_DOut,
 					IR_LATCH_EN	=> IR_LATCH_EN_i,
+					PC_LATCH_EN	=> PC_LATCH_EN_i,
 					NPC_LATCH_EN	=> NPC_LATCH_EN_i,
+					RF_WE		=> RF_WE_i,
 					RegA_LATCH_EN	=> RegA_LATCH_EN_i,
 					RegB_LATCH_EN	=> RegB_LATCH_EN_i,
 					RegIMM_LATCH_EN	=> RegIMM_LATCH_EN_i,
-					MUXA_PRE_SEL	=> MUXA_PRE_SEL_i,
-					MUXB_PRE_SEL	=> MUXB_PRE_SEL_i,					
+--					MUXA_PRE_SEL	=> MUXA_PRE_SEL_i,
+--					MUXB_PRE_SEL	=> MUXB_PRE_SEL_i,					
 					MUXA_SEL	=> MUXA_SEL_i,
 					MUXB_SEL	=> MUXB_SEL_i,
 					ALU_OUTREG_EN	=> ALU_OUTREG_EN_i,
@@ -297,9 +300,7 @@ architecture DLX_RTL of DLX is
 					LMD_LATCH_EN	=> LMD_LATCH_EN_i,
 					JUMP_EN		=> JUMP_EN_i,
 					JUMP_COND	=> JUMP_COND_i,
-					PC_LATCH_EN	=> PC_LATCH_EN_i,
 					WB_MUX_SEL	=> WB_MUX_SEL_i,
-					RF_WE		=> RF_WE_i,
 					IR_OUTPUT	=> IR
 --					PC_OUTPUT	=> PC
 					);
