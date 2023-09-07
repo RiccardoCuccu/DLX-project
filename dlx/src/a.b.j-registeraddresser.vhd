@@ -15,7 +15,7 @@ entity REGADDR is
 
 	generic (	N	: integer := IR_SIZE_GLOBAL;			-- / 32 bits
 			OPC	: integer := OPC_SIZE_GLOBAL;			-- /  6 bits
-			REG	: integer := RF_ADDRESSES_GLOBAL);		-- /  5 bits
+			REG	: integer := RS_SIZE_GLOBAL);			-- /  5 bits
 
 	port (		INSTR	: in  std_logic_vector(N - 1 downto 0);		-- Instruction Input		/ 32 bits
 			RS1	: out std_logic_vector(REG - 1 downto 0);	-- First Source Register	/  5 bits

@@ -19,7 +19,7 @@ use work.constants.all;
 entity RF is
 
 	generic (	N		: integer := RF_SIZE_GLOBAL;
-			NA		: integer := RF_ADDRESSES_GLOBAL);
+			NA		: integer := RS_SIZE_GLOBAL);
 
 	port	(	CLK		: in	std_logic;				-- Clock
 			RST		: in	std_logic;				-- Reset, active low

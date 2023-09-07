@@ -16,7 +16,7 @@ entity SIGNEX is
 
 	generic (	N	: integer := IR_SIZE_GLOBAL;			-- / 32 bits
 			OPC	: integer := OPC_SIZE_GLOBAL;			-- /  6 bits
-			REG	: integer := REG_SIZE_GLOBAL);			-- /  5 bits
+			REG	: integer := RS_SIZE_GLOBAL);			-- /  5 bits
 
 	port (		INSTR	: in  std_logic_vector(N - 1 downto 0);		-- Instruction Input		/ 32 bits
 			IMM	: out std_logic_vector(N - 1 downto 0));	-- Extended Immediate		/ 32 bits

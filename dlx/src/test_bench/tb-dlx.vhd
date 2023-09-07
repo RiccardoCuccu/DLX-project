@@ -38,7 +38,7 @@ begin
 		Clock <= not(Clock) after 0.5 ns;
 	end process;
 
-	Reset <= '0', '1' after 6 ns, '0' after 11 ns, '1' after 15 ns;
+	Reset <= '0', '1' after 6 ns; -- '0' after 11 ns, '1' after 15 ns;
 
 end TEST;
 

@@ -42,7 +42,7 @@ begin
 
 	RCA0: RCA generic map (ALU_OP_RCA_SIZE_GLOBAL) port map (A, B, '0', SUM0, COUT0);
 	RCA1: RCA generic map (ALU_OP_RCA_SIZE_GLOBAL) port map (A, B, '1', SUM1, COUT1);
-	MUX: MUX21 generic map (ALU_OP_MUX_SIZE_GLOBAL) port map (SUM1, SUM0, Ci, S);
+	MUX: MUX21 generic map (ALU_OP_MUX_SIZE_GLOBAL) port map (SUM0, SUM1, Ci, S);
 
 	-- Ovf <= (OVF1 and Ci) or (OVF0 and not Ci);
 

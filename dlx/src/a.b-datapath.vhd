@@ -7,7 +7,7 @@
 --		and ensure synchronous operations across all stages.
 --
 -- Author:	Riccardo Cuccu
--- Date:	2023/09/05
+-- Date:	2023/09/07
 ----------------------------------------------------------------------------------------------------
 
 library ieee;
@@ -20,7 +20,8 @@ use work.constants.all;
 entity DLX_DATAPATH is
 
 	generic (	IR_SIZE			: integer := IR_SIZE_GLOBAL;			-- Instruction Register size		/ 32 bits
-			PC_SIZE			: integer := PC_SIZE_GLOBAL);			-- Program Counter size			/ 32 bits
+			PC_SIZE			: integer := PC_SIZE_GLOBAL;			-- Program Counter size			/ 32 bits
+			RS_SIZE			: integer := RS_SIZE_GLOBAL);			-- Registers Source size		/  5 bits
 
 	port (		CLK			: in  std_logic;				-- Clock
 			RST			: in  std_logic;				-- Reset (active low)
@@ -53,7 +54,7 @@ entity DLX_DATAPATH is
 			DRAM_WE			: in  std_logic;				-- Data RAM Write Enable
 			LMD_LATCH_EN		: in  std_logic;				-- LMD Register Latch Enable
 			JUMP_EN			: in  std_logic;				-- JUMP Enable Signal for PC input MUX
-			JUMP_COND		: in std_logic;					-- JUMP Condition
+			JUMP_COND		: in  std_logic;				-- JUMP Condition
 			PC_LATCH_EN		: in  std_logic;				-- Program Counte Latch Enable
 
 			-- WB Control signals
@@ -173,7 +174,7 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 	component RF is
 
 		generic	(	N		: integer := RF_SIZE_GLOBAL;			-- / 32 bits
-				NA		: integer := RF_ADDRESSES_GLOBAL);		-- /  5 bits
+				NA		: integer := RS_SIZE_GLOBAL);			-- /  5 bits
 
 		port	(	CLK		: in  std_logic;				-- Clock
 				RST		: in  std_logic;				-- Reset (active low)
@@ -194,7 +195,7 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 
 		generic (	N 		: integer := IR_SIZE_GLOBAL;			-- / 32 bits
 				OPC		: integer := OPC_SIZE_GLOBAL;			-- /  6 bits
-				REG 		: integer := REG_SIZE_GLOBAL);			-- /  5 bits
+				REG 		: integer := RS_SIZE);				-- /  5 bits
 
 		port (		INSTR		: in  std_logic_vector(N - 1 downto 0);		-- Instruction		/ 32 bits
 				IMM		: out std_logic_vector(N - 1 downto 0));	-- Immediate		/ 32 bits
@@ -205,7 +206,7 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 	
 		generic (	N		: integer := IR_SIZE_GLOBAL;			-- / 32 bits
 				OPC		: integer := OPC_SIZE_GLOBAL;			-- /  6 bits
-				REG		: integer := RF_ADDRESSES_GLOBAL);		-- /  5 bits
+				REG		: integer := RS_SIZE_GLOBAL);			-- /  5 bits
 	
 		port (		INSTR		: in  std_logic_vector(N - 1 downto 0);		-- Instruction		/ 32 bits
 				RS1		: out std_logic_vector(REG - 1 downto 0);	-- RS1			/  5 bits
@@ -294,7 +295,10 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 	-- DECODE-EXECUTE (ID_EX) Pipeline signals
 	signal ID_EX_NPC, ID_EX_NPC_NEXT : std_logic_vector(PC_SIZE - 1 downto 0);					-- Program Counter signal		/ 32 bits
 --	signal ID_EX_IR, ID_EX_IR_NEXT : std_logic_vector(IR_SIZE - 1 downto 0);					-- Instruction Register signal		/ 32 bits
-	signal ID_EX_RD, ID_EX_RD_NEXT : std_logic_vector(RF_ADDRESSES_GLOBAL - 1 downto 0);				-- Register File - Write address	/  5 bits
+
+	signal ID_EX_RS1, ID_EX_RS1_NEXT : std_logic_vector(RS_SIZE - 1 downto 0);					-- Register Source 1			/  5 bits
+	signal ID_EX_RS2, ID_EX_RS2_NEXT : std_logic_vector(RS_SIZE - 1 downto 0);					-- Register Source 2			/  5 bits
+	signal ID_EX_RD, ID_EX_RD_NEXT : std_logic_vector(RS_SIZE - 1 downto 0);					-- Register File - Write address	/  5 bits
 	signal ID_EX_RF_DATAIN, ID_EX_RF_DATAIN_NEXT : std_logic_vector(RF_SIZE_GLOBAL - 1 downto 0);			-- Register File - Write data		/ 32 bits
 	signal ID_EX_RF_OUT1, ID_EX_RF_OUT1_NEXT : std_logic_vector(RF_SIZE_GLOBAL - 1 downto 0);			-- Register File - Read data 1		/ 32 bits
 	signal ID_EX_RF_OUT2, ID_EX_RF_OUT2_NEXT : std_logic_vector(RF_SIZE_GLOBAL - 1 downto 0);			-- Register File - Read data 2		/ 32 bits
@@ -305,14 +309,14 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 
 	-- EXECUTE-MEMORY (EX_MEM) Pipeline signals
 --	signal EX_MEM_NPC, EX_MEM_NPC_NEXT : std_logic_vector(PC_SIZE - 1 downto 0);					-- Program Counter signal		/ 32 bits
-	signal EX_MEM_BRANCH_DETECT, EX_MEM_BRANCH_DETECT_NEXT : std_logic;							-- Branch Condition
-	signal EX_MEM_RD, EX_MEM_RD_NEXT : std_logic_vector(RF_ADDRESSES_GLOBAL - 1 downto 0);				-- Register File - Write address	/  5 bits
+	signal EX_MEM_BRANCH_DETECT, EX_MEM_BRANCH_DETECT_NEXT : std_logic;						-- Branch Condition
+	signal EX_MEM_RD, EX_MEM_RD_NEXT : std_logic_vector(RS_SIZE - 1 downto 0);					-- Register File - Write address	/  5 bits
 	signal EX_MEM_RF_DATAIN, EX_MEM_RF_DATAIN_NEXT : std_logic_vector(RF_SIZE_GLOBAL - 1 downto 0);			-- Register File - Write data		/ 32 bits
 --	signal EX_MEM_RF_OUT2, EX_MEM_RF_OUT2_NEXT : std_logic_vector(RF_SIZE_GLOBAL - 1 downto 0);			-- Register File - Read data 2		/ 32 bits
 	signal EX_MEM_ALU_OUT, EX_MEM_ALU_OUT_NEXT : std_logic_vector(RF_SIZE_GLOBAL - 1 downto 0);			-- ALU Output				/ 32 bits
 
 	-- MEMORY-WRITE BACK (MEM_WB) Pipeline signals
-	signal MEM_WB_RD, MEM_WB_RD_NEXT : std_logic_vector(RF_ADDRESSES_GLOBAL - 1 downto 0);				-- Register File - Write address	/  5 bits
+	signal MEM_WB_RD, MEM_WB_RD_NEXT : std_logic_vector(RS_SIZE - 1 downto 0);					-- Register File - Write address	/  5 bits
 	signal MEM_WB_ALU_OUT, MEM_WB_ALU_OUT_NEXT : std_logic_vector(RF_SIZE_GLOBAL - 1 downto 0);			-- ALU Output				/ 32 bits
 	signal MEM_WB_DRAM_OUT, MEM_WB_DRAM_OUT_NEXT : std_logic_vector(DRAM_WORD_SIZE_GLOBAL - 1 downto 0);		-- DRAM Output 				/ 32 bits
 
@@ -320,7 +324,7 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 
 	-- DECODE signals
 --	signal RF_ENABLE, RF_WR, RF_RD1, RF_RD2 : std_logic;
-	signal RS1, RS2, RD : std_logic_vector(RF_ADDRESSES_GLOBAL - 1 downto 0);					-- /  5 bits
+	signal RS1, RS2, RD : std_logic_vector(RS_SIZE - 1 downto 0);							-- /  5 bits
 	signal RF_OUT1, RF_OUT2 : std_logic_vector(RF_SIZE_GLOBAL - 1 downto 0);					-- / 32 bits
 	signal IMM_OUT : std_logic_vector(IR_SIZE_GLOBAL - 1 downto 0);							-- / 32 bits
 
@@ -341,10 +345,10 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 	-- Forwarding Unit signals
 
 	-- ALU signals (testbench) -- DELETE
-	signal IF_ALU_LABEL, ID_ALU_LABEL, EX_ALU_LABEL, MEM_ALU_LABEL, WB_ALU_LABEL : ALU_label;			-- ALU Opcode
-	signal IF_ALU_LABEL_NEXT, ID_ALU_LABEL_NEXT, EX_ALU_LABEL_NEXT, MEM_ALU_LABEL_NEXT, WB_ALU_LABEL_NEXT : ALU_label;			-- ALU Opcode
-			-- ALU Func
-
+	signal IF_ALU_LABEL, ID_ALU_LABEL, EX_ALU_LABEL, MEM_ALU_LABEL, WB_ALU_LABEL : ALU_label;					-- ALU Opcode
+	signal IF_ALU_LABEL_NEXT, ID_ALU_LABEL_NEXT, EX_ALU_LABEL_NEXT, MEM_ALU_LABEL_NEXT, WB_ALU_LABEL_NEXT : ALU_label;		-- ALU Opcode
+	
+	-- ALU Func
 	signal IR_opcode : std_logic_vector(5 downto 0);				-- OpCode part of IR
 	signal IR_func   : std_logic_vector(10 downto 0);				-- Func part of IR when Rtype
 
@@ -370,18 +374,18 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 			elsif IR_opcode = RTYPE then			-- Operation Labels
 				if IR_func = RTYPE_SLL		then	IF_ALU_LABEL <= L_RTYPE_SLL;
 				elsif IR_func = RTYPE_SRL	then	IF_ALU_LABEL <= L_RTYPE_SRL;
---				elsif IR_func = RTYPE_SRA	then	IF_ALU_LABEL <= L_RTYPE_SRA;
+				elsif IR_func = RTYPE_SRA	then	IF_ALU_LABEL <= L_RTYPE_SRA;
 				elsif IR_func = RTYPE_ADD	then	IF_ALU_LABEL <= L_RTYPE_ADD;
---				elsif IR_func = RTYPE_ADDU	then	IF_ALU_LABEL <= L_RTYPE_ADDU;
+				elsif IR_func = RTYPE_ADDU	then	IF_ALU_LABEL <= L_RTYPE_ADDU;
 				elsif IR_func = RTYPE_SUB	then	IF_ALU_LABEL <= L_RTYPE_SUB;
---				elsif IR_func = RTYPE_SUBU	then	IF_ALU_LABEL <= L_RTYPE_SUBU;
+				elsif IR_func = RTYPE_SUBU	then	IF_ALU_LABEL <= L_RTYPE_SUBU;
 				elsif IR_func = RTYPE_AND	then	IF_ALU_LABEL <= L_RTYPE_AND;
 				elsif IR_func = RTYPE_OR	then	IF_ALU_LABEL <= L_RTYPE_OR;
 				elsif IR_func = RTYPE_XOR	then	IF_ALU_LABEL <= L_RTYPE_XOR;
---				elsif IR_func = RTYPE_SEQ	then	IF_ALU_LABEL <= L_RTYPE_SEQ;
+				elsif IR_func = RTYPE_SEQ	then	IF_ALU_LABEL <= L_RTYPE_SEQ;
 				elsif IR_func = RTYPE_SNE	then	IF_ALU_LABEL <= L_RTYPE_SNE;
---				elsif IR_func = RTYPE_SLT	then	IF_ALU_LABEL <= L_RTYPE_SLT;
---				elsif IR_func = RTYPE_SGT	then	IF_ALU_LABEL <= L_RTYPE_SGT;
+				elsif IR_func = RTYPE_SLT	then	IF_ALU_LABEL <= L_RTYPE_SLT;
+				elsif IR_func = RTYPE_SGT	then	IF_ALU_LABEL <= L_RTYPE_SGT;
 				elsif IR_func = RTYPE_SLE	then	IF_ALU_LABEL <= L_RTYPE_SLE;
 				elsif IR_func = RTYPE_SGE	then	IF_ALU_LABEL <= L_RTYPE_SGE;
 --				elsif IR_func = RTYPE_MOVI2S	then	IF_ALU_LABEL <= L_RTYPE_MOVI2S;
@@ -392,10 +396,10 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 --				elsif IR_func = RTYPE_MOVI2FP	then	IF_ALU_LABEL <= L_RTYPE_MOVI2FP;
 --				elsif IR_func = RTYPE_MOVI2T	then	IF_ALU_LABEL <= L_RTYPE_MOVI2T;
 --				elsif IR_func = RTYPE_MOVT2I	then	IF_ALU_LABEL <= L_RTYPE_MOVT2I;
---				elsif IR_func = RTYPE_SLTU	then	IF_ALU_LABEL <= L_RTYPE_SLTU;
---				elsif IR_func = RTYPE_SGTU	then	IF_ALU_LABEL <= L_RTYPE_SGTU;
---				elsif IR_func = RTYPE_SLEU	then	IF_ALU_LABEL <= L_RTYPE_SLEU;
---				elsif IR_func = RTYPE_SGEU	then	IF_ALU_LABEL <= L_RTYPE_SGEU;
+				elsif IR_func = RTYPE_SLTU	then	IF_ALU_LABEL <= L_RTYPE_SLTU;
+				elsif IR_func = RTYPE_SGTU	then	IF_ALU_LABEL <= L_RTYPE_SGTU;
+				elsif IR_func = RTYPE_SLEU	then	IF_ALU_LABEL <= L_RTYPE_SLEU;
+				elsif IR_func = RTYPE_SGEU	then	IF_ALU_LABEL <= L_RTYPE_SGEU;
 --				elsif IR_func = RTYPE_ADDF	then	IF_ALU_LABEL <= L_RTYPE_ADDF;
 --				elsif IR_func = RTYPE_SUBF	then	IF_ALU_LABEL <= L_RTYPE_SUBF;
 --				elsif IR_func = RTYPE_MULTF	then	IF_ALU_LABEL <= L_RTYPE_MULTF;
@@ -435,9 +439,9 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 --			elsif IR_opcode = ITYPE_BFPT	then	IF_ALU_LABEL <= L_ITYPE_BFPT;
 --			elsif IR_opcode = ITYPE_BFPF	then	IF_ALU_LABEL <= L_ITYPE_BFPF;
 			elsif IR_opcode = ITYPE_ADDI	then	IF_ALU_LABEL <= L_ITYPE_ADDI;
---			elsif IR_opcode = ITYPE_ADDUI	then	IF_ALU_LABEL <= L_ITYPE_ADDUI;
+			elsif IR_opcode = ITYPE_ADDUI	then	IF_ALU_LABEL <= L_ITYPE_ADDUI;
 			elsif IR_opcode = ITYPE_SUBI	then	IF_ALU_LABEL <= L_ITYPE_SUBI;
---			elsif IR_opcode = ITYPE_SUBUI	then	IF_ALU_LABEL <= L_ITYPE_SUBUI;
+			elsif IR_opcode = ITYPE_SUBUI	then	IF_ALU_LABEL <= L_ITYPE_SUBUI;
 			elsif IR_opcode = ITYPE_ANDI	then	IF_ALU_LABEL <= L_ITYPE_ANDI;
 			elsif IR_opcode = ITYPE_ORI	then	IF_ALU_LABEL <= L_ITYPE_ORI;
 			elsif IR_opcode = ITYPE_XORI	then	IF_ALU_LABEL <= L_ITYPE_XORI;
@@ -449,11 +453,11 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 			elsif IR_opcode = ITYPE_SLLI	then	IF_ALU_LABEL <= L_ITYPE_SLLI;
 			elsif IR_opcode = ITYPE_NOP	then	IF_ALU_LABEL <= L_ITYPE_NOP;
 			elsif IR_opcode = ITYPE_SRLI	then	IF_ALU_LABEL <= L_ITYPE_SRLI;
---			elsif IR_opcode = ITYPE_SRAI	then	IF_ALU_LABEL <= L_ITYPE_SRAI;
---			elsif IR_opcode = ITYPE_SEQI	then	IF_ALU_LABEL <= L_ITYPE_SEQI;
+			elsif IR_opcode = ITYPE_SRAI	then	IF_ALU_LABEL <= L_ITYPE_SRAI;
+			elsif IR_opcode = ITYPE_SEQI	then	IF_ALU_LABEL <= L_ITYPE_SEQI;
 			elsif IR_opcode = ITYPE_SNEI	then	IF_ALU_LABEL <= L_ITYPE_SNEI;
---			elsif IR_opcode = ITYPE_SLTI	then	IF_ALU_LABEL <= L_ITYPE_SLTI;
---			elsif IR_opcode = ITYPE_SGTI	then	IF_ALU_LABEL <= L_ITYPE_SGTI;
+			elsif IR_opcode = ITYPE_SLTI	then	IF_ALU_LABEL <= L_ITYPE_SLTI;
+			elsif IR_opcode = ITYPE_SGTI	then	IF_ALU_LABEL <= L_ITYPE_SGTI;
 			elsif IR_opcode = ITYPE_SLEI	then	IF_ALU_LABEL <= L_ITYPE_SLEI;
 			elsif IR_opcode = ITYPE_SGEI	then	IF_ALU_LABEL <= L_ITYPE_SGEI;
 --			elsif IR_opcode = ITYPE_LB	then	IF_ALU_LABEL <= L_ITYPE_LB;
@@ -469,10 +473,10 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 --			elsif IR_opcode = ITYPE_SF	then	IF_ALU_LABEL <= L_ITYPE_SF;
 --			elsif IR_opcode = ITYPE_SD	then	IF_ALU_LABEL <= L_ITYPE_SD;
 --			elsif IR_opcode = ITYPE_ITLB	then	IF_ALU_LABEL <= L_ITYPE_ITLB;
---			elsif IR_opcode = ITYPE_SLTUI	then	IF_ALU_LABEL <= L_ITYPE_SLTUI;
---			elsif IR_opcode = ITYPE_SGTUI	then	IF_ALU_LABEL <= L_ITYPE_SGTUI;
---			elsif IR_opcode = ITYPE_SLEUI	then	IF_ALU_LABEL <= L_ITYPE_SLEUI;
---			elsif IR_opcode = ITYPE_SGEUI	then	IF_ALU_LABEL <= L_ITYPE_SGEUI;
+			elsif IR_opcode = ITYPE_SLTUI	then	IF_ALU_LABEL <= L_ITYPE_SLTUI;
+			elsif IR_opcode = ITYPE_SGTUI	then	IF_ALU_LABEL <= L_ITYPE_SGTUI;
+			elsif IR_opcode = ITYPE_SLEUI	then	IF_ALU_LABEL <= L_ITYPE_SLEUI;
+			elsif IR_opcode = ITYPE_SGEUI	then	IF_ALU_LABEL <= L_ITYPE_SGEUI;
 	
 			-- J-Type instructions
 			elsif IR_opcode = JTYPE_J	then	IF_ALU_LABEL <= L_JTYPE_J;
@@ -697,7 +701,7 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 		REGISTER_FILE: RF
 
 			generic map (	N		=> RF_SIZE_GLOBAL,
-					NA		=> RF_ADDRESSES_GLOBAL)
+					NA		=> RS_SIZE_GLOBAL)
 
 			port map (	CLK		=> CLK,
 					RST		=> RST,
@@ -716,7 +720,7 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 
 			generic map (	N		=> IR_SIZE_GLOBAL,
 					OPC		=> OPC_SIZE_GLOBAL,
-					REG		=> REG_SIZE_GLOBAL)
+					REG		=> RS_SIZE)
 
 			port map (	INSTR		=> IF_ID_IR,
 					IMM		=> IMM_OUT);
@@ -777,16 +781,16 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 
 			generic map (	N		=> IR_SIZE_GLOBAL,
 					OPC		=> OPC_SIZE_GLOBAL,
-					REG		=> RF_ADDRESSES_GLOBAL)
+					REG		=> RS_SIZE_GLOBAL)
 
 			port map (	INSTR		=> IF_ID_IR,
 					RS1		=> RS1,				-- /  5 bits
 					RS2		=> RS2,				-- /  5 bits
 					RD		=> RD);				-- /  5 bits
 
---		RS1			<= IF_ID_IR(IR_SIZE - OPC_SIZE_GLOBAL - 1 downto IR_SIZE - OPC_SIZE_GLOBAL - REG_SIZE_GLOBAL);						-- IF_ID_IR(25 downto 21);
---		RS2			<= IF_ID_IR(IR_SIZE - OPC_SIZE_GLOBAL - REG_SIZE_GLOBAL - 1 downto IR_SIZE - OPC_SIZE_GLOBAL - REG_SIZE_GLOBAL*2);			-- IF_ID_IR(20 downto 16);
---		RD			<= IF_ID_IR(IR_SIZE - OPC_SIZE_GLOBAL - REG_SIZE_GLOBAL*2 - 1 downto IR_SIZE - OPC_SIZE_GLOBAL - REG_SIZE_GLOBAL*3);			-- IF_ID_IR(15 downto 11);
+--		RS1			<= IF_ID_IR(IR_SIZE - OPC_SIZE_GLOBAL - 1 downto IR_SIZE - OPC_SIZE_GLOBAL - RS_SIZE);					-- IF_ID_IR(25 downto 21);
+--		RS2			<= IF_ID_IR(IR_SIZE - OPC_SIZE_GLOBAL - RS_SIZE - 1 downto IR_SIZE - OPC_SIZE_GLOBAL - RS_SIZE*2);			-- IF_ID_IR(20 downto 16);
+--		RD			<= IF_ID_IR(IR_SIZE - OPC_SIZE_GLOBAL - RS_SIZE*2 - 1 downto IR_SIZE - OPC_SIZE_GLOBAL - RS_SIZE*3);			-- IF_ID_IR(15 downto 11);
 
 --		REL_JUMP		<= IF_ID_PC + ID_EX_IMM_NEXT;			-- Relative Jump Address
 
@@ -799,6 +803,8 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 --		ID_EX_IR_NEXT		<= IF_ID_IR;
 --		ID_EX_OFFSET_NEXT	<= ID_EX_OFFSET;
 
+		ID_EX_RS1_NEXT		<= RS1;
+		ID_EX_RS2_NEXT		<= RS2;
 		ID_EX_RD_NEXT		<= RD;
 		ID_EX_RF_DATAIN_NEXT	<= WB_MUX_OUT;
 
@@ -942,19 +948,19 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 		end process;
 
 
---		ForwardingUnitComponent: ForwardingUnit
---			Generic Map(NbitRegAddressing => R)
---			Port Map
---			(
---				Rs1             => ID_EX_RS1,
---				Rs2             => ID_EX_RS2,
---				RdinMemStage    => EX_MEM_RD,
---				RdinWrbStage    => writa_addr_f,
---				MEM_WB_RegWrite => MEM_WB_RegWrite,
---				EX_MEM_RegWrite => EX_MEM_RegWrite,
---				ForwardA        => ForwardAmuxSelector,
---				ForwardB        => ForwardBmuxSelector);
-
+--		FORWARDING_UNIT: FU
+--
+--			generic map (	N		=> RS_SIZE)
+--			
+--			port map (	RS1		=> ID_EX_RS1,
+--					RS2		=> ID_EX_RS2,
+--					RD_MEM		=> EX_MEM_RD,
+--					RD_WB		=> MEM_WB_RD,
+--					EX_MEM_RF	=> EX_MEM_RF_WE,
+--					MEM_WB_RF	=> MEM_WB_RF_WE,
+--					FORWARD_A	=> ForwardAmuxSelector,		-- MUXA_PRE_SEL (?)
+--					FORWARD_B	=> ForwardBmuxSelector);	-- MUXB_PRE_SEL (?)
+--
 		LATCH_ALUOUT: LDR	generic map (ALU_OP_SIZE_GLOBAL)	port map (RST, ALU_OUTREG_EN, ALU_OUT, EX_MEM_ALU_OUT_NEXT);
 		LATCH_BRANCH: LD						port map (RST, ALU_OUTREG_EN, BRANCH_DETECT, EX_MEM_BRANCH_DETECT_NEXT);
 

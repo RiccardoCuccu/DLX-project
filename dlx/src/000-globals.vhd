@@ -7,7 +7,7 @@
 --		easily configurable and maintainable.
 --
 -- Author:	Riccardo Cuccu
--- Date:	2023/09/05
+-- Date:	2023/09/07
 ----------------------------------------------------------------------------------------------------
 
 library ieee;
@@ -21,7 +21,7 @@ package constants is
 	-- Control unit input sizes
 	constant OPC_SIZE_GLOBAL		: integer := 6;						-- OPCODE field size
 	constant FUNC_SIZE_GLOBAL		: integer := 11;					-- FUNC field size
-	constant REG_SIZE_GLOBAL		: integer := 5;						-- RS field size
+	constant RS_SIZE_GLOBAL			: integer := 5;						-- RS field size
 
 	-- Control unit registers sizes
 	constant IR_SIZE_GLOBAL			: integer := SIZE_GLOBAL;				-- Instruction Register size
@@ -34,7 +34,7 @@ package constants is
 	constant IRAM_SIZE_GLOBAL		: integer := 2**8;					-- Instruction Memory size
 
 	-- Register file
-	constant RF_ADDRESSES_GLOBAL		: integer := 5;						-- Exponent address size
+--	constant RF_ADDRESSES_GLOBAL		: integer := 5;						-- Exponent address size
 	constant RF_SIZE_GLOBAL			: integer := IR_SIZE_GLOBAL;				-- Register size
 
 	-- Instruction cycles
@@ -54,12 +54,124 @@ package constants is
 	constant DRAM_WORD_SIZE_GLOBAL		: integer := SIZE_GLOBAL;				-- DRAM registers size
 
 	-- ALU Operations
-	type aluOp is (		--NOP, ADDS, LLS, LRS --- to be completed
-				--OP_SRA,
-				OP_SLL, OP_SRL, OP_ADD, OP_SUB, OP_AND, OP_OR, OP_XOR, OP_SNE, OP_SLE, OP_SGE,
-				OP_BEQZ, OP_BNEZ, OP_ADDI, OP_SUBI, OP_ANDI, OP_ORI, OP_XORI, OP_SLLI, OP_NOP, OP_SRLI, OP_SNEI, OP_SLEI, OP_SGEI, OP_LW, OP_SW,
-				OP_J, OP_JAL
+	type aluOp is (		--OP_SLL, OP_SRL, OP_ADD, OP_SUB, OP_AND, OP_OR, OP_XOR, OP_SNE, OP_SLE, OP_SGE,
+				--OP_BEQZ, OP_BNEZ, OP_ADDI, OP_SUBI, OP_ANDI, OP_ORI, OP_XORI, OP_SLLI, OP_NOP, OP_SRLI, OP_SNEI, OP_SLEI, OP_SGEI, OP_LW, OP_SW,
+				--OP_J, OP_JAL
+
+				-- FUNC labels
+				OP_SLL,
+				OP_SRL,
+				OP_SRA,
+				OP_ADD,
+				OP_ADDU,
+				OP_SUB,
+				OP_SUBU,
+				OP_AND,
+				OP_OR,
+				OP_XOR,
+				OP_SEQ,
+				OP_SNE,
+				OP_SLT,
+				OP_SGT,
+				OP_SLE,
+				OP_SGE,
+				OP_MOVI2S,
+				OP_MOVS2I,
+				OP_MOVF,
+				OP_MOVD,
+				OP_MOVFP2I,
+				OP_MOVI2FP,
+				OP_MOVI2T,
+				OP_MOVT2I,
+				OP_SLTU,
+				OP_SGTU,
+				OP_SLEU,
+				OP_SGEU,
+				OP_ADDF,
+				OP_SUBF,
+				OP_MULTF,
+				OP_DIVF,
+				OP_ADDD,
+				OP_SUBD,
+				OP_MULTD,
+				OP_DIVD,
+				OP_CVTF2D,
+				OP_CVTF2I,
+				OP_CVTD2F,
+				OP_CVTD2I,
+				OP_CVTI2F,
+				OP_CVTI2D,
+				OP_MULT,
+				OP_DIV,
+				OP_EQF,
+				OP_NEF,
+				OP_LTF,
+				OP_GTF,
+				OP_LEF,
+				OP_GEF,
+				OP_MULTU,
+				OP_DIVU,
+				OP_EQD,
+				OP_NED,
+				OP_LTD,
+				OP_GTD,
+				OP_LED,
+				OP_GED,
+
+				-- OPCODE labels
+--				L_RTYPE,
+--				L_ITYPE,
+				OP_BEQZ,
+				OP_BNEZ,
+				OP_BFPT,
+				OP_BFPF,
+				OP_ADDI,
+				OP_ADDUI,
+				OP_SUBI,
+				OP_SUBUI,
+				OP_ANDI,
+				OP_ORI,
+				OP_XORI,
+				OP_LHI,
+				OP_RFE,
+				OP_TRAP,
+				OP_JR,
+				OP_JALR,
+				OP_SLLI,
+				OP_SRLI,
+				OP_SRAI,
+				OP_SEQI,
+				OP_SNEI,
+				OP_SLTI,
+				OP_SGTI,
+				OP_SLEI,
+				OP_SGEI,
+				OP_LB,
+				OP_LH,
+				OP_LW,
+				OP_LBU,
+				OP_LHU,
+				OP_LF,
+				OP_LD,
+				OP_SB,
+				OP_SH,
+				OP_SW,
+				OP_SF,
+				OP_SD,
+				OP_ITLB,
+				OP_SLTUI,
+				OP_SGTUI,
+				OP_SLEUI,
+				OP_SGEUI,
+
+				OP_J,
+				OP_JAL,
+
+				-- NOP label
+				OP_NOP
+
 			);
+
 	-- FUNC labels
 	type ALU_label is (	-- FUNC labels
 				L_RTYPE_SLL,
@@ -124,6 +236,7 @@ package constants is
 
 				-- OPCODE labels
 				L_RTYPE,
+				L_ITYPE,
 				L_ITYPE_BEQZ,
 				L_ITYPE_BNEZ,
 				L_ITYPE_BFPT,
@@ -167,6 +280,7 @@ package constants is
 				L_ITYPE_SGTUI,
 				L_ITYPE_SLEUI,
 				L_ITYPE_SGEUI,
+				L_JTYPE,
 				L_JTYPE_J,
 				L_JTYPE_JAL,
 
@@ -179,18 +293,18 @@ package constants is
 -- R-Type register-registe instruction -> FUNC field
 	constant RTYPE_SLL	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"04";
 	constant RTYPE_SRL	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"06";
---	constant RTYPE_SRA	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"07";
+	constant RTYPE_SRA	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"07";
 	constant RTYPE_ADD	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"20";
---	constant RTYPE_ADDU	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"21";
+	constant RTYPE_ADDU	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"21";
 	constant RTYPE_SUB	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"22";
---	constant RTYPE_SUBU	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"23";
+	constant RTYPE_SUBU	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"23";
 	constant RTYPE_AND	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"24";
 	constant RTYPE_OR	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"25";
 	constant RTYPE_XOR	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"26";
---	constant RTYPE_SEQ	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"28";
+	constant RTYPE_SEQ	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"28";
 	constant RTYPE_SNE	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"29";
---	constant RTYPE_SLT	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"2A";
---	constant RTYPE_SGT	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"2B";
+	constant RTYPE_SLT	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"2A";
+	constant RTYPE_SGT	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"2B";
 	constant RTYPE_SLE	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"2C";
 	constant RTYPE_SGE	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"2D";
 --	constant RTYPE_MOVI2S	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"30";
@@ -201,10 +315,10 @@ package constants is
 --	constant RTYPE_MOVI2FP	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"35";
 --	constant RTYPE_MOVI2T	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"36";
 --	constant RTYPE_MOVT2I	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"37";
---	constant RTYPE_SLTU	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"3A";
---	constant RTYPE_SGTU	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"3B";
---	constant RTYPE_SLEU	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"3C";
---	constant RTYPE_SGEU	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"3D";
+	constant RTYPE_SLTU	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"3A";
+	constant RTYPE_SGTU	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"3B";
+	constant RTYPE_SLEU	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"3C";
+	constant RTYPE_SGEU	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"3D";
 
 -- R-Type floating-point instruction -> FUNC field
 --	constant RTYPE_ADDF	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"00";
@@ -247,9 +361,9 @@ package constants is
 --	constant ITYPE_BFPT	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "00" & x"6";
 --	constant ITYPE_BFPF	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "00" & x"7";
 	constant ITYPE_ADDI	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "00" & x"8";
---	constant ITYPE_ADDUI	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "00" & x"9";
+	constant ITYPE_ADDUI	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "00" & x"9";
 	constant ITYPE_SUBI	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "00" & x"A";
---	constant ITYPE_SUBUI	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "00" & x"B";
+	constant ITYPE_SUBUI	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "00" & x"B";
 	constant ITYPE_ANDI	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "00" & x"C";
 	constant ITYPE_ORI	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "00" & x"D";
 	constant ITYPE_XORI	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "00" & x"E";
@@ -261,11 +375,11 @@ package constants is
 	constant ITYPE_SLLI	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "01" & x"4";
 	constant ITYPE_NOP	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "01" & x"5";
 	constant ITYPE_SRLI	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "01" & x"6";
---	constant ITYPE_SRAI	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "01" & x"7";
---	constant ITYPE_SEQI	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "01" & x"8";
+	constant ITYPE_SRAI	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "01" & x"7";
+	constant ITYPE_SEQI	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "01" & x"8";
 	constant ITYPE_SNEI	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "01" & x"9";
---	constant ITYPE_SLTI	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "01" & x"A";
---	constant ITYPE_SGTI	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "01" & x"B";
+	constant ITYPE_SLTI	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "01" & x"A";
+	constant ITYPE_SGTI	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "01" & x"B";
 	constant ITYPE_SLEI	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "01" & x"C";
 	constant ITYPE_SGEI	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "01" & x"D";
 --	constant ITYPE_LB	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "10" & x"0";
@@ -281,10 +395,10 @@ package constants is
 --	constant ITYPE_SF	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "10" & x"E";
 --	constant ITYPE_SD	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "10" & x"F";
 --	constant ITYPE_ITLB	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "11" & x"8";
---	constant ITYPE_SLTUI	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "11" & x"A";
---	constant ITYPE_SGTUI	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "11" & x"B";
---	constant ITYPE_SLEUI	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "11" & x"C";
---	constant ITYPE_SGEUI	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "11" & x"D";
+	constant ITYPE_SLTUI	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "11" & x"A";
+	constant ITYPE_SGTUI	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "11" & x"B";
+	constant ITYPE_SLEUI	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "11" & x"C";
+	constant ITYPE_SGEUI	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "11" & x"D";
 
 -- J-Type instruction -> OPCODE field
 	constant JTYPE_J	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "00" & x"2";

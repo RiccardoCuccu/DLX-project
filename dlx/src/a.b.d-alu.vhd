@@ -1,3 +1,12 @@
+----------------------------------------------------------------------------------------------------
+-- Description:	This ALU (Arithmetic Logic Unit) module is designed to execute various arithmetic, 
+--		logical and shifting operations. This ALU makes use of a P4 Adder for addition
+--		and subtraction operations.
+--
+-- Author:	Riccardo Cuccu
+-- Date:	2023/09/07
+----------------------------------------------------------------------------------------------------
+
 library ieee; 
 use ieee.std_logic_1164.all; 
 --use ieee.std_logic_unsigned.all;
@@ -112,31 +121,35 @@ architecture BEHAVIORAL of ALU is
 
 				-- Shift
 
---				when OP_SLL =>	-- unsigned, R[regc] <-- R[rega] << R[regb]_27..31
---				when OP_SLLI =>	-- unsigned, R[regb] <-- R[rega] << uimm16_27..31
+--				when OP_SLL =>		-- unsigned, R[regc] <-- R[rega] << R[regb]_27..31
+--				when OP_SLLI =>		-- unsigned, R[regb] <-- R[rega] << uimm16_27..31
 				when OP_SLL | OP_SLLI =>
 					Y_TMP <= std_logic_vector(shift_left(unsigned(OP1),to_integer(unsigned(OP2))));
 
---				when OP_SRL =>	-- unsigned, R[regc] <-- R[rega] >> R[regb]_27..31
---				when OP_SRLI =>	-- unsigned, R[regb] <-- R[rega] >> uimm16_27..31
+--				when OP_SRL =>		-- unsigned, R[regc] <-- R[rega] >> R[regb]_27..31
+--				when OP_SRLI =>		-- unsigned, R[regb] <-- R[rega] >> uimm16_27..31
 				when OP_SRL | OP_SRLI =>
 					Y_TMP <= std_logic_vector(shift_right(unsigned(OP1),to_integer(unsigned(OP2))));
 
--- PRO --
-----				when OP_SRA =>	-- signed, R[regc] <-- (R[rega]_0)^R[regb] ## (R[rega] >> R[regb])_R[regb]..31
-----				when OP_SRAI =>	-- signed, R[regb] <-- (R[rega]_31)^uimm16 ## (R[rega] >> uimm16)_uimm16..31
---				when OP_SRA | OP_SRAI =>
---					Y_TMP <= std_logic_vector(shift_right(signed(OP1),to_integer(unsigned(OP2))));
+--				when OP_SRA =>		-- signed, R[regc] <-- (R[rega]_0)^R[regb] ## (R[rega] >> R[regb])_R[regb]..31
+--				when OP_SRAI =>		-- signed, R[regb] <-- (R[rega]_31)^uimm16 ## (R[rega] >> uimm16)_uimm16..31
+				when OP_SRA | OP_SRAI =>
+					Y_TMP <= std_logic_vector(shift_right(signed(OP1),to_integer(unsigned(OP2))));
 
 				-- Arithmetic Operations
 
---				when OP_ADD =>	-- signed, R[regc] <-- R[rega] + R[regb]
---				when OP_ADDI =>	-- signed, R[regb] <-- R[rega] + imm16
+--				when OP_ADD =>		-- signed, R[regc] <-- R[rega] + R[regb]
+--				when OP_ADDI =>		-- signed, R[regb] <-- R[rega] + imm16
 				when OP_ADD | OP_ADDI =>
 					OP_A <= OP1;
 					OP_B <= OP2;
 					OP_Ci <= '0';
 					Y_TMP <= OP_S;
+
+--				when OP_ADDU =>		-- unsigned, R[regc] <-- R[rega] + R[regb]
+--				when OP_ADDUI =>	-- unsigned, R[regb] <-- R[rega] + uimm16
+				when OP_ADDU | OP_ADDUI =>
+					Y_TMP <= std_logic_vector(unsigned(OP1) + unsigned(OP2));
 
 --				when OP_SUB =>	-- signed, R[regc] <-- R[rega] - R[regb]
 --				when OP_SUBI =>	-- signed, R[regb] <-- R[rega] - imm16
@@ -146,27 +159,41 @@ architecture BEHAVIORAL of ALU is
 					OP_Ci <= '1';
 					Y_TMP <= OP_S;
 
+--				when OP_SUBU =>		-- unsigned, R[regc] <-- R[rega] - R[regb]
+--				when OP_SUBUI =>	-- unsigned, R[regb] <-- R[rega] - uimm16
+				when OP_SUBU | OP_SUBUI =>
+					Y_TMP <= std_logic_vector(unsigned(OP1) - unsigned(OP2));
+
 				-- Logic Operations
 
---				when OP_AND =>	-- unsigned bitwise basis, R[regc] <-- R[rega] & R[regb]
---				when OP_ANDI =>	-- unsigned bitwise basis, R[regb] <-- R[rega] & uimm16
+--				when OP_AND =>		-- unsigned bitwise basis, R[regc] <-- R[rega] & R[regb]
+--				when OP_ANDI =>		-- unsigned bitwise basis, R[regb] <-- R[rega] & uimm16
 				when OP_AND | OP_ANDI =>
 					Y_TMP <= OP1 and OP2;
 
---				when OP_OR =>	-- unsigned bitwise basis, R[regc] <-- R[rega] | R[regb]
---				when OP_ORI =>	-- unsigned bitwise basis, R[regb] <-- R[rega] | uimm16
+--				when OP_OR =>		-- unsigned bitwise basis, R[regc] <-- R[rega] | R[regb]
+--				when OP_ORI =>		-- unsigned bitwise basis, R[regb] <-- R[rega] | uimm16
 				when OP_OR | OP_ORI =>
 					Y_TMP <= OP1 or OP2;
 
---				when OP_XOR =>	-- unsigned bitwise basis, R[regc] <-- R[rega] XOR R[regb]
---				when OP_XORI =>	-- unsigned bitwise basis, R[regb] <-- R[rega] XOR uimm16
+--				when OP_XOR =>		-- unsigned bitwise basis, R[regc] <-- R[rega] XOR R[regb]
+--				when OP_XORI =>		-- unsigned bitwise basis, R[regb] <-- R[rega] XOR uimm16
 				when OP_XOR | OP_XORI =>
 					Y_TMP <= OP1 xor OP2;
 
 				-- Comparison Operations
 
---				when OP_SNE =>	-- signed, if (R[rega] != R[regb]) R[regc] <-- 1 else R[regc] <-- 0
---				when OP_SNEI =>	-- signed, if (R[rega] != imm16) R[regb] <-- 1 else R[regb] <-- 0
+--				when OP_SEQ =>		-- signed, if (R[rega] == R[regb]) R[regc] <-- 1 else R[regc] <-- 0
+--				when OP_SEQI =>		-- signed, if (R[rega] == imm16 ) R[regb] <-- 1 else R[regb] <-- 0
+				when OP_SEQ | OP_SEQI =>
+					if (OP1 = OP2) then
+						Y_TMP <= std_logic_vector(to_unsigned(1, Y_TMP'length));
+					else
+						Y_TMP <= std_logic_vector(to_unsigned(0, Y_TMP'length));
+					end if;
+
+--				when OP_SNE =>		-- signed, if (R[rega] != R[regb]) R[regc] <-- 1 else R[regc] <-- 0
+--				when OP_SNEI =>		-- signed, if (R[rega] != imm16) R[regb] <-- 1 else R[regb] <-- 0
 				when OP_SNE | OP_SNEI =>
 					if (OP1 /= OP2) then
 						Y_TMP <= std_logic_vector(to_unsigned(1, Y_TMP'length));
@@ -174,8 +201,44 @@ architecture BEHAVIORAL of ALU is
 						Y_TMP <= std_logic_vector(to_unsigned(0, Y_TMP'length));
 					end if;
 
---				when OP_SLE =>	-- signed, if (R[rega] <= R[regb]) R[regc] <-- 1 else R[regc] <-- 0
---				when OP_SLEI =>	-- signed, if (R[rega] <= imm16) R[regb] <-- 1 else R[regb] <-- 0
+--				when OP_SLT =>		-- signed, if (R[rega] < R[regb]) R[regc] <-- 1 else R[regc] <-- 0
+--				when OP_SLTI =>		-- signed, if (R[rega] < imm16) R[regb] <-- 1 else R[regb] <-- 0
+				when OP_SLT | OP_SLTI =>
+					if (signed(OP1) < signed(OP2)) then
+						Y_TMP <= std_logic_vector(to_unsigned(1, Y_TMP'length));
+					else
+						Y_TMP <= std_logic_vector(to_unsigned(0, Y_TMP'length));
+					end if;
+
+--				when OP_SLTU =>		-- unsigned, if (R[rega] < R[regb]) R[regc] <-- 1 else R[regc] <-- 0
+--				when OP_SLTUI =>	-- unsigned, if (R[rega] < uimm16) R[regb] <-- 1 else R[regb] <-- 0
+				when OP_SLTU | OP_SLTUI =>
+					if (unsigned(OP1) < unsigned(OP2)) then
+						Y_TMP <= std_logic_vector(to_unsigned(1, Y_TMP'length));
+					else
+						Y_TMP <= std_logic_vector(to_unsigned(0, Y_TMP'length));
+					end if;
+
+--				when OP_SGT =>		-- signed, if (R[rega] > R[regb]) R[regc] <-- 1 else R[regc] <-- 0
+--				when OP_SGTI =>		-- signed, if (R[rega] > imm16) R[regb] <-- 1 else R[regb] <-- 0
+				when OP_SGT | OP_SGTI =>	
+					if (signed(OP1) > signed(OP2)) then
+						Y_TMP <= std_logic_vector(to_unsigned(1, Y_TMP'length));
+					else
+						Y_TMP <= std_logic_vector(to_unsigned(0, Y_TMP'length));
+					end if;
+
+--				when OP_SGTU =>		-- unsigned, if (R[rega] > R[regb]) R[regc] <-- 1 else R[regc] <-- 0
+--				when OP_SGTUI =>	-- unsigned, if (R[rega] > uimm16) R[regb] <-- 1 else R[regb] <-- 0
+				when OP_SGTU | OP_SGTUI =>	
+					if (unsigned(OP1) > unsigned(OP2)) then
+						Y_TMP <= std_logic_vector(to_unsigned(1, Y_TMP'length));
+					else
+						Y_TMP <= std_logic_vector(to_unsigned(0, Y_TMP'length));
+					end if;
+
+--				when OP_SLE =>		-- signed, if (R[rega] <= R[regb]) R[regc] <-- 1 else R[regc] <-- 0
+--				when OP_SLEI =>		-- signed, if (R[rega] <= imm16) R[regb] <-- 1 else R[regb] <-- 0
 				when OP_SLE | OP_SLEI =>
 					if (signed(OP1) <= signed(OP2)) then
 						Y_TMP <= std_logic_vector(to_unsigned(1, Y_TMP'length));
@@ -183,8 +246,17 @@ architecture BEHAVIORAL of ALU is
 						Y_TMP <= std_logic_vector(to_unsigned(0, Y_TMP'length));
 					end if;
 
---				when OP_SGE =>	-- signed, if (R[rega] >= R[regb]) R[regc] <-- 1 else R[regc] <-- 0
---				when OP_SGEI =>	-- signed, if (R[rega] >= imm16) R[regb] <-- 1 else R[regb] <-- 0
+--				when OP_SLEU =>		-- unsigned, if (R[rega] <= R[regb]) R[regc] <-- 1 else R[regc] <-- 0
+--				when OP_SLEUI =>	-- unsigned, if (R[rega] <= uimm16) R[regb] <-- 1 else R[regb] <-- 0
+				when OP_SLEU | OP_SLEUI =>
+					if (unsigned(OP1) <= unsigned(OP2)) then
+						Y_TMP <= std_logic_vector(to_unsigned(1, Y_TMP'length));
+					else
+						Y_TMP <= std_logic_vector(to_unsigned(0, Y_TMP'length));
+					end if;
+
+--				when OP_SGE =>		-- signed, if (R[rega] >= R[regb]) R[regc] <-- 1 else R[regc] <-- 0
+--				when OP_SGEI =>		-- signed, if (R[rega] >= imm16) R[regb] <-- 1 else R[regb] <-- 0
 				when OP_SGE | OP_SGEI =>	
 					if (signed(OP1) >= signed(OP2)) then
 						Y_TMP <= std_logic_vector(to_unsigned(1, Y_TMP'length));
@@ -192,17 +264,46 @@ architecture BEHAVIORAL of ALU is
 						Y_TMP <= std_logic_vector(to_unsigned(0, Y_TMP'length));
 					end if;
 
---				when OP_BEQZ =>	-- if (R[rega] == 0) PC <-- PC + imm16
---				when OP_BNEZ =>	-- if (R[rega] != 0) PC <-- PC + imm16
-				when OP_BEQZ | OP_BNEZ =>
-					Y_TMP <= OP1;
+--				when OP_SGEU =>		-- unsigned, if (R[rega] >= R[regb]) R[regc] <-- 1 else R[regc] <-- 0
+--				when OP_SGEUI =>	-- unsigned, if (R[rega] >= uimm16) R[regb] <-- 1 else R[regb] <-- 0
+				when OP_SGEU | OP_SGEUI =>
+					if (unsigned(OP1) >= unsigned(OP2)) then
+						Y_TMP <= std_logic_vector(to_unsigned(1, Y_TMP'length));
+					else
+						Y_TMP <= std_logic_vector(to_unsigned(0, Y_TMP'length));
+					end if;
 
---				when OP_LW =>	-- R[regb] <-- M[imm16 + R[rega]]
---				when OP_SW =>	-- M[imm16 + R[rega]] <-- R[regb]
---				when OP_J =>	-- PC <-- PC + imm26
---				when OP_JAL =>	-- R31 <-- PC + 4; PC <-- PC + imm26
---				when OP_NOP =>	-- idles one cycle	
-				when others => Y_TMP <= std_logic_vector(to_unsigned(0, Y_TMP'length));
+--				when OP_BEQZ =>		-- if (R[rega] == 0) PC <-- PC + imm16
+--				when OP_BNEZ =>		-- if (R[rega] != 0) PC <-- PC + imm16
+				when OP_BEQZ | OP_BNEZ =>
+					OP_A <= OP1;
+					OP_B <= OP2;
+					OP_Ci <= '0';
+					Y_TMP <= OP_S;
+
+--				when OP_LW =>		-- R[regb] <-- M[imm16 + R[rega]]
+--				when OP_SW =>		-- M[imm16 + R[rega]] <-- R[regb]
+				when OP_LW | OP_SW =>
+					OP_A <= OP1;
+					OP_B <= OP2;
+					OP_Ci <= '0';
+					Y_TMP <= OP_S;
+
+--				when OP_J =>		-- PC <-- PC + imm26
+--				when OP_JAL =>		-- R31 <-- PC + 4; PC <-- PC + imm26
+				when OP_J | OP_JAL =>
+					OP_A <= OP1;
+					OP_B <= OP2;
+					OP_Ci <= '0';
+					--Y_TMP <= OP_S;
+					Y_TMP <= std_logic_vector(to_unsigned(4, Y_TMP'length));
+
+--				when OP_NOP =>		-- idles one cycle
+				when OP_NOP =>
+					Y_TMP <= std_logic_vector(to_unsigned(0, Y_TMP'length));
+
+				when others =>
+					Y_TMP <= std_logic_vector(to_unsigned(0, Y_TMP'length));
 			end case;
 		end process;
 
