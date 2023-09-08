@@ -176,7 +176,7 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 		generic	(	N		: integer := RF_SIZE_GLOBAL;			-- / 32 bits
 				NA		: integer := RS_SIZE_GLOBAL);			-- /  5 bits
 
-		port	(	CLK		: in  std_logic;				-- Clock
+		port	(	--CLK		: in  std_logic;				-- Clock
 				RST		: in  std_logic;				-- Reset (active low)
 				EN		: in  std_logic;				-- Enable
 				EN_RD1		: in  std_logic;				-- Read Enable 1
@@ -702,7 +702,7 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 			generic map (	N		=> RF_SIZE_GLOBAL,
 					NA		=> RS_SIZE_GLOBAL)
 
-			port map (	CLK		=> CLK,
+			port map (	--CLK		=> CLK,
 					RST		=> RST,
 					EN		=> '1',
 					EN_RD1		=> '1',

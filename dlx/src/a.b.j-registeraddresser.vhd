@@ -1,10 +1,9 @@
 ----------------------------------------------------------------------------------------------------
--- Description:	This module is designed to accordingly set the RS1, RS2, and RD register addresses.
---		The module differentiates between R-Type, I-Type, and J-Type instructions based 
---		on the opcode (IR_OPC).
+-- Description: This module sets the RS1, RS2, and RD register addresses based on the incoming 
+--		instruction's opcode. It handles R-Type, I-Type, and J-Type instructions.
 --
 -- Author:	Riccardo Cuccu
--- Date:	2023/09/07
+-- Date:	2023/09/08
 ----------------------------------------------------------------------------------------------------
 
 library ieee;
@@ -27,7 +26,7 @@ end REGADDR;
 
 architecture BEHAVIORAL of REGADDR is
 
-	-- Local signal to hold the opcode portion of the instruction
+	-- Local signals to temporarily store opcode and register addresses from the instruction
 	signal IR_OPC	: std_logic_vector(OPC - 1 downto 0);
 	signal REG1	: std_logic_vector(REG - 1 downto 0);
 	signal REG2	: std_logic_vector(REG - 1 downto 0);
@@ -35,13 +34,13 @@ architecture BEHAVIORAL of REGADDR is
 
 begin
 
-	-- Extract the opcode from the input instruction
+	-- Extract opcode and register addresses from input instruction
 	IR_OPC	<= INSTR(N - 1 downto N - OPC);
 	REG1	<= INSTR(N - OPC - 1 downto N - OPC - REG);			-- INSTR(25 downto 21);
 	REG2	<= INSTR(N - OPC - REG - 1 downto N - OPC - REG*2);		-- INSTR(20 downto 16);
 	REG3	<= INSTR(N - OPC - REG*2 - 1 downto N - OPC - REG*3);		-- INSTR(15 downto 11);
 
-	-- Process to differentiate between instruction types and set output ports
+	-- Process to identify instruction type and set the output ports
 	process(IR_OPC, REG1, REG2, REG3)
 	begin
 

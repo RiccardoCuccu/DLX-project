@@ -1,14 +1,12 @@
 ----------------------------------------------------------------------------------------------------
--- Description:	This module functions as a Register File (RF) within the DLX 
---		architecture. When in read mode, it takes in register addresses
---		(ADD_RD1, ADD_RD2) and returns the corresponding register
---		values (OUT1, OUT2). When in write mode, it takes a register 
---		address (ADD_WR) and writes the DATAIN value to the specified
---		register. The operations are enabled by respective enable 
---		signals (EN, EN_RD1, EN_RD2, EN_WR).
+-- Description:	This module functions as a Register File (RF) within the DLX architecture.
+--		In read mode, it receives register addresses (ADD_RD1, ADD_RD2) and returns 
+--		the corresponding register values (OUT1, OUT2). In write mode, it writes 
+--		the DATAIN value to the register specified by ADD_WR. Operations are enabled by 
+--		the respective enable signals (EN, EN_RD1, EN_RD2, EN_WR).
 --
 -- Author:	Riccardo Cuccu
--- Date:	2023/09/03
+-- Date:	2023/09/08
 ----------------------------------------------------------------------------------------------------
 
 library ieee;
@@ -18,10 +16,10 @@ use work.constants.all;
 
 entity RF is
 
-	generic (	N		: integer := RF_SIZE_GLOBAL;
-			NA		: integer := RS_SIZE_GLOBAL);
+	generic (	N		: integer := RF_SIZE_GLOBAL;			-- / 32 bits
+			NA		: integer := RS_SIZE_GLOBAL);			-- /  5 bits
 
-	port	(	CLK		: in	std_logic;				-- Clock
+	port	(	--CLK		: in	std_logic;				-- Clock
 			RST		: in	std_logic;				-- Reset, active low
 			EN		: in	std_logic;				-- Enable
 			EN_RD1		: in	std_logic;				-- Read Enable 1
@@ -45,12 +43,11 @@ architecture BEHAVIORAL of RF is
 
 	begin
 
-		REGISTER_WRITE: process(CLK, RST)					-- Synchronous
+--		REGISTER_WRITE: process(CLK, RST)					-- Synchronous
+		REGISTER_WRITE: process(RST, EN, ADD_WR, EN_WR, DATAIN)			-- Asynchronous
 		begin
 
 			if RST = '0' then						-- Reset, active low
---				OUT1 <= (others => '0');
---				OUT2 <= (others => '0');
 				REG <= (others => (others => '0'));
 --				REG <= (	"00000000000000000000000000001010",	-- Default Value: 10 (0xA)
 --						"00000000000000000000000000001011",	-- Default Value: 11 (0xB)
@@ -65,21 +62,19 @@ architecture BEHAVIORAL of RF is
 --						"00000000000000000011101111101010",	-- Default Value: 15338 (0x3BEA)
 --						others => (others =>'0'));
 
-			elsif CLK'event and CLK='1' then				-- Posedge Clock
-				if EN = '1' then					-- Enable Signal, active high
-					if EN_WR = '1' then
-						if (conv_integer(ADD_WR) = 0) then
-							REG(0) <= (others => '0');	-- Special handling for register 0 (hardwired to 0)
-						else
-							REG(conv_integer(ADD_WR)) <= DATAIN;
-						end if;
+--			elsif CLK'event and CLK='1' then				-- Posedge Clock
+			else
+				if EN = '1' and EN_WR = '1' then			-- Enable Signals, active high
+					if (conv_integer(ADD_WR) = 0) then
+						REG(0) <= (others => '0');		-- Special handling for register 0 (hardwired to 0)
+					elsif (conv_integer(ADD_WR) = 2**NA - 1) then
+						REG(2**NA - 1) <= (others => '0');	-- Special handling for register 31 (hardwired to 0)
+					else
+						REG(conv_integer(ADD_WR)) <= DATAIN;
 					end if;
 				end if;
-
---				REG(0) <= (others => '0');
---				REG(2**NA - 1) <= (others => '0');
-
 			end if;
+
 		end process;
 
 		REGISTER_READ: process(EN, ADD_RD1, ADD_RD2, EN_RD1, EN_RD2)		-- Asynchronous

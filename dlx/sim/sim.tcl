@@ -8,7 +8,7 @@
 #		specific pipeline stages for detailed observations.
 #
 # Author:	Riccardo Cuccu
-# Date:		2023/09/07
+# Date:		2023/09/08
 #----------------------------------------------------------------------------------------------------
 
 #----------------------------------------------------------------------------------------------------
@@ -845,7 +845,7 @@ quietly set NumericStdNoWarnings 1			; # Warning: NUMERIC_STD.TO_INTEGER: metava
 run 0 ns;
 
 # Re-enable warnings
-quietly set StdArithNoWarnings 0			; # Warning: CONV_INTEGER: There is an 'U'|'X'|'W'|'Z'|'-' in an arithm
+quietly set StdArithNoWarnings 0			; # Warning: CONV_INTEGER: There is an 'U'|'X'|'W'|'Z'|'-' in an arithmetic operand
 quietly set NumericStdNoWarnings 0			; # Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
 
 # Run the real simulation
