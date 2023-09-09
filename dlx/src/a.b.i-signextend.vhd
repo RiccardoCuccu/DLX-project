@@ -61,11 +61,11 @@ begin
 			IMM(N - OPC - REG*2 - 1 downto 0) <= IMM_I;
 			IMM(N - 1 downto N - OPC - REG*2) <= (others => '0');
 
---		elsif IR_OPC = ITYPE_LHI then
---
---			-- Zero-extend lower 16-bits and copy higher 16-bits from immediate
---			IMM(N - OPC - REG*2 - 1 downto 0) <= (others => '0');
---			IMM(N - 1 downto N - OPC - REG*2) <= IMM_I;
+		elsif IR_OPC = ITYPE_LHI then
+
+			-- Zero-extend lower 16-bits and copy higher 16-bits from immediate
+			IMM(N - OPC - REG*2 - 1 downto 0) <= (others => '0');
+			IMM(N - 1 downto N - OPC - REG*2) <= IMM_I;
 
 --		elsif IR_OPC = ITYPE_LB or IR_OPC = ITYPE_LBU then
 --

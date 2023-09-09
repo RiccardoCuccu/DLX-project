@@ -7,7 +7,7 @@
 --		and ensure synchronous operations across all stages.
 --
 -- Author:	Riccardo Cuccu
--- Date:	2023/09/07
+-- Date:	2023/09/08
 ----------------------------------------------------------------------------------------------------
 
 library ieee;
@@ -446,7 +446,7 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 			elsif IR_opcode = ITYPE_ANDI	then	IF_ALU_LABEL <= L_ITYPE_ANDI;
 			elsif IR_opcode = ITYPE_ORI	then	IF_ALU_LABEL <= L_ITYPE_ORI;
 			elsif IR_opcode = ITYPE_XORI	then	IF_ALU_LABEL <= L_ITYPE_XORI;
---			elsif IR_opcode = ITYPE_LHI	then	IF_ALU_LABEL <= L_ITYPE_LHI;
+			elsif IR_opcode = ITYPE_LHI	then	IF_ALU_LABEL <= L_ITYPE_LHI;
 --			elsif IR_opcode = ITYPE_RFE	then	IF_ALU_LABEL <= L_ITYPE_RFE;
 --			elsif IR_opcode = ITYPE_TRAP	then	IF_ALU_LABEL <= L_ITYPE_TRAP;
 --			elsif IR_opcode = ITYPE_JR	then	IF_ALU_LABEL <= L_ITYPE_JR;

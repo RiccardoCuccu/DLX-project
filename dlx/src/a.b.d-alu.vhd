@@ -4,13 +4,11 @@
 --		and subtraction operations.
 --
 -- Author:	Riccardo Cuccu
--- Date:	2023/09/07
+-- Date:	2023/09/08
 ----------------------------------------------------------------------------------------------------
 
-library ieee; 
-use ieee.std_logic_1164.all; 
---use ieee.std_logic_unsigned.all;
---use ieee.std_logic_signed.all;
+library ieee;
+use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use work.constants.all;
 
@@ -119,7 +117,7 @@ architecture BEHAVIORAL of ALU is
 		begin
 			case(OPC) is
 
-				-- Shift
+				-- Shifts
 
 --				when OP_SLL =>		-- unsigned, R[regc] <-- R[rega] << R[regb]_27..31
 --				when OP_SLLI =>		-- unsigned, R[regb] <-- R[rega] << uimm16_27..31
@@ -273,13 +271,7 @@ architecture BEHAVIORAL of ALU is
 						Y_TMP <= std_logic_vector(to_unsigned(0, Y_TMP'length));
 					end if;
 
---				when OP_BEQZ =>		-- if (R[rega] == 0) PC <-- PC + imm16
---				when OP_BNEZ =>		-- if (R[rega] != 0) PC <-- PC + imm16
-				when OP_BEQZ | OP_BNEZ =>
-					OP_A <= OP1;
-					OP_B <= OP2;
-					OP_Ci <= '0';
-					Y_TMP <= OP_S;
+				-- Loads
 
 --				when OP_LW =>		-- R[regb] <-- M[imm16 + R[rega]]
 --				when OP_SW =>		-- M[imm16 + R[rega]] <-- R[regb]
@@ -289,6 +281,12 @@ architecture BEHAVIORAL of ALU is
 					OP_Ci <= '0';
 					Y_TMP <= OP_S;
 
+--				when OP_LHI =>		-- R[regb] <-- imm16 ## 0^16
+				when OP_LHI =>
+					Y_TMP <= OP2;
+
+				-- Jumps
+
 --				when OP_J =>		-- PC <-- PC + imm26
 --				when OP_JAL =>		-- R31 <-- PC + 4; PC <-- PC + imm26
 				when OP_J | OP_JAL =>
@@ -297,6 +295,18 @@ architecture BEHAVIORAL of ALU is
 					OP_Ci <= '0';
 					--Y_TMP <= OP_S;
 					Y_TMP <= std_logic_vector(to_unsigned(4, Y_TMP'length));
+
+				-- Branches
+
+--				when OP_BEQZ =>		-- if (R[rega] == 0) PC <-- PC + imm16
+--				when OP_BNEZ =>		-- if (R[rega] != 0) PC <-- PC + imm16
+				when OP_BEQZ | OP_BNEZ =>
+					OP_A <= OP1;
+					OP_B <= OP2;
+					OP_Ci <= '0';
+					Y_TMP <= OP_S;
+
+				-- No Operations
 
 --				when OP_NOP =>		-- idles one cycle
 				when OP_NOP =>

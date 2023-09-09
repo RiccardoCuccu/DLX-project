@@ -7,7 +7,7 @@
 --		easily configurable and maintainable.
 --
 -- Author:	Riccardo Cuccu
--- Date:	2023/09/07
+-- Date:	2023/09/08
 ----------------------------------------------------------------------------------------------------
 
 library ieee;
@@ -367,7 +367,7 @@ package constants is
 	constant ITYPE_ANDI	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "00" & x"C";
 	constant ITYPE_ORI	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "00" & x"D";
 	constant ITYPE_XORI	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "00" & x"E";
---	constant ITYPE_LHI	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "00" & x"F";
+	constant ITYPE_LHI	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "00" & x"F";
 --	constant ITYPE_RFE	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "01" & x"0";
 --	constant ITYPE_TRAP	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "01" & x"1";
 --	constant ITYPE_JR	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "01" & x"2";

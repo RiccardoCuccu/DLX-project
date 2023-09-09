@@ -5,7 +5,7 @@
 --		These control signals are generated based on opcode and function fields.
 --
 -- Author:	Riccardo Cuccu
--- Date:	2023/09/07
+-- Date:	2023/09/08
 ----------------------------------------------------------------------------------------------------
 
 library ieee;
@@ -43,8 +43,6 @@ entity DLX_CU is
 			RegIMM_LATCH_EN		: out std_logic;	-- Immediate Register Latch Enable
 
 			-- EX Control Signals
---			MUXA_PRE_SEL		: out std_logic;	-- MUX-A Pre Sel
---			MUXB_PRE_SEL		: out std_logic;	-- MUX-B Pre Sel
 			MUXA_SEL		: out std_logic;	-- MUX-A Sel
 			MUXB_SEL		: out std_logic;	-- MUX-B Sel
 			ALU_OUTREG_EN		: out std_logic;	-- ALU Output Register Enable
@@ -89,7 +87,7 @@ architecture DLX_CU_HW of DLX_CU is
 					"111" & "1101" & "0110" & "00000" & "1",		-- x"0C" ANDI	*
 					"111" & "1101" & "0110" & "00000" & "1",		-- x"0D" ORI	*
 					"111" & "1101" & "0110" & "00000" & "1",		-- x"0E" XORI	*
-					"000" & "0000" & "0000" & "00000" & "0",		-- x"0F" LHI	/
+					"111" & "1001" & "0110" & "00000" & "1",		-- x"0F" LHI	/
 
 					"000" & "0000" & "0000" & "00000" & "0",		-- x"10" RFE	/
 					"000" & "0000" & "0000" & "00000" & "0",		-- x"11" TRAP	/
@@ -295,7 +293,7 @@ begin
 		elsif IR_opcode = ITYPE_ANDI	then	aluOpcode1 <= OP_ANDI;		IR_opcode_LABEL1 <= L_ITYPE_ANDI;	IR_func_LABEL1 <= L_ITYPE;
 		elsif IR_opcode = ITYPE_ORI	then	aluOpcode1 <= OP_ORI;		IR_opcode_LABEL1 <= L_ITYPE_ORI;	IR_func_LABEL1 <= L_ITYPE;
 		elsif IR_opcode = ITYPE_XORI	then	aluOpcode1 <= OP_XORI;		IR_opcode_LABEL1 <= L_ITYPE_XORI;	IR_func_LABEL1 <= L_ITYPE;
---		elsif IR_opcode = ITYPE_LHI	then	aluOpcode1 <= OP_LHI;		IR_opcode_LABEL1 <= L_ITYPE_LHI;	IR_func_LABEL1 <= L_ITYPE;
+		elsif IR_opcode = ITYPE_LHI	then	aluOpcode1 <= OP_LHI;		IR_opcode_LABEL1 <= L_ITYPE_LHI;	IR_func_LABEL1 <= L_ITYPE;
 --		elsif IR_opcode = ITYPE_RFE	then	aluOpcode1 <= OP_RFE;		IR_opcode_LABEL1 <= L_ITYPE_RFE;	IR_func_LABEL1 <= L_ITYPE;
 --		elsif IR_opcode = ITYPE_TRAP	then	aluOpcode1 <= OP_TRAP;		IR_opcode_LABEL1 <= L_ITYPE_TRAP;	IR_func_LABEL1 <= L_ITYPE;
 --		elsif IR_opcode = ITYPE_JR	then	aluOpcode1 <= OP_JR;		IR_opcode_LABEL1 <= L_ITYPE_JR;		IR_func_LABEL1 <= L_ITYPE;
