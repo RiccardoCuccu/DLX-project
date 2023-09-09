@@ -1,3 +1,13 @@
+----------------------------------------------------------------------------------------------------
+-- Description:	This module acts as the top-level entity for a parallel 4-bit adder (P4 Adder) within a DLX
+--		architecture. It comprises two main components: a Sum Generator and a Carry Generator.
+--		The Sum Generator is responsible for generating the sum output, whereas the Carry Generator
+--		calculates intermediate and output carries.
+--
+-- Author:	Riccardo Cuccu
+-- Date:	2023/09/09
+----------------------------------------------------------------------------------------------------
+
 library ieee; 
 use ieee.std_logic_1164.all; 
 use ieee.std_logic_unsigned.all;

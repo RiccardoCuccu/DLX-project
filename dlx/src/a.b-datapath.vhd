@@ -7,7 +7,7 @@
 --		and ensure synchronous operations across all stages.
 --
 -- Author:	Riccardo Cuccu
--- Date:	2023/09/08
+-- Date:	2023/09/09
 ----------------------------------------------------------------------------------------------------
 
 library ieee;

@@ -8,7 +8,7 @@
 #		specific pipeline stages for detailed observations.
 #
 # Author:	Riccardo Cuccu
-# Date:		2023/09/08
+# Date:		2023/09/09
 #----------------------------------------------------------------------------------------------------
 
 #----------------------------------------------------------------------------------------------------
@@ -45,7 +45,9 @@ vcom -quiet ../src/000-globals/ldr.vhd
 
 ## Multiplexers
 vcom -quiet ../src/000-globals/mux21.vhd
+vcom -quiet ../src/000-globals/mux21_logic.vhd
 vcom -quiet ../src/000-globals/mux41.vhd
+#vcom -quiet ../src/000-globals/mux41_logic.vhd
 
 # Arithmetic Components
 vcom -quiet ../src/000-globals/fa.vhd
@@ -69,6 +71,10 @@ vcom -quiet ../src/a.b.j-registeraddresser.vhd
 
 ### ALU (a.b.d)
 vcom -quiet ../src/a.b.d-alu.vhd
+vcom -quiet ../src/a.b.d-alu/a.b.d.c-comparator.vhd
+vcom -quiet ../src/a.b.d-alu/a.b.d.d-logic.vhd
+vcom -quiet ../src/a.b.d-alu/a.b.d.e-barrel-shifter-left.vhd
+vcom -quiet ../src/a.b.d-alu/a.b.d.f-barrel-shifter-right.vhd
 
 #### P4Adder (a.b.d.a)
 vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4adder.vhd
@@ -398,6 +404,12 @@ if {$tb_waves eq 1} {
 		sim:/tb_dlx/U1/DATAPATH_I/ALU_OPCODE \
 		sim:/tb_dlx/U1/DATAPATH_I/ALU_OUT \
 		sim:/tb_dlx/U1/DATAPATH_I/ALU_ZERO
+
+#		add wave -divider {ALU_LOGIC} -position insertpoint -radix binary \
+#		sim:/tb_dlx/U1/DATAPATH_I/ARITHMETIC_LOGIC_UNIT/LOG/*
+
+		add wave -divider {ALU_ADDER} -position insertpoint -radix binary \
+		sim:/tb_dlx/U1/DATAPATH_I/ARITHMETIC_LOGIC_UNIT/SUM/*
 
 		add wave -divider {ZERO_DETECTOR} -position insertpoint \
 		sim:/tb_dlx/U1/DATAPATH_I/ID_EX_RF_OUT1 \

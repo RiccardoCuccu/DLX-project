@@ -19,6 +19,7 @@ end MUX41;
 architecture BEHAVIORAL of MUX41 is
 
 begin
+
 	process (A, B, C, D, S)
 	begin
 		case S is

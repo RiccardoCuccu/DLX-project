@@ -4,7 +4,7 @@
 --		and subtraction operations.
 --
 -- Author:	Riccardo Cuccu
--- Date:	2023/09/08
+-- Date:	2023/09/09
 ----------------------------------------------------------------------------------------------------
 
 library ieee;
@@ -14,14 +14,14 @@ use work.constants.all;
 
 entity ALU is
 
-	generic (	N:	integer := ALU_OP_SIZE_GLOBAL;			-- / 32 bits
-			NB:	integer := ALU_BLOCK_SIZE_GLOBAL);		-- /  8 bits
+	generic (	N:	integer := ALU_OP_SIZE_GLOBAL;				-- / 32 bits
+			NB:	integer := ALU_BLOCK_SIZE_GLOBAL);			-- /  8 bits
 
-	port (		OP1:	in	std_logic_vector(N - 1 downto 0);	-- Operand 1		/ 32 bit
-			OP2:	in	std_logic_vector(N - 1 downto 0);	-- Operand 2		/ 32 bit
-			OPC:	in	aluOp;					-- Control Signal
-			Y:	out	std_logic_vector(N - 1 downto 0);	-- Result		/ 32 bit
-			Z:	out	std_logic);				-- Zero flag
+	port (		OP1:	in	std_logic_vector(N - 1 downto 0);		-- Operand 1		/ 32 bits
+			OP2:	in	std_logic_vector(N - 1 downto 0);		-- Operand 2		/ 32 bits
+			OPC:	in	aluOp;						-- Control Signal
+			Y:	out	std_logic_vector(N - 1 downto 0);		-- Result		/ 32 bits
+			Z:	out	std_logic);					-- Zero flag
 			--Co:	out	std_logic);
 			--Ovf:	out	std_logic);
 end ALU;
@@ -34,34 +34,56 @@ architecture BEHAVIORAL of ALU is
 		generic (	N:	integer := ALU_OP_SIZE_GLOBAL;			-- / 32 bits
 				NB:	integer := ALU_BLOCK_SIZE_GLOBAL);		-- /  8 bits
 
-		port (		A:	in	std_logic_vector(N - 1 downto 0);	-- Operand 1		/ 32 bit
-				B:	in	std_logic_vector(N - 1 downto 0);	-- Operand 2		/ 32 bit
+		port (		A:	in	std_logic_vector(N - 1 downto 0);	-- Operand 1		/ 32 bits
+				B:	in	std_logic_vector(N - 1 downto 0);	-- Operand 2		/ 32 bits
 				Ci:	in	std_logic;				-- Carry in
-				S:	out	std_logic_vector(N - 1 downto 0);	-- Result		/ 32 bit
+				S:	out	std_logic_vector(N - 1 downto 0);	-- Result		/ 32 bits
 				Co:	out	std_logic);				-- Carry out
 				--Ovf:	out	std_logic);
 	end component;
 
---	component COMPARATOR is
---
---		generic (	N: integer := ALU_OP_SIZE_GLOBAL);
---
---		port (		A:	in	std_logic_vector(N - 1 downto 0);	-- Operand 1
---				B:	in	std_logic_vector(N - 1 downto 0);	-- Operand 2
---				S:	out	std_logic);				-- Result
---
---	end component;
+	component COMPARATOR is
 
---	component LOGIC is
---
---		generic (	N:	integer := ALU_OP_SIZE_GLOBAL);
---	
---		port (		A:	in	std_logic_vector(N - 1 downto 0);	-- Operand 1
---				B:	in	std_logic_vector(N - 1 downto 0);	-- Operand 2
---				OP:	in	std_logic_vector(1 downto 0);		-- Operation
---				S:	out	std_logic_vector(N - 1 downto 0));	-- Result
---
---	end component;
+		generic (	N:	integer	:= ALU_OP_SIZE_GLOBAL);			-- / 32 bits
+
+		port (		A:	in	std_logic_vector(N - 1 downto 0);	-- Operand 1		/ 32 bits
+				B:	in	std_logic_vector(N - 1 downto 0);	-- Operand 2		/ 32 bits
+				S:	in	std_logic_vector(3 downto 0);		-- Selector		/  4 bits
+				Y:	out	std_logic_vector(N - 1 downto 0));	-- Result		/ 32 bits
+
+	end component;
+
+	component LOGIC is
+
+		generic (	N:	integer	:= ALU_OP_SIZE_GLOBAL);			-- / 32 bits
+
+		port (		A:	in	std_logic_vector(N - 1 downto 0);	-- Operand 1		/ 32 bits
+				B:	in	std_logic_vector(N - 1 downto 0);	-- Operand 2		/ 32 bits
+				S:	in	std_logic_vector(1 downto 0);		-- Selector		/  2 bits
+				Y:	out	std_logic_vector(N - 1 downto 0));	-- Result		/ 32 bits
+
+	end component;
+
+	component BARREL_SHIFTER_LEFT is
+
+		generic (	N:	integer := ALU_OP_SIZE_GLOBAL);			-- / 32 bits
+
+		port (		A:	in	std_logic_vector(N - 1 downto 0);	-- Operand		/ 32 bits
+				B:	in	std_logic_vector(N - 1 downto 0);	-- Number of Shifts	/ 32 bits
+				Y:	out	std_logic_vector(N - 1 downto 0));	-- Result		/ 32 bits
+
+	end component;
+
+	component BARREL_SHIFTER_RIGHT is
+
+		generic (	N:	integer := ALU_OP_SIZE_GLOBAL);			-- / 32 bits
+
+		port (		A:	in	std_logic_vector(N - 1 downto 0);	-- Operand		/ 32 bits
+				B:	in	std_logic_vector(N - 1 downto 0);	-- Number of Shifts	/ 32 bits
+				S:	in	std_logic;				-- Shif Type		/  2 bits
+				Y:	out	std_logic_vector(N - 1 downto 0));	-- Result		/ 32 bits
+
+	end component;
 
 --	component BOOTHMUL is
 --		generic (
@@ -69,19 +91,8 @@ architecture BEHAVIORAL of ALU is
 --		port (
 --			A :		in	std_logic_vector(NBIT/2 -1 downto 0);
 --			B :		in	std_logic_vector(NBIT/2 -1 downto 0);
---			C :	    out	std_logic_vector(NBIT-1 downto 0));
+--			C :		out	std_logic_vector(NBIT-1 downto 0));
 --	end component;
-
-	--component SHIFTER is
-		--generic (
-			--I_SIZE : integer := 32);
-		--port (
-			--Control: in std_logic_vector(1 downto 0);
-			--Operand_1 : in  std_logic_vector(I_SIZE - 1 downto 0);
-			--Operand_2 : in  std_logic_vector(I_SIZE - 1 downto 0);
-			--Dout : out std_logic_vector(I_SIZE - 1 downto 0)
-			--);
-	--end component;
 
 --	component fpAdderTOP is
 --		Port
@@ -102,10 +113,14 @@ architecture BEHAVIORAL of ALU is
 --		);
 --	end component;
 
-	signal Y_TMP, OP_A, OP_B, OP_S : std_logic_vector(N - 1 downto 0);
---	signal OP_LOGIC : std_logic_vector(1 downto 0);
+	signal OP_A, OP_B : std_logic_vector(N - 1 downto 0);
+	signal Y_TMP : std_logic_vector(N - 1 downto 0);
+	signal Y_SUM, Y_LOGIC, Y_SHIFTR, Y_SHIFTL, Y_COMPARE : std_logic_vector(N - 1 downto 0);
+
+	signal OP_COMPARE : std_logic_vector(3 downto 0);
+	signal OP_LOGIC : std_logic_vector(1 downto 0);
+	signal OP_SHIFT : std_logic;
 	signal OP_Ci : std_logic;
---	signal OP_CMP : std_logic;
 
 	begin
 
@@ -113,26 +128,37 @@ architecture BEHAVIORAL of ALU is
 		-- Processes
 		----------------------------------------------------------------------------------------------------
 
-		COMPUTATION: process(OP1, OP2, OP_S, OPC)
+		COMPUTATION: process(OP1, OP2, OPC, Y_SUM, Y_LOGIC, Y_SHIFTR, Y_SHIFTL, Y_COMPARE)
 		begin
-			case(OPC) is
+			case OPC is
 
-				-- Shifts
+				-- Shift
 
 --				when OP_SLL =>		-- unsigned, R[regc] <-- R[rega] << R[regb]_27..31
 --				when OP_SLLI =>		-- unsigned, R[regb] <-- R[rega] << uimm16_27..31
 				when OP_SLL | OP_SLLI =>
-					Y_TMP <= std_logic_vector(shift_left(unsigned(OP1),to_integer(unsigned(OP2))));
+--					Y_TMP <= std_logic_vector(shift_left(unsigned(OP1),to_integer(unsigned(OP2))));
+					OP_A <= OP1;
+					OP_B <= OP2;
+					Y_TMP <= Y_SHIFTL;
 
 --				when OP_SRL =>		-- unsigned, R[regc] <-- R[rega] >> R[regb]_27..31
 --				when OP_SRLI =>		-- unsigned, R[regb] <-- R[rega] >> uimm16_27..31
 				when OP_SRL | OP_SRLI =>
-					Y_TMP <= std_logic_vector(shift_right(unsigned(OP1),to_integer(unsigned(OP2))));
+--					Y_TMP <= std_logic_vector(shift_right(unsigned(OP1),to_integer(unsigned(OP2))));
+					OP_A <= OP1;
+					OP_B <= OP2;
+					OP_SHIFT <= '0';
+					Y_TMP <= Y_SHIFTR;
 
 --				when OP_SRA =>		-- signed, R[regc] <-- (R[rega]_0)^R[regb] ## (R[rega] >> R[regb])_R[regb]..31
 --				when OP_SRAI =>		-- signed, R[regb] <-- (R[rega]_31)^uimm16 ## (R[rega] >> uimm16)_uimm16..31
 				when OP_SRA | OP_SRAI =>
-					Y_TMP <= std_logic_vector(shift_right(signed(OP1),to_integer(unsigned(OP2))));
+--					Y_TMP <= std_logic_vector(shift_right(signed(OP1),to_integer(unsigned(OP2))));
+					OP_A <= OP1;
+					OP_B <= OP2;
+					OP_SHIFT <= '1';
+					Y_TMP <= Y_SHIFTR;
 
 				-- Arithmetic Operations
 
@@ -142,7 +168,7 @@ architecture BEHAVIORAL of ALU is
 					OP_A <= OP1;
 					OP_B <= OP2;
 					OP_Ci <= '0';
-					Y_TMP <= OP_S;
+					Y_TMP <= Y_SUM;
 
 --				when OP_ADDU =>		-- unsigned, R[regc] <-- R[rega] + R[regb]
 --				when OP_ADDUI =>	-- unsigned, R[regb] <-- R[rega] + uimm16
@@ -155,7 +181,7 @@ architecture BEHAVIORAL of ALU is
 					OP_A <= OP1;
 					OP_B <= NOT OP2;
 					OP_Ci <= '1';
-					Y_TMP <= OP_S;
+					Y_TMP <= Y_SUM;
 
 --				when OP_SUBU =>		-- unsigned, R[regc] <-- R[rega] - R[regb]
 --				when OP_SUBUI =>	-- unsigned, R[regb] <-- R[rega] - uimm16
@@ -167,109 +193,108 @@ architecture BEHAVIORAL of ALU is
 --				when OP_AND =>		-- unsigned bitwise basis, R[regc] <-- R[rega] & R[regb]
 --				when OP_ANDI =>		-- unsigned bitwise basis, R[regb] <-- R[rega] & uimm16
 				when OP_AND | OP_ANDI =>
-					Y_TMP <= OP1 and OP2;
+					OP_A <= OP1;
+					OP_B <= OP2;
+					OP_LOGIC <= "00";
+					Y_TMP <= Y_LOGIC;
 
 --				when OP_OR =>		-- unsigned bitwise basis, R[regc] <-- R[rega] | R[regb]
 --				when OP_ORI =>		-- unsigned bitwise basis, R[regb] <-- R[rega] | uimm16
 				when OP_OR | OP_ORI =>
-					Y_TMP <= OP1 or OP2;
+					OP_A <= OP1;
+					OP_B <= OP2;
+					OP_LOGIC <= "01";
+					Y_TMP <= Y_LOGIC;
 
 --				when OP_XOR =>		-- unsigned bitwise basis, R[regc] <-- R[rega] XOR R[regb]
 --				when OP_XORI =>		-- unsigned bitwise basis, R[regb] <-- R[rega] XOR uimm16
 				when OP_XOR | OP_XORI =>
-					Y_TMP <= OP1 xor OP2;
+					OP_A <= OP1;
+					OP_B <= OP2;
+					OP_LOGIC <= "10";
+					Y_TMP <= Y_LOGIC;
 
 				-- Comparison Operations
 
 --				when OP_SEQ =>		-- signed, if (R[rega] == R[regb]) R[regc] <-- 1 else R[regc] <-- 0
 --				when OP_SEQI =>		-- signed, if (R[rega] == imm16 ) R[regb] <-- 1 else R[regb] <-- 0
 				when OP_SEQ | OP_SEQI =>
-					if (OP1 = OP2) then
-						Y_TMP <= std_logic_vector(to_unsigned(1, Y_TMP'length));
-					else
-						Y_TMP <= std_logic_vector(to_unsigned(0, Y_TMP'length));
-					end if;
+					OP_A <= OP1;
+					OP_B <= OP2;
+					OP_COMPARE <= "0000";
+					Y_TMP <= Y_COMPARE;
 
 --				when OP_SNE =>		-- signed, if (R[rega] != R[regb]) R[regc] <-- 1 else R[regc] <-- 0
 --				when OP_SNEI =>		-- signed, if (R[rega] != imm16) R[regb] <-- 1 else R[regb] <-- 0
 				when OP_SNE | OP_SNEI =>
-					if (OP1 /= OP2) then
-						Y_TMP <= std_logic_vector(to_unsigned(1, Y_TMP'length));
-					else
-						Y_TMP <= std_logic_vector(to_unsigned(0, Y_TMP'length));
-					end if;
+					OP_A <= OP1;
+					OP_B <= OP2;
+					OP_COMPARE <= "0001";
+					Y_TMP <= Y_COMPARE;
 
 --				when OP_SLT =>		-- signed, if (R[rega] < R[regb]) R[regc] <-- 1 else R[regc] <-- 0
 --				when OP_SLTI =>		-- signed, if (R[rega] < imm16) R[regb] <-- 1 else R[regb] <-- 0
 				when OP_SLT | OP_SLTI =>
-					if (signed(OP1) < signed(OP2)) then
-						Y_TMP <= std_logic_vector(to_unsigned(1, Y_TMP'length));
-					else
-						Y_TMP <= std_logic_vector(to_unsigned(0, Y_TMP'length));
-					end if;
+					OP_A <= OP1;
+					OP_B <= OP2;
+					OP_COMPARE <= "0010";
+					Y_TMP <= Y_COMPARE;
 
 --				when OP_SLTU =>		-- unsigned, if (R[rega] < R[regb]) R[regc] <-- 1 else R[regc] <-- 0
 --				when OP_SLTUI =>	-- unsigned, if (R[rega] < uimm16) R[regb] <-- 1 else R[regb] <-- 0
 				when OP_SLTU | OP_SLTUI =>
-					if (unsigned(OP1) < unsigned(OP2)) then
-						Y_TMP <= std_logic_vector(to_unsigned(1, Y_TMP'length));
-					else
-						Y_TMP <= std_logic_vector(to_unsigned(0, Y_TMP'length));
-					end if;
+					OP_A <= OP1;
+					OP_B <= OP2;
+					OP_COMPARE <= "0011";
+					Y_TMP <= Y_COMPARE;
 
 --				when OP_SGT =>		-- signed, if (R[rega] > R[regb]) R[regc] <-- 1 else R[regc] <-- 0
 --				when OP_SGTI =>		-- signed, if (R[rega] > imm16) R[regb] <-- 1 else R[regb] <-- 0
 				when OP_SGT | OP_SGTI =>	
-					if (signed(OP1) > signed(OP2)) then
-						Y_TMP <= std_logic_vector(to_unsigned(1, Y_TMP'length));
-					else
-						Y_TMP <= std_logic_vector(to_unsigned(0, Y_TMP'length));
-					end if;
+					OP_A <= OP1;
+					OP_B <= OP2;
+					OP_COMPARE <= "0100";
+					Y_TMP <= Y_COMPARE;
 
 --				when OP_SGTU =>		-- unsigned, if (R[rega] > R[regb]) R[regc] <-- 1 else R[regc] <-- 0
 --				when OP_SGTUI =>	-- unsigned, if (R[rega] > uimm16) R[regb] <-- 1 else R[regb] <-- 0
 				when OP_SGTU | OP_SGTUI =>	
-					if (unsigned(OP1) > unsigned(OP2)) then
-						Y_TMP <= std_logic_vector(to_unsigned(1, Y_TMP'length));
-					else
-						Y_TMP <= std_logic_vector(to_unsigned(0, Y_TMP'length));
-					end if;
+					OP_A <= OP1;
+					OP_B <= OP2;
+					OP_COMPARE <= "0101";
+					Y_TMP <= Y_COMPARE;
 
 --				when OP_SLE =>		-- signed, if (R[rega] <= R[regb]) R[regc] <-- 1 else R[regc] <-- 0
 --				when OP_SLEI =>		-- signed, if (R[rega] <= imm16) R[regb] <-- 1 else R[regb] <-- 0
 				when OP_SLE | OP_SLEI =>
-					if (signed(OP1) <= signed(OP2)) then
-						Y_TMP <= std_logic_vector(to_unsigned(1, Y_TMP'length));
-					else
-						Y_TMP <= std_logic_vector(to_unsigned(0, Y_TMP'length));
-					end if;
+					OP_A <= OP1;
+					OP_B <= OP2;
+					OP_COMPARE <= "0110";
+					Y_TMP <= Y_COMPARE;
 
 --				when OP_SLEU =>		-- unsigned, if (R[rega] <= R[regb]) R[regc] <-- 1 else R[regc] <-- 0
 --				when OP_SLEUI =>	-- unsigned, if (R[rega] <= uimm16) R[regb] <-- 1 else R[regb] <-- 0
 				when OP_SLEU | OP_SLEUI =>
-					if (unsigned(OP1) <= unsigned(OP2)) then
-						Y_TMP <= std_logic_vector(to_unsigned(1, Y_TMP'length));
-					else
-						Y_TMP <= std_logic_vector(to_unsigned(0, Y_TMP'length));
-					end if;
+					OP_A <= OP1;
+					OP_B <= OP2;
+					OP_COMPARE <= "0111";
+					Y_TMP <= Y_COMPARE;
 
 --				when OP_SGE =>		-- signed, if (R[rega] >= R[regb]) R[regc] <-- 1 else R[regc] <-- 0
 --				when OP_SGEI =>		-- signed, if (R[rega] >= imm16) R[regb] <-- 1 else R[regb] <-- 0
 				when OP_SGE | OP_SGEI =>	
-					if (signed(OP1) >= signed(OP2)) then
-						Y_TMP <= std_logic_vector(to_unsigned(1, Y_TMP'length));
-					else
-						Y_TMP <= std_logic_vector(to_unsigned(0, Y_TMP'length));
-					end if;
+					OP_A <= OP1;
+					OP_B <= OP2;
+					OP_COMPARE <= "1000";
+					Y_TMP <= Y_COMPARE;
 
 --				when OP_SGEU =>		-- unsigned, if (R[rega] >= R[regb]) R[regc] <-- 1 else R[regc] <-- 0
 --				when OP_SGEUI =>	-- unsigned, if (R[rega] >= uimm16) R[regb] <-- 1 else R[regb] <-- 0
 				when OP_SGEU | OP_SGEUI =>
-					if (unsigned(OP1) >= unsigned(OP2)) then
-						Y_TMP <= std_logic_vector(to_unsigned(1, Y_TMP'length));
-					else
-						Y_TMP <= std_logic_vector(to_unsigned(0, Y_TMP'length));
-					end if;
+					OP_A <= OP1;
+					OP_B <= OP2;
+					OP_COMPARE <= "1001";
+					Y_TMP <= Y_COMPARE;
 
 				-- Loads
 
@@ -279,7 +304,7 @@ architecture BEHAVIORAL of ALU is
 					OP_A <= OP1;
 					OP_B <= OP2;
 					OP_Ci <= '0';
-					Y_TMP <= OP_S;
+					Y_TMP <= Y_SUM;
 
 --				when OP_LHI =>		-- R[regb] <-- imm16 ## 0^16
 				when OP_LHI =>
@@ -293,7 +318,7 @@ architecture BEHAVIORAL of ALU is
 					OP_A <= OP1;
 					OP_B <= OP2;
 					OP_Ci <= '0';
-					--Y_TMP <= OP_S;
+					--Y_TMP <= Y_SUM;
 					Y_TMP <= std_logic_vector(to_unsigned(4, Y_TMP'length));
 
 				-- Branches
@@ -304,7 +329,7 @@ architecture BEHAVIORAL of ALU is
 					OP_A <= OP1;
 					OP_B <= OP2;
 					OP_Ci <= '0';
-					Y_TMP <= OP_S;
+					Y_TMP <= Y_SUM;
 
 				-- No Operations
 
@@ -337,14 +362,23 @@ architecture BEHAVIORAL of ALU is
 
 		SUM: P4_ADDER
 		generic map (N, NB)
-		port map (OP_A, OP_B, OP_Ci, OP_S, open);
+		port map (OP_A, OP_B, OP_Ci, Y_SUM, open);
 
---		LGC: LOGIC
---		generic map (N)
---		port map (OP_A, OP_B, OP_LOGIC, OP_S);
+		BSL: BARREL_SHIFTER_LEFT
+		generic map (N)
+		port map (OP_A, OP_B, Y_SHIFTL);
 
---		CMP: COMPARATOR
---		generic map (N)
---		port map (OP_A, OP_B, OP_CMP);
+		BSR: BARREL_SHIFTER_RIGHT
+		generic map (N)
+		port map (OP_A, OP_B, OP_SHIFT, Y_SHIFTR);
+
+		LOG: LOGIC
+		generic map (N)
+		port map (OP_A, OP_B, OP_LOGIC, Y_LOGIC);
+
+		CMP: COMPARATOR
+		generic map (N)
+		port map (OP_A, OP_B, OP_COMPARE, Y_COMPARE);
+
 
 end BEHAVIORAL;
