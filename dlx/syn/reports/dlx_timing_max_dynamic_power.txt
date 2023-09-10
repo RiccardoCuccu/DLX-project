@@ -1,0 +1,17 @@
+Warning: Design 'DLX' has '480' unresolved references. For more detailed information, use the "link" command. (UID-341)
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 1
+Design : DLX
+Version: S-2021.06-SP4
+Date   : Sun Sep 10 20:15:10 2023
+****************************************
+
+Operating Conditions: typical   Library: NangateOpenCellLibrary
+Wire Load Model Mode: top
+No paths.
+
+1

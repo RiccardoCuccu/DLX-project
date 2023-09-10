@@ -1,7 +1,8 @@
 ----------------------------------------------------------------------------------------------------
--- Description:	This DRAM module is designed to act as a memory unit in a DLX architecture. 
---		The DRAM can be both read from and written to but is only accessible via
---		specific load and store commands.
+-- Description:	This VHDL module serves as the testbench for the DLX architecture. It generates 
+--		a clock signal and a reset sequence for the DLX core. The testbench includes 
+--		instance instantiation of the DLX core and maps the testbench clock and reset 
+--		signals to the core's clock and reset inputs.
 --
 -- Author:	Riccardo Cuccu
 -- Date:	2023/09/10

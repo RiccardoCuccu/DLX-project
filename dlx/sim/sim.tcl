@@ -30,8 +30,6 @@ vcom -quiet ../src/000-globals.vhd
 ## Basic Logic Gates
 vcom -quiet ../src/000-globals/and.vhd
 vcom -quiet ../src/000-globals/nand.vhd
-#vcom -quiet ../src/000-globals/xand.vhd
-#vcom -quiet ../src/000-globals/xnand.vhd
 vcom -quiet ../src/000-globals/or.vhd
 vcom -quiet ../src/000-globals/nor.vhd
 vcom -quiet ../src/000-globals/xor.vhd
@@ -62,8 +60,6 @@ vcom -quiet ../src/a.a-cu.vhd
 vcom -quiet ../src/a.b-datapath.vhd
 vcom -quiet ../src/a.b.a-registerfile.vhd
 vcom -quiet ../src/a.b.c-forwardingunit.vhd
-vcom -quiet ../src/a.b.e-dram.vhd
-vcom -quiet ../src/a.b.f-iram.vhd
 #vcom -quiet ../src/a.b.g-pc.vhd
 #vcom -quiet ../src/a.b.h-ir.vhd
 vcom -quiet ../src/a.b.i-signextend.vhd
@@ -87,9 +83,6 @@ vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4adder/a.b.d.a.a.a-pg_row.vhd
 vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4adder/a.b.d.a.a-carry_generator.vhd
 
 ##### Sum Generator (a.b.d.a.b)
-#vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4adder/a.b.d.a.b.a.b-mux21.vhd
-#vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4adder/a.b.d.a.b.a.a.a-fa.vhd
-#vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4adder/a.b.d.a.b.a.a-rca.vhd
 vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4adder/a.b.d.a.b.a-carry_select_block.vhd
 vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4adder/a.b.d.a.b-sum_generator.vhd
 
@@ -107,6 +100,12 @@ vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4adder/a.b.d.a.b-sum_generator.vhd
 
 #### Floating Point Multiplier (a.b.d.f)
 #vcom -quiet ../src/a.b.d-alu/a.b.d.f-floatingpointmultiplier.vhd
+
+## IRAM (a.c)
+vcom -quiet ../src/a.c-iram.vhd
+
+## DRAM (a.d)
+vcom -quiet ../src/a.d-dram.vhd
 
 # DLX (a)
 vcom -quiet ../src/a-dlx.vhd

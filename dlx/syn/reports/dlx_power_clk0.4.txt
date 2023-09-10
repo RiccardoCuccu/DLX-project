@@ -1,0 +1,58 @@
+Loading db file '/home/mariagrazia.graziano/do/libnangate/NangateOpenCellLibrary_typical_ecsm.db'
+Information: Propagating switching activity (low effort zero delay simulation). (PWR-6)
+Warning: Design has unannotated primary inputs. (PWR-414)
+Warning: Design has unannotated sequential cell outputs. (PWR-415)
+Warning: Design has unannotated black box outputs. (PWR-428)
+ 
+****************************************
+Report : power
+        -analysis_effort low
+Design : DLX
+Version: S-2021.06-SP4
+Date   : Sun Sep 10 20:14:01 2023
+****************************************
+
+
+Library(s) Used:
+
+    NangateOpenCellLibrary (File: /home/mariagrazia.graziano/do/libnangate/NangateOpenCellLibrary_typical_ecsm.db)
+
+
+Operating Conditions: typical   Library: NangateOpenCellLibrary
+Wire Load Model Mode: top
+
+Design        Wire Load Model            Library
+------------------------------------------------
+DLX                    5K_hvratio_1_1    NangateOpenCellLibrary
+
+
+Global Operating Voltage = 1.1  
+Power-specific unit information :
+    Voltage Units = 1V
+    Capacitance Units = 1.000000ff
+    Time Units = 1ns
+    Dynamic Power Units = 1uW    (derived from V,C,T units)
+    Leakage Power Units = 1nW
+
+
+  Cell Internal Power  =   8.0198 mW   (93%)
+  Net Switching Power  = 602.2430 uW    (7%)
+                         ---------
+Total Dynamic Power    =   8.6220 mW  (100%)
+
+Cell Leakage Power     = 264.7981 uW
+
+
+                 Internal         Switching           Leakage            Total
+Power Group      Power            Power               Power              Power   (   %    )  Attrs
+--------------------------------------------------------------------------------------------------
+io_pad             0.0000            0.0000            0.0000            0.0000  (   0.00%)
+memory             0.0000            0.0000            0.0000            0.0000  (   0.00%)
+black_box          0.0000           12.4327            0.0000           12.4327  (   0.14%)
+clock_network     20.7540            5.7570          802.1140           27.3131  (   0.31%)
+register       6.8884e+03            0.9347        3.1615e+04        6.9209e+03  (  77.88%)
+sequential       817.9974            0.0000        5.2541e+04          870.5381  (   9.80%)
+combinational    292.6279          583.1183        1.7984e+05        1.0556e+03  (  11.88%)
+--------------------------------------------------------------------------------------------------
+Total          8.0198e+03 uW       602.2428 uW     2.6480e+05 nW     8.8868e+03 uW
+1

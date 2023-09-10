@@ -1,0 +1,32 @@
+Warning: Design 'DLX' has '480' unresolved references. For more detailed information, use the "link" command. (UID-341)
+ 
+****************************************
+Report : area
+Design : DLX
+Version: S-2021.06-SP4
+Date   : Sun Sep 10 20:15:10 2023
+****************************************
+
+Information: Updating design information... (UID-85)
+Library(s) Used:
+
+    NangateOpenCellLibrary (File: /home/mariagrazia.graziano/do/libnangate/NangateOpenCellLibrary_typical_ecsm.db)
+
+Number of ports:                         1869
+Number of nets:                          8177
+Number of cells:                         5888
+Number of combinational cells:           3818
+Number of sequential cells:              2005
+Number of macros/black boxes:               0
+Number of buf/inv:                       1031
+Number of references:                       4
+
+Combinational area:               4184.712009
+Buf/Inv area:                      562.856005
+Noncombinational area:            4739.588045
+Macro/Black Box area:                0.000000
+Net Interconnect area:      undefined  (Wire load has zero net area)
+
+Total cell area:                  8924.300054
+Total area:                 undefined
+1
