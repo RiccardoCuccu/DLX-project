@@ -1,3 +1,12 @@
+----------------------------------------------------------------------------------------------------
+-- Description:	This DRAM module is designed to act as a memory unit in a DLX architecture. 
+--		The DRAM can be both read from and written to but is only accessible via
+--		specific load and store commands.
+--
+-- Author:	Riccardo Cuccu
+-- Date:	2023/09/10
+----------------------------------------------------------------------------------------------------
+
 library ieee;
 use ieee.std_logic_1164.all;
 use work.constants.all;
@@ -16,8 +25,9 @@ architecture TEST of TB_DLX is
 
 	component DLX
 
-		generic (	IR_SIZE	: integer := IR_SIZE_GLOBAL;	-- Instruction Register Size
-				PC_SIZE	: integer := PC_SIZE_GLOBAL);	-- Program Counter Size
+		generic (	IR_SIZE		: integer := IR_SIZE_GLOBAL;		-- Instruction Register Size		/ 32 bits
+				PC_SIZE		: integer := PC_SIZE_GLOBAL;		-- Program Counter Size			/ 32 bits
+				DRAM_SIZE	: integer := DRAM_WORD_SIZE_GLOBAL);	-- DRAM Word Size			/ 32 bits
 
 		port (		CLK	: in std_logic;
 				RST	: in std_logic);		-- Active Low

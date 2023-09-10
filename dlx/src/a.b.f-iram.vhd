@@ -6,7 +6,7 @@
 --		The memory is then accessed via an input address to fetch instructions for execution.
 --
 -- Author:	Riccardo Cuccu
--- Date:	2023/09/03
+-- Date:	2023/09/10
 ----------------------------------------------------------------------------------------------------
 
 library ieee;
@@ -22,28 +22,28 @@ use work.constants.all;
 -- Memory filled by a process which reads from a file
 -- file name is "test.asm.mem"
 
-entity IRAM is
+entity DLX_IRAM is
 	
 	generic (	RAM_DEPTH	: integer := IRAM_SIZE_GLOBAL;
 			I_SIZE		: integer := IR_SIZE_GLOBAL);
-	
+
 	port (		--CLK		: in  std_logic;
 			RST		: in  std_logic;
 			ADDR		: in  std_logic_vector(I_SIZE - 1 downto 0);
 			DOUT		: out std_logic_vector(I_SIZE - 1 downto 0));
 
-end IRAM;
+end DLX_IRAM;
 
-architecture BEHAVIORAL of IRAM is
+architecture BEHAVIORAL of DLX_IRAM is
 
-	--type RAMtype is array (0 to RAM_DEPTH - 1) of integer; -- std_logic_vector(I_SIZE - 1 downto 0);
+--	type RAMtype is array (0 to RAM_DEPTH - 1) of integer; -- std_logic_vector(I_SIZE - 1 downto 0);
 	type RAMtype is array (0 to RAM_DEPTH - 1) of std_logic_vector(I_SIZE - 1 downto 0);
 
 	signal IRAM_mem: RAMtype := (others => (others => '0'));
 
 begin
 
-	-- DOUT <= conv_std_logic_vector(IRAM_mem(conv_integer(unsigned(ADDR))),I_SIZE);
+--	DOUT <= conv_std_logic_vector(IRAM_mem(conv_integer(unsigned(ADDR))),I_SIZE);
 	DOUT <= IRAM_mem(conv_integer(unsigned(ADDR(I_SIZE - 1 downto 2))));
 
 	-- purpose: This process is in charge of filling the Instruction RAM with the firmware
@@ -61,9 +61,14 @@ begin
 				IRAM_mem(index) <= tmp_data;		-- Store the instruction into internal memory
 				index := index + 1;			-- Increment index
 			end loop;
-		--elsif (CLK = '0') then
-		--	DOUT <= IRAM_mem(conv_integer(unsigned(ADDR(I_SIZE - 1 downto 2))));
+--		elsif (CLK = '0') then
+--			DOUT <= IRAM_mem(conv_integer(unsigned(ADDR(I_SIZE - 1 downto 2))));
 		end if;
 	end process FILL_MEM_P;
 
 end BEHAVIORAL;
+
+configuration CFG_IRAM_BEHAVIORAL of DLX_IRAM is
+	for BEHAVIORAL
+	end for;
+end CFG_IRAM_BEHAVIORAL;

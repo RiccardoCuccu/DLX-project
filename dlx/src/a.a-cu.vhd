@@ -5,7 +5,7 @@
 --		These control signals are generated based on opcode and function fields.
 --
 -- Author:	Riccardo Cuccu
--- Date:	2023/09/08
+-- Date:	2023/09/10
 ----------------------------------------------------------------------------------------------------
 
 library ieee;
@@ -13,8 +13,6 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use ieee.std_logic_arith.all;
 use work.constants.all;
---use ieee.numeric_std.all;
---use work.all;
 
 entity DLX_CU is
 
@@ -22,6 +20,7 @@ entity DLX_CU is
 			FUNC_SIZE		: integer := FUNC_SIZE_GLOBAL;		-- Func Field Size for R-Type Ops
 			OP_CODE_SIZE		: integer := OPC_SIZE_GLOBAL;		-- Op Code Size
 --			ALU_OPC_SIZE		: integer := OPC_SIZE_GLOBAL;		-- ALU Op Code Size
+--			ALU_SIZE		: integer := ALU_OP_SIZE_GLOBAL;	-- ALU Operands Size
 			IR_SIZE			: integer := IR_SIZE_GLOBAL;		-- Instruction Register Size
 			CW_SIZE			: integer := CW_SIZE_GLOBAL);		-- Control Word Size
 

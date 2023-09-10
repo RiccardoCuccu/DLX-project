@@ -4,17 +4,15 @@
 --		specific load and store commands.
 --
 -- Author:	Riccardo Cuccu
--- Date:	2023/09/05
+-- Date:	2023/09/10
 ----------------------------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;
---use ieee.std_logic_unsigned.all;
---use ieee.std_logic_arith.all;
 use ieee.numeric_std.all;
 use work.constants.all;
 
-entity DRAM is
+entity DLX_DRAM is
 
 	generic (	N	: integer := DRAM_SIZE_GLOBAL;			-- DRAM size			/ 256 addresses
 			NW	: integer := DRAM_WORD_SIZE_GLOBAL);		-- DRAM registers size		/ 32 bits
@@ -27,10 +25,10 @@ entity DRAM is
 			DIN	: in std_logic_vector(NW - 1 downto 0);		-- Data in
 			DOUT	: out std_logic_vector(NW - 1 downto 0));	-- Data out
 
-end DRAM;
+end DLX_DRAM;
 
 
-architecture BEHAVIORAL of DRAM is
+architecture BEHAVIORAL of DLX_DRAM is
 
 	-- Define DRAM as an array of std_logic_vector
 	type RAMtype is array (0 to N - 1) of std_logic_vector(NW-1 downto 0);
@@ -67,7 +65,7 @@ architecture BEHAVIORAL of DRAM is
 end BEHAVIORAL;
 
 
-configuration CFG_DRAM_BEHAVIORAL of DRAM is
+configuration CFG_DRAM_BEHAVIORAL of DLX_DRAM is
 	for BEHAVIORAL
 	end for;
 end CFG_DRAM_BEHAVIORAL;
