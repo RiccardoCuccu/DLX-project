@@ -6,7 +6,7 @@
 --		the respective enable signals (EN, EN_RD1, EN_RD2, EN_WR).
 --
 -- Author:	Riccardo Cuccu
--- Date:	2023/09/08
+-- Date:	2023/09/10
 ----------------------------------------------------------------------------------------------------
 
 library ieee;
@@ -19,8 +19,7 @@ entity RF is
 	generic (	N		: integer := RF_SIZE_GLOBAL;			-- / 32 bits
 			NA		: integer := RS_SIZE_GLOBAL);			-- /  5 bits
 
-	port	(	--CLK		: in	std_logic;				-- Clock
-			RST		: in	std_logic;				-- Reset, active low
+	port	(	RST		: in	std_logic;				-- Reset, active low
 			EN		: in	std_logic;				-- Enable
 			EN_RD1		: in	std_logic;				-- Read Enable 1
 			EN_RD2		: in	std_logic;				-- Read Enable 2
@@ -43,7 +42,6 @@ architecture BEHAVIORAL of RF is
 
 	begin
 
---		REGISTER_WRITE: process(CLK, RST)					-- Synchronous
 		REGISTER_WRITE: process(RST, EN, ADD_WR, EN_WR, DATAIN)			-- Asynchronous
 		begin
 
@@ -61,8 +59,6 @@ architecture BEHAVIORAL of RF is
 --						"00000000000000000001111111101010",	-- Default Value: 8170 (0xD)
 --						"00000000000000000011101111101010",	-- Default Value: 15338 (0x3BEA)
 --						others => (others =>'0'));
-
---			elsif CLK'event and CLK='1' then				-- Posedge Clock
 			else
 				if EN = '1' and EN_WR = '1' then			-- Enable Signals, active high
 					if (conv_integer(ADD_WR) = 0) then
@@ -77,7 +73,7 @@ architecture BEHAVIORAL of RF is
 
 		end process;
 
-		REGISTER_READ: process(EN, ADD_RD1, ADD_RD2, EN_RD1, EN_RD2)		-- Asynchronous
+		REGISTER_READ: process(EN, ADD_RD1, ADD_RD2, EN_RD1, EN_RD2, REG)	-- Asynchronous
 		begin
 
 			if EN = '1' then						-- Enable Signal, active high

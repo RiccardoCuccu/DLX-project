@@ -132,7 +132,7 @@ architecture BEHAVIORAL of ALU is
 		begin
 			case OPC is
 
-				-- Shift
+				-- Shifts
 
 --				when OP_SLL =>		-- unsigned, R[regc] <-- R[rega] << R[regb]_27..31
 --				when OP_SLLI =>		-- unsigned, R[regb] <-- R[rega] << uimm16_27..31
@@ -318,8 +318,8 @@ architecture BEHAVIORAL of ALU is
 					OP_A <= OP1;
 					OP_B <= OP2;
 					OP_Ci <= '0';
-					--Y_TMP <= Y_SUM;
-					Y_TMP <= std_logic_vector(to_unsigned(4, Y_TMP'length));
+					Y_TMP <= Y_SUM;
+					--Y_TMP <= std_logic_vector(to_unsigned(4, Y_TMP'length));
 
 				-- Branches
 

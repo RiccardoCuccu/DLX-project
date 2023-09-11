@@ -1,11 +1,9 @@
 #----------------------------------------------------------------------------------------------------
-# Description:	This module is responsible for setting up the simulation 
-#		environment in QuestaSim for the DLX microarchitecture. 
-#		It compiles VHDL files related to the various components of DLX
-#		and, additionally, it sets up simulation waveforms based on
-#		user-specified configurations for better debugging.
-#		User can select between different waveform settings and focus on
-#		specific pipeline stages for detailed observations.
+# Description:	This module is responsible for setting up the simulation environment in QuestaSim
+#		for the DLX microarchitecture. It compiles VHDL files related to the various 
+#		components of DLX and sets up simulation waveforms based on user-specified 
+#		configurations for better debugging. Users can select between different waveform
+#		settings and focus on specific pipeline stages for detailed observations.
 #
 # Author:	Riccardo Cuccu
 # Date:		2023/09/10
@@ -28,6 +26,7 @@ vcom -quiet ../src/000-functions.vhd
 vcom -quiet ../src/000-globals.vhd
 
 ## Basic Logic Gates
+vcom -quiet ../src/000-globals/not.vhd
 vcom -quiet ../src/000-globals/and.vhd
 vcom -quiet ../src/000-globals/nand.vhd
 vcom -quiet ../src/000-globals/or.vhd
@@ -331,7 +330,6 @@ if {$tb_waves eq 1} {
 		sim:/tb_dlx/U1/DATAPATH_I/ID_EX_RS1 \
 		sim:/tb_dlx/U1/DATAPATH_I/ID_EX_RS2 \
 		sim:/tb_dlx/U1/DATAPATH_I/ID_EX_RD \
-		sim:/tb_dlx/U1/DATAPATH_I/ID_EX_RF_DATAIN \
 		sim:/tb_dlx/U1/DATAPATH_I/ID_EX_RF_OUT1 \
 		sim:/tb_dlx/U1/DATAPATH_I/ID_EX_RF_OUT2 \
 		sim:/tb_dlx/U1/DATAPATH_I/ID_EX_IMM
@@ -422,7 +420,6 @@ if {$tb_waves eq 1} {
 		sim:/tb_dlx/U1/DATAPATH_I/ID_EX_RS1 \
 		sim:/tb_dlx/U1/DATAPATH_I/ID_EX_RS2 \
 		sim:/tb_dlx/U1/DATAPATH_I/ID_EX_RD \
-		sim:/tb_dlx/U1/DATAPATH_I/ID_EX_RF_DATAIN \
 		sim:/tb_dlx/U1/DATAPATH_I/ID_EX_RF_OUT1 \
 		sim:/tb_dlx/U1/DATAPATH_I/ID_EX_RF_OUT2 \
 		sim:/tb_dlx/U1/DATAPATH_I/ID_EX_IMM
@@ -431,7 +428,6 @@ if {$tb_waves eq 1} {
 		sim:/tb_dlx/U1/DATAPATH_I/EX_MEM_BRANCH_DETECT \
 		sim:/tb_dlx/U1/DATAPATH_I/EX_MEM_ALU_OUTPUT \
 		sim:/tb_dlx/U1/DATAPATH_I/EX_MEM_RF_WE \
-		sim:/tb_dlx/U1/DATAPATH_I/EX_MEM_RF_DATAIN \
 		sim:/tb_dlx/U1/DATAPATH_I/EX_MEM_RD
 
 	}
@@ -479,7 +475,6 @@ if {$tb_waves eq 1} {
 		sim:/tb_dlx/U1/DATAPATH_I/EX_MEM_BRANCH_DETECT \
 		sim:/tb_dlx/U1/DATAPATH_I/EX_MEM_ALU_OUTPUT \
 		sim:/tb_dlx/U1/DATAPATH_I/EX_MEM_RF_WE \
-		sim:/tb_dlx/U1/DATAPATH_I/EX_MEM_RF_DATAIN \
 		sim:/tb_dlx/U1/DATAPATH_I/EX_MEM_RD
 
 		add wave -divider {MEM-WB Pipeline} -position insertpoint \
@@ -630,7 +625,6 @@ if {$tb_waves eq 2} {
 		add wave -divider {ID-EX Pipeline} -position insertpoint \
 		sim:/tb_datapath/U1/ID_EX_NPC \
 		sim:/tb_datapath/U1/ID_EX_RD \
-		sim:/tb_datapath/U1/ID_EX_RF_DATAIN \
 		sim:/tb_datapath/U1/ID_EX_RF_OUT1 \
 		sim:/tb_datapath/U1/ID_EX_RF_OUT2 \
 		sim:/tb_datapath/U1/ID_EX_IMM
@@ -652,7 +646,6 @@ if {$tb_waves eq 2} {
 		sim:/tb_datapath/U1/EX_ALU_LABEL
 
 		add wave -divider {ALU_PRE_MUX1} -position insertpoint \
-		sim:/tb_datapath/U1/ID_EX_RF_DATAIN \
 		sim:/tb_datapath/U1/ID_EX_NPC \
 		sim:/tb_datapath/U1/MUXA_SEL \
 		sim:/tb_datapath/U1/ALU_PREOP1
@@ -664,7 +657,6 @@ if {$tb_waves eq 2} {
 		sim:/tb_datapath/U1/ALU_OP1
 
 		add wave -divider {ALU_PRE_MUX2} -position insertpoint \
-		sim:/tb_datapath/U1/ID_EX_RF_DATAIN \
 		sim:/tb_datapath/U1/ID_EX_IMM_NEXT \
 		sim:/tb_datapath/U1/MUXB_SEL \
 		sim:/tb_datapath/U1/ALU_PREOP2
@@ -691,7 +683,6 @@ if {$tb_waves eq 2} {
 		add wave -divider {ID-EX Pipeline} -position insertpoint \
 		sim:/tb_datapath/U1/ID_EX_NPC \
 		sim:/tb_datapath/U1/ID_EX_RD \
-		sim:/tb_datapath/U1/ID_EX_RF_DATAIN \
 		sim:/tb_datapath/U1/ID_EX_RF_OUT1 \
 		sim:/tb_datapath/U1/ID_EX_RF_OUT2 \
 		sim:/tb_datapath/U1/ID_EX_IMM
@@ -699,7 +690,6 @@ if {$tb_waves eq 2} {
 		add wave -divider {EX-MEM Pipeline} -position insertpoint \
 		sim:/tb_datapath/U1/EX_MEM_BRANCH_DETECT \
 		sim:/tb_datapath/U1/EX_MEM_ALU_OUTPUT \
-		sim:/tb_datapath/U1/EX_MEM_RF_DATAIN \
 		sim:/tb_datapath/U1/EX_MEM_RD
 
 	}
@@ -736,7 +726,6 @@ if {$tb_waves eq 2} {
 		add wave -divider {EX-MEM Pipeline} -position insertpoint \
 		sim:/tb_datapath/U1/EX_MEM_BRANCH_DETECT \
 		sim:/tb_datapath/U1/EX_MEM_ALU_OUTPUT \
-		sim:/tb_datapath/U1/EX_MEM_RF_DATAIN \
 		sim:/tb_datapath/U1/EX_MEM_RD
 
 		add wave -divider {MEM-WB Pipeline} -position insertpoint \
@@ -790,7 +779,6 @@ if {$tb_waves eq 3} {
 	sim:/tb_dlx/U1/DATAPATH_I/EX_ALU_LABEL
 
 	add wave -divider {ALU_PRE_MUX1} -position insertpoint \
-	sim:/tb_dlx/U1/DATAPATH_I/ID_EX_RF_DATAIN \
 	sim:/tb_dlx/U1/DATAPATH_I/ID_EX_NPC \
 	sim:/tb_dlx/U1/DATAPATH_I/MUXA_SEL \
 	sim:/tb_dlx/U1/DATAPATH_I/ALU_PREOP1
@@ -802,7 +790,6 @@ if {$tb_waves eq 3} {
 	sim:/tb_dlx/U1/DATAPATH_I/ALU_OP1
 
 	add wave -divider {ALU_PRE_MUX2} -position insertpoint \
-	sim:/tb_dlx/U1/DATAPATH_I/ID_EX_RF_DATAIN \
 	sim:/tb_dlx/U1/DATAPATH_I/ID_EX_IMM_NEXT \
 	sim:/tb_dlx/U1/DATAPATH_I/MUXB_SEL \
 	sim:/tb_dlx/U1/DATAPATH_I/ALU_PREOP2
