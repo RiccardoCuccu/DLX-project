@@ -1,3 +1,11 @@
+----------------------------------------------------------------------------------------------------
+-- Description:	This module serves as the Program Counter (PC) within a DLX processor architecture.
+--		It uses Flip-Flops (FFD components) to store the program counter value.
+--
+-- Author:	Riccardo Cuccu
+-- Date:	2023/09/11
+----------------------------------------------------------------------------------------------------
+
 library ieee;
 use ieee.std_logic_1164.all;
 use work.constants.all;

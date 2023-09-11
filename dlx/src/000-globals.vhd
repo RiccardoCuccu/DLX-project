@@ -1,13 +1,11 @@
 ----------------------------------------------------------------------------------------------------
--- Description:	This package defines various constants and types which are
---		used globally throughout the DLX project. The package includes
---		constants for setting default sizes, register sizes, ALU
---		operations, instruction types, etc. It serves as a single point
---		of control for various parameters, thereby making the system
---		easily configurable and maintainable.
+-- Description:	This package sets up constants and types for universal use across the DLX project.
+--		It contains defaults for sizes, ALU operations, instruction types, and so on,
+--		functioning as a centralized control point for various parameters to simplify
+--		system configuration and maintenance.
 --
 -- Author:	Riccardo Cuccu
--- Date:	2023/09/08
+-- Date:	2023/09/11
 ----------------------------------------------------------------------------------------------------
 
 library ieee;
@@ -37,9 +35,6 @@ package constants is
 --	constant RF_ADDRESSES_GLOBAL		: integer := 5;						-- Exponent address size
 	constant RF_SIZE_GLOBAL			: integer := IR_SIZE_GLOBAL;				-- Register size
 
-	-- Instruction cycles
-	--constant IN_EXE_CYCLES_GLOBAL		: integer := 5;						-- Instructions Execution cycles
-
 	-- ALU registers sizes
 	constant ALU_OP_SIZE_GLOBAL		: integer := SIZE_GLOBAL;				-- ALU operands size
 	constant ALU_BLOCK_SIZE_GLOBAL		: integer := 8;						-- ALU blocks size
@@ -50,7 +45,6 @@ package constants is
 
 	-- DRAM
 	constant DRAM_SIZE_GLOBAL		: integer := 2**8;					-- DRAM size
-	--constant DRAM_SIZE_GLOBAL		: integer := 2**20;					-- DRAM size
 	constant DRAM_WORD_SIZE_GLOBAL		: integer := SIZE_GLOBAL;				-- DRAM registers size
 
 	-- ALU Operations
@@ -59,232 +53,26 @@ package constants is
 				--OP_J, OP_JAL
 
 				-- FUNC labels
-				OP_SLL,
-				OP_SRL,
-				OP_SRA,
-				OP_ADD,
-				OP_ADDU,
-				OP_SUB,
-				OP_SUBU,
-				OP_AND,
-				OP_OR,
-				OP_XOR,
-				OP_SEQ,
-				OP_SNE,
-				OP_SLT,
-				OP_SGT,
-				OP_SLE,
-				OP_SGE,
-				OP_MOVI2S,
-				OP_MOVS2I,
-				OP_MOVF,
-				OP_MOVD,
-				OP_MOVFP2I,
-				OP_MOVI2FP,
-				OP_MOVI2T,
-				OP_MOVT2I,
-				OP_SLTU,
-				OP_SGTU,
-				OP_SLEU,
-				OP_SGEU,
-				OP_ADDF,
-				OP_SUBF,
-				OP_MULTF,
-				OP_DIVF,
-				OP_ADDD,
-				OP_SUBD,
-				OP_MULTD,
-				OP_DIVD,
-				OP_CVTF2D,
-				OP_CVTF2I,
-				OP_CVTD2F,
-				OP_CVTD2I,
-				OP_CVTI2F,
-				OP_CVTI2D,
-				OP_MULT,
-				OP_DIV,
-				OP_EQF,
-				OP_NEF,
-				OP_LTF,
-				OP_GTF,
-				OP_LEF,
-				OP_GEF,
-				OP_MULTU,
-				OP_DIVU,
-				OP_EQD,
-				OP_NED,
-				OP_LTD,
-				OP_GTD,
-				OP_LED,
-				OP_GED,
+				OP_SLL, OP_SRL, OP_SRA, OP_ADD, OP_ADDU, OP_SUB, OP_SUBU, OP_AND, OP_OR, OP_XOR, OP_SEQ, OP_SNE, OP_SLT, OP_SGT, OP_SLE, OP_SGE, OP_MOVI2S, OP_MOVS2I, OP_MOVF, OP_MOVD, OP_MOVFP2I, OP_MOVI2FP, OP_MOVI2T, OP_MOVT2I, OP_SLTU, OP_SGTU, OP_SLEU, OP_SGEU,
+				OP_ADDF, OP_SUBF, OP_MULTF, OP_DIVF, OP_ADDD, OP_SUBD, OP_MULTD, OP_DIVD, OP_CVTF2D, OP_CVTF2I, OP_CVTD2F, OP_CVTD2I, OP_CVTI2F, OP_CVTI2D, OP_MULT, OP_DIV, OP_EQF, OP_NEF, OP_LTF, OP_GTF, OP_LEF, OP_GEF, OP_MULTU, OP_DIVU, OP_EQD, OP_NED, OP_LTD, OP_GTD, OP_LED, OP_GED,
 
 				-- OPCODE labels
---				L_RTYPE,
---				L_ITYPE,
-				OP_BEQZ,
-				OP_BNEZ,
-				OP_BFPT,
-				OP_BFPF,
-				OP_ADDI,
-				OP_ADDUI,
-				OP_SUBI,
-				OP_SUBUI,
-				OP_ANDI,
-				OP_ORI,
-				OP_XORI,
-				OP_LHI,
-				OP_RFE,
-				OP_TRAP,
-				OP_JR,
-				OP_JALR,
-				OP_SLLI,
-				OP_SRLI,
-				OP_SRAI,
-				OP_SEQI,
-				OP_SNEI,
-				OP_SLTI,
-				OP_SGTI,
-				OP_SLEI,
-				OP_SGEI,
-				OP_LB,
-				OP_LH,
-				OP_LW,
-				OP_LBU,
-				OP_LHU,
-				OP_LF,
-				OP_LD,
-				OP_SB,
-				OP_SH,
-				OP_SW,
-				OP_SF,
-				OP_SD,
-				OP_ITLB,
-				OP_SLTUI,
-				OP_SGTUI,
-				OP_SLEUI,
-				OP_SGEUI,
-
-				OP_J,
-				OP_JAL,
-
-				-- NOP label
+				OP_BEQZ, OP_BNEZ, OP_BFPT, OP_BFPF, OP_ADDI, OP_ADDUI, OP_SUBI, OP_SUBUI, OP_ANDI, OP_ORI, OP_XORI, OP_LHI, OP_RFE, OP_TRAP, OP_JR, OP_JALR, OP_SLLI, OP_SRLI, OP_SRAI, OP_SEQI, OP_SNEI, OP_SLTI, OP_SGTI, OP_SLEI, OP_SGEI, OP_LB, OP_LH, OP_LW, OP_LBU, OP_LHU, OP_LF, OP_LD, OP_SB, OP_SH, OP_SW, OP_SF, OP_SD, OP_ITLB, OP_SLTUI, OP_SGTUI, OP_SLEUI, OP_SGEUI,
+				OP_J, OP_JAL,
 				OP_NOP
 
 			);
 
 	-- FUNC labels
 	type ALU_label is (	-- FUNC labels
-				L_RTYPE_SLL,
-				L_RTYPE_SRL,
-				L_RTYPE_SRA,
-				L_RTYPE_ADD,
-				L_RTYPE_ADDU,
-				L_RTYPE_SUB,
-				L_RTYPE_SUBU,
-				L_RTYPE_AND,
-				L_RTYPE_OR,
-				L_RTYPE_XOR,
-				L_RTYPE_SEQ,
-				L_RTYPE_SNE,
-				L_RTYPE_SLT,
-				L_RTYPE_SGT,
-				L_RTYPE_SLE,
-				L_RTYPE_SGE,
-				L_RTYPE_MOVI2S,
-				L_RTYPE_MOVS2I,
-				L_RTYPE_MOVF,
-				L_RTYPE_MOVD,
-				L_RTYPE_MOVFP2I,
-				L_RTYPE_MOVI2FP,
-				L_RTYPE_MOVI2T,
-				L_RTYPE_MOVT2I,
-				L_RTYPE_SLTU,
-				L_RTYPE_SGTU,
-				L_RTYPE_SLEU,
-				L_RTYPE_SGEU,
-				L_RTYPE_ADDF,
-				L_RTYPE_SUBF,
-				L_RTYPE_MULTF,
-				L_RTYPE_DIVF,
-				L_RTYPE_ADDD,
-				L_RTYPE_SUBD,
-				L_RTYPE_MULTD,
-				L_RTYPE_DIVD,
-				L_RTYPE_CVTF2D,
-				L_RTYPE_CVTF2I,
-				L_RTYPE_CVTD2F,
-				L_RTYPE_CVTD2I,
-				L_RTYPE_CVTI2F,
-				L_RTYPE_CVTI2D,
-				L_RTYPE_MULT,
-				L_RTYPE_DIV,
-				L_RTYPE_EQF,
-				L_RTYPE_NEF,
-				L_RTYPE_LTF,
-				L_RTYPE_GTF,
-				L_RTYPE_LEF,
-				L_RTYPE_GEF,
-				L_RTYPE_MULTU,
-				L_RTYPE_DIVU,
-				L_RTYPE_EQD,
-				L_RTYPE_NED,
-				L_RTYPE_LTD,
-				L_RTYPE_GTD,
-				L_RTYPE_LED,
-				L_RTYPE_GED,
+				L_RTYPE_SLL, L_RTYPE_SRL, L_RTYPE_SRA, L_RTYPE_ADD, L_RTYPE_ADDU, L_RTYPE_SUB, L_RTYPE_SUBU, L_RTYPE_AND, L_RTYPE_OR, L_RTYPE_XOR, L_RTYPE_SEQ, L_RTYPE_SNE, L_RTYPE_SLT, L_RTYPE_SGT, L_RTYPE_SLE, L_RTYPE_SGE, L_RTYPE_MOVI2S, L_RTYPE_MOVS2I, L_RTYPE_MOVF, L_RTYPE_MOVD, L_RTYPE_MOVFP2I, L_RTYPE_MOVI2FP, L_RTYPE_MOVI2T, L_RTYPE_MOVT2I, L_RTYPE_SLTU, L_RTYPE_SGTU, L_RTYPE_SLEU, L_RTYPE_SGEU,
+				L_RTYPE_ADDF, L_RTYPE_SUBF, L_RTYPE_MULTF, L_RTYPE_DIVF, L_RTYPE_ADDD, L_RTYPE_SUBD, L_RTYPE_MULTD, L_RTYPE_DIVD, L_RTYPE_CVTF2D, L_RTYPE_CVTF2I, L_RTYPE_CVTD2F, L_RTYPE_CVTD2I, L_RTYPE_CVTI2F, L_RTYPE_CVTI2D, L_RTYPE_MULT, L_RTYPE_DIV, L_RTYPE_EQF, L_RTYPE_NEF, L_RTYPE_LTF, L_RTYPE_GTF, L_RTYPE_LEF, L_RTYPE_GEF, L_RTYPE_MULTU, L_RTYPE_DIVU, L_RTYPE_EQD, L_RTYPE_NED, L_RTYPE_LTD, L_RTYPE_GTD, L_RTYPE_LED, L_RTYPE_GED,
 				L_RTYPE_NOP,
 
 				-- OPCODE labels
-				L_RTYPE,
-				L_ITYPE,
-				L_ITYPE_BEQZ,
-				L_ITYPE_BNEZ,
-				L_ITYPE_BFPT,
-				L_ITYPE_BFPF,
-				L_ITYPE_ADDI,
-				L_ITYPE_ADDUI,
-				L_ITYPE_SUBI,
-				L_ITYPE_SUBUI,
-				L_ITYPE_ANDI,
-				L_ITYPE_ORI,
-				L_ITYPE_XORI,
-				L_ITYPE_LHI,
-				L_ITYPE_RFE,
-				L_ITYPE_TRAP,
-				L_ITYPE_JR,
-				L_ITYPE_JALR,
-				L_ITYPE_SLLI,
-				L_ITYPE_NOP,
-				L_ITYPE_SRLI,
-				L_ITYPE_SRAI,
-				L_ITYPE_SEQI,
-				L_ITYPE_SNEI,
-				L_ITYPE_SLTI,
-				L_ITYPE_SGTI,
-				L_ITYPE_SLEI,
-				L_ITYPE_SGEI,
-				L_ITYPE_LB,
-				L_ITYPE_LH,
-				L_ITYPE_LW,
-				L_ITYPE_LBU,
-				L_ITYPE_LHU,
-				L_ITYPE_LF,
-				L_ITYPE_LD,
-				L_ITYPE_SB,
-				L_ITYPE_SH,
-				L_ITYPE_SW,
-				L_ITYPE_SF,
-				L_ITYPE_SD,
-				L_ITYPE_ITLB,
-				L_ITYPE_SLTUI,
-				L_ITYPE_SGTUI,
-				L_ITYPE_SLEUI,
-				L_ITYPE_SGEUI,
-				L_JTYPE,
-				L_JTYPE_J,
-				L_JTYPE_JAL,
-
-				-- NOP label
+				L_RTYPE, L_ITYPE, L_JTYPE,
+				L_ITYPE_BEQZ, L_ITYPE_BNEZ, L_ITYPE_BFPT, L_ITYPE_BFPF, L_ITYPE_ADDI, L_ITYPE_ADDUI, L_ITYPE_SUBI, L_ITYPE_SUBUI, L_ITYPE_ANDI, L_ITYPE_ORI, L_ITYPE_XORI, L_ITYPE_LHI, L_ITYPE_RFE, L_ITYPE_TRAP, L_ITYPE_JR, L_ITYPE_JALR, L_ITYPE_SLLI, L_ITYPE_NOP, L_ITYPE_SRLI, L_ITYPE_SRAI, L_ITYPE_SEQI, L_ITYPE_SNEI, L_ITYPE_SLTI, L_ITYPE_SGTI, L_ITYPE_SLEI, L_ITYPE_SGEI, L_ITYPE_LB, L_ITYPE_LH, L_ITYPE_LW, L_ITYPE_LBU, L_ITYPE_LHU, L_ITYPE_LF, L_ITYPE_LD, L_ITYPE_SB, L_ITYPE_SH, L_ITYPE_SW, L_ITYPE_SF, L_ITYPE_SD, L_ITYPE_ITLB, L_ITYPE_SLTUI, L_ITYPE_SGTUI, L_ITYPE_SLEUI, L_ITYPE_SGEUI,
+				L_JTYPE_J, L_JTYPE_JAL,
 				L_NOP
 
 			);

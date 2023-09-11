@@ -1,10 +1,10 @@
 ----------------------------------------------------------------------------------------------------
--- Description:	This module encapsulates the entire datapath of the DLX architecture,
---		including its five pipeline stages: instruction fetch (IF), instruction
---		decode (ID), execution (EX), memory access (MEM) and write-back (WB).
---		The module takes clock and reset signals, along with various control signals
---		that manage the latching and forwarding of data through the pipeline
---		and ensure synchronous operations across all stages.
+-- Description:	This module encapsulates the entire datapath of the DLX architecture. It includes 
+--		the five pipeline stages: instruction fetch (IF), instruction decode (ID), 
+--		execution (EX), memory access (MEM), and write-back (WB). The module takes clock 
+--		and reset signals, as well as various control signals that manage latching and 
+--		forwarding of data through the pipeline. It ensures synchronous operation across 
+--		all stages.
 --
 -- Author:	Riccardo Cuccu
 -- Date:	2023/09/11
@@ -28,7 +28,7 @@ entity DLX_DATAPATH is
 			RST			: in  std_logic;				-- Reset (active low)
 
 			IR_IN			: in  std_logic_vector(IR_SIZE - 1 downto 0);	-- Instruction Register			/ 32 bits
-			DRAM_OUT		: in  std_logic_vector(DRAM_SIZE - 1 downto 0); -- DRAM Data Output			/ 32 bits
+			DRAM_OUT		: in  std_logic_vector(DRAM_SIZE - 1 downto 0);	-- DRAM Data Output			/ 32 bits
 
 			-- IF Control Signal
 			IR_LATCH_EN		: in  std_logic;				-- Instruction Register Latch Enable
@@ -46,10 +46,7 @@ entity DLX_DATAPATH is
 			MUXB_SEL		: in  std_logic;				-- MUX-B Sel
 			ALU_OUTREG_EN		: in  std_logic;				-- ALU Output Register Enable
 			EQ_COND			: in  std_logic;				-- Branch if (not) Equal to Zero
-
-			-- ALU Operation Code
-			ALU_OPCODE		: in  aluOp;					-- choose between implicit or explicit coding, like std_logic_vector(ALU_OPC_SIZE - 1 downto 0);
-			--ALU_OPCODE		: in  std_logic_vector(ALU_OPC_SIZE - 1 downto 0);
+			ALU_OPCODE		: in  aluOp;					-- ALU Operation Code
 
 			-- MEM Control Signals
 			DRAM_RE			: in  std_logic;				-- Data RAM Read Enable
@@ -868,3 +865,9 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 					Y	=> WB_MUX_OUT);				-- MUX Output
 
 end DLX_DATAPATH_ARCH;
+
+
+configuration CFG_DLX_DATAPATH_ARCHITECTURE of DLX_DATAPATH is
+	for DLX_DATAPATH_ARCH
+	end for;
+end CFG_DLX_DATAPATH_ARCHITECTURE;

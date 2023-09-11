@@ -21,9 +21,9 @@ entity DLX_DRAM is
 			RST	: in std_logic;					-- Reset:Active-Low
 			RE	: in std_logic;					-- Read Enable
 			WE	: in std_logic;					-- Write Enable
-			ADDR	: in std_logic_vector(NW - 1 downto 0);		-- Address
-			DIN	: in std_logic_vector(NW - 1 downto 0);		-- Data in
-			DOUT	: out std_logic_vector(NW - 1 downto 0));	-- Data out
+			ADDR	: in std_logic_vector(NW - 1 downto 0);		-- Address			/ 32 bits
+			DIN	: in std_logic_vector(NW - 1 downto 0);		-- Data in			/ 32 bits
+			DOUT	: out std_logic_vector(NW - 1 downto 0));	-- Data out			/ 32 bits
 
 end DLX_DRAM;
 

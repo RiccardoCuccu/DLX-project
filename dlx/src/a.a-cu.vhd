@@ -5,7 +5,7 @@
 --		These control signals are generated based on opcode and function fields.
 --
 -- Author:	Riccardo Cuccu
--- Date:	2023/09/10
+-- Date:	2023/09/11
 ----------------------------------------------------------------------------------------------------
 
 library ieee;
@@ -16,59 +16,54 @@ use work.constants.all;
 
 entity DLX_CU is
 
-	generic (	MICROCODE_MEM_SIZE	: integer := MMEM_SIZE_GLOBAL;		-- Microcode Memory Size
-			FUNC_SIZE		: integer := FUNC_SIZE_GLOBAL;		-- Func Field Size for R-Type Ops
-			OP_CODE_SIZE		: integer := OPC_SIZE_GLOBAL;		-- Op Code Size
---			ALU_OPC_SIZE		: integer := OPC_SIZE_GLOBAL;		-- ALU Op Code Size
---			ALU_SIZE		: integer := ALU_OP_SIZE_GLOBAL;	-- ALU Operands Size
-			IR_SIZE			: integer := IR_SIZE_GLOBAL;		-- Instruction Register Size
-			CW_SIZE			: integer := CW_SIZE_GLOBAL);		-- Control Word Size
+	generic (	MIC_MEM_SIZE		: integer := MMEM_SIZE_GLOBAL;		-- Microcode Memory Size		/ 64 bits
+			FUNC_SIZE		: integer := FUNC_SIZE_GLOBAL;		-- Func Field Size for R-Type Ops	/ 11 bits
+			OP_CODE_SIZE		: integer := OPC_SIZE_GLOBAL;		-- Op Code Size				/  6 bits
+			IR_SIZE			: integer := IR_SIZE_GLOBAL;		-- Instruction Register Size		/ 32 bits
+			CW_SIZE			: integer := CW_SIZE_GLOBAL);		-- Control Word Size			/ 17 bits
 
-	port (		CLK			: in  std_logic;	-- Clock
-			RST			: in  std_logic;	-- Reset (active low)
+	port (		CLK			: in  std_logic;			-- Clock
+			RST			: in  std_logic;			-- Reset (active low)
 
 			-- Instruction Register
 			IR_IN			: in  std_logic_vector(IR_SIZE - 1 downto 0);
 
 			-- IF Control Signal
-			IR_LATCH_EN		: out std_logic;	-- Instruction Register Latch Enable
-			PC_LATCH_EN		: out std_logic;	-- Program Counter Latch Enable
-			NPC_LATCH_EN		: out std_logic;	-- Next Program Counter Register Latch Enable
+			IR_LATCH_EN		: out std_logic;			-- Instruction Register Latch Enable
+			PC_LATCH_EN		: out std_logic;			-- Program Counter Latch Enable
+			NPC_LATCH_EN		: out std_logic;			-- Next Program Counter Register Latch Enable
 
 			-- ID Control Signals
-			RF_WE			: out std_logic;	-- Register File Write Enable
-			RegA_LATCH_EN		: out std_logic;	-- Register A Latch Enable
-			RegB_LATCH_EN		: out std_logic;	-- Register B Latch Enable
-			RegIMM_LATCH_EN		: out std_logic;	-- Immediate Register Latch Enable
+			RF_WE			: out std_logic;			-- Register File Write Enable
+			RegA_LATCH_EN		: out std_logic;			-- Register A Latch Enable
+			RegB_LATCH_EN		: out std_logic;			-- Register B Latch Enable
+			RegIMM_LATCH_EN		: out std_logic;			-- Immediate Register Latch Enable
 
 			-- EX Control Signals
-			MUXA_SEL		: out std_logic;	-- MUX-A Sel
-			MUXB_SEL		: out std_logic;	-- MUX-B Sel
-			ALU_OUTREG_EN		: out std_logic;	-- ALU Output Register Enable
-			EQ_COND			: out std_logic;	-- Branch if (not) Equal to Zero
-
-			-- ALU Operation Code
-			ALU_OPCODE		: out aluOp;		-- choose between implicit or explicit coding, like std_logic_vector(ALU_OPC_SIZE - 1 downto 0);
-			--ALU_OPCODE		: out std_logic_vector(ALU_OPC_SIZE - 1 downto 0);
+			MUXA_SEL		: out std_logic;			-- MUX-A Sel
+			MUXB_SEL		: out std_logic;			-- MUX-B Sel
+			ALU_OUTREG_EN		: out std_logic;			-- ALU Output Register Enable
+			EQ_COND			: out std_logic;			-- Branch if (not) Equal to Zero
+			ALU_OPCODE		: out aluOp;				-- ALU Operation Code
 
 			-- MEM Control Signals
-			DRAM_RE			: out std_logic;	-- Data RAM Read Enable
-			DRAM_WE			: out std_logic;	-- Data RAM Write Enable
-			LMD_LATCH_EN		: out std_logic;	-- LMD Register Latch Enable
-			JUMP_EN			: out std_logic;	-- JUMP Enable Signal for PC input MUX
-			JUMP_COND		: out std_logic;	-- JUMP Condition
+			DRAM_RE			: out std_logic;			-- Data RAM Read Enable
+			DRAM_WE			: out std_logic;			-- Data RAM Write Enable
+			LMD_LATCH_EN		: out std_logic;			-- LMD Register Latch Enable
+			JUMP_EN			: out std_logic;			-- JUMP Enable Signal for PC input MUX
+			JUMP_COND		: out std_logic;			-- JUMP Condition
 
 			-- WB Control signals
-			WB_MUX_SEL		: out std_logic);	-- Write Back MUX Sel
+			WB_MUX_SEL		: out std_logic);			-- Write Back MUX Sel
 
 end DLX_CU;
 
 
 architecture DLX_CU_HW of DLX_CU is
 
-	type mem_array is array (integer range 0 to MICROCODE_MEM_SIZE - 1) of std_logic_vector(CW_SIZE - 1 downto 0);
+	type mem_array is array (integer range 0 to MIC_MEM_SIZE - 1) of std_logic_vector(CW_SIZE - 1 downto 0);
 
-	-- look-up table (* = BASIC DLX; ** = PRO DLX)
+	-- Look-up table (* = BASIC DLX; ** = PRO DLX)
 	signal cw_mem : mem_array := (	
 
 					"111" & "1110" & "0010" & "00000" & "1",		-- x"00" RTYPE	*
@@ -139,15 +134,11 @@ architecture DLX_CU_HW of DLX_CU is
 					"000" & "0000" & "0000" & "00000" & "0",		-- x"3E"
 					"000" & "0000" & "0000" & "00000" & "0");		-- x"3F"
 
-	--signal IR_opcode : std_logic_vector(OP_CODE_SIZE - 1 downto 0);		-- OpCode part of IR
-	--signal IR_func   : std_logic_vector(FUNC_SIZE - 1 downto 0);			-- Func part of IR when Rtype
+	signal IR_opcode : std_logic_vector(OP_CODE_SIZE -1 downto 0);			-- OpCode part of IR
+	signal IR_func   : std_logic_vector(FUNC_SIZE - 1 downto 0);			-- Func part of IR when Rtype
 
-	signal IR_opcode : std_logic_vector(5 downto 0);				-- OpCode part of IR
-	signal IR_func   : std_logic_vector(10 downto 0);				-- Func part of IR when Rtype
-	signal cw1       : std_logic_vector(CW_SIZE - 1 downto 0);			-- full control word read from cw_mem
-
-	-- control words
---	signal cw1 : std_logic_vector(CW_SIZE - 1 downto 0);				-- first stage		/ 3 signals
+	-- Control words
+	signal cw1 : std_logic_vector(CW_SIZE - 1 downto 0);				-- first stage		/ 3 signals
 	signal cw2 : std_logic_vector(CW_SIZE - 1 - 3 downto 0);			-- second stage		/ 4 signals
 	signal cw3 : std_logic_vector(CW_SIZE - 1 - 7 downto 0);			-- third stage		/ 4 signals
 	signal cw4 : std_logic_vector(CW_SIZE - 1 - 11 downto 0);			-- fourth stage		/ 6 signals
@@ -157,11 +148,7 @@ architecture DLX_CU_HW of DLX_CU is
 	signal aluOpcode2 : aluOp := OP_NOP;
 	signal aluOpcode3 : aluOp := OP_NOP;
 
---	signal aluOpcode1 : std_logic_vector(ALU_OPC_SIZE - 1 downto 0) := ITYPE_NOP;
---	signal aluOpcode2 : std_logic_vector(ALU_OPC_SIZE - 1 downto 0) := ITYPE_NOP;
---	signal aluOpcode3 : std_logic_vector(ALU_OPC_SIZE - 1 downto 0) := ITYPE_NOP;
-
-	-- testbench signals
+	-- Testbench signals
 
 	signal IR_opcode_LABEL1 : ALU_label;
 	signal IR_opcode_LABEL2 : ALU_label;
@@ -208,6 +195,7 @@ begin
 
 	-- Generate WB stage control signals
 	WB_MUX_SEL	<= cw5(CW_SIZE - 17);
+
 
 	-- Process for generating ALU operations and labels
 	ALU_OP_CODE_P: process (RST, IR_opcode, IR_func)

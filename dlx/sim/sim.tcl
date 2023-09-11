@@ -6,7 +6,7 @@
 #		settings and focus on specific pipeline stages for detailed observations.
 #
 # Author:	Riccardo Cuccu
-# Date:		2023/09/10
+# Date:		2023/09/11
 #----------------------------------------------------------------------------------------------------
 
 #----------------------------------------------------------------------------------------------------
@@ -65,14 +65,14 @@ vcom -quiet ../src/a.b.j-register_addresser.vhd
 ### ALU (a.b.d)
 vcom -quiet ../src/a.b.d-alu.vhd
 vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4_adder.vhd
-#vcom -quiet ../src/a.b.d-alu/a.b.d.b-boot_hmultiplier.vhd
+#vcom -quiet ../src/a.b.d-alu/a.b.d.b-booth_multiplier.vhd
 vcom -quiet ../src/a.b.d-alu/a.b.d.c-comparator.vhd
 vcom -quiet ../src/a.b.d-alu/a.b.d.d-logic.vhd
 vcom -quiet ../src/a.b.d-alu/a.b.d.e-barrel_shifter_left.vhd
 vcom -quiet ../src/a.b.d-alu/a.b.d.f-barrel_shifter_right.vhd
 vcom -quiet ../src/a.b.d-alu/a.b.d.g-zero_detector.vhd
-#vcom -quiet ../src/a.b.d-alu/a.b.d.h-floatingpointadder.vhd
-#vcom -quiet ../src/a.b.d-alu/a.b.d.i-floatingpointmultiplier.vhd
+#vcom -quiet ../src/a.b.d-alu/a.b.d.h-floatingpoint_adder.vhd
+#vcom -quiet ../src/a.b.d-alu/a.b.d.i-floatingpoint_multiplier.vhd
 
 ##### P4Adder / Carry Generator (a.b.d.a.a)
 vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4_adder/a.b.d.a.a.d-pg_block.vhd
@@ -138,11 +138,7 @@ if {$tb_waves eq 1} {
 
 		add wave -divider {TB_DLX} -position insertpoint \
 		-color white sim:/tb_dlx/U1/CLK \
-		-color gray  sim:/tb_dlx/U1/RST \
-		sim:/tb_dlx/U1/IR
-		#sim:/tb_dlx/U1/PC \
-		#sim:/tb_dlx/U1/IRam_DOut
-		#sim:/tb_dlx/U1/PC_BUS
+		-color gray  sim:/tb_dlx/U1/RST
 
 	}
 
@@ -154,8 +150,7 @@ if {$tb_waves eq 1} {
 
 			add wave -height 50 -divider {CONTROL UNIT} -height 19 \
 			-color white sim:/tb_dlx/U1/CLK \
-			-color gray  sim:/tb_dlx/U1/RST \
-			sim:/tb_dlx/U1/IR
+			-color gray  sim:/tb_dlx/U1/RST
 
 		}
 
@@ -214,8 +209,7 @@ if {$tb_waves eq 1} {
 
 			add wave -height 50 -divider {FETCH (IF)} -height 19 \
 			-color white sim:/tb_dlx/U1/CLK \
-			-color gray  sim:/tb_dlx/U1/RST \
-			sim:/tb_dlx/U1/IR
+			-color gray  sim:/tb_dlx/U1/RST
 
 		}
 
@@ -269,8 +263,7 @@ if {$tb_waves eq 1} {
 
 			add wave -height 50 -divider {DECODE (ID)} -height 19 \
 			-color white sim:/tb_dlx/U1/CLK \
-			-color gray  sim:/tb_dlx/U1/RST \
-			sim:/tb_dlx/U1/IR
+			-color gray  sim:/tb_dlx/U1/RST
 
 		}
 
@@ -329,8 +322,7 @@ if {$tb_waves eq 1} {
 
 			add wave -height 50 -divider {EXECUTE (EX)} -height 19 \
 			-color white sim:/tb_dlx/U1/CLK \
-			-color gray  sim:/tb_dlx/U1/RST \
-			sim:/tb_dlx/U1/IR
+			-color gray  sim:/tb_dlx/U1/RST
 
 		}
 
@@ -424,8 +416,7 @@ if {$tb_waves eq 1} {
 		if {$pipe_stage eq 6} {
 			add wave -height 50 -divider {MEMORY (MEM)} -height 19 \
 			-color white sim:/tb_dlx/U1/CLK \
-			-color gray  sim:/tb_dlx/U1/RST \
-			sim:/tb_dlx/U1/IR
+			-color gray  sim:/tb_dlx/U1/RST
 		}
 
 		add wave -divider {MEM CONTROL SIGNALS} -position insertpoint \
@@ -477,8 +468,7 @@ if {$tb_waves eq 1} {
 		if {$pipe_stage eq 6} {
 			add wave -height 50 -divider {WRITE BACK (WB)} -height 19 \
 			-color white sim:/tb_dlx/U1/CLK \
-			-color gray  sim:/tb_dlx/U1/RST \
-			sim:/tb_dlx/U1/IR
+			-color gray  sim:/tb_dlx/U1/RST
 		}
 
 		add wave -divider {WB CONTROL SIGNALS} -position insertpoint \

@@ -6,7 +6,7 @@
 --		the respective enable signals (EN, EN_RD1, EN_RD2, EN_WR).
 --
 -- Author:	Riccardo Cuccu
--- Date:	2023/09/10
+-- Date:	2023/09/11
 ----------------------------------------------------------------------------------------------------
 
 library ieee;
@@ -47,24 +47,10 @@ architecture BEHAVIORAL of RF is
 
 			if RST = '0' then						-- Reset, active low
 				REG <= (others => (others => '0'));
---				REG <= (	"00000000000000000000000000001010",	-- Default Value: 10 (0xA)
---						"00000000000000000000000000001011",	-- Default Value: 11 (0xB)
---						"00000000000000000000000000001100",	-- Default Value: 12 (0xC)
---						"00000000000000000000000000001101",	-- Default Value: 13 (0xD)
---						"00000000000000000000000000001110",	-- Default Value: 14 (0xE)
---						others => (others =>'0'));
---				REG <= (	"00000000000000000000101110101010",	-- Default Value: 2986 (0xBAA)
---						"00000000000000000000101111101010",	-- Default Value: 3050 (0xBEA)
---						"00000000000000000000111111101010",	-- Default Value: 4074 (0xFEA)
---						"00000000000000000001111111101010",	-- Default Value: 8170 (0xD)
---						"00000000000000000011101111101010",	-- Default Value: 15338 (0x3BEA)
---						others => (others =>'0'));
 			else
 				if EN = '1' and EN_WR = '1' then			-- Enable Signals, active high
 					if (conv_integer(ADD_WR) = 0) then
 						REG(0) <= (others => '0');		-- Special handling for register 0 (hardwired to 0)
-					elsif (conv_integer(ADD_WR) = 2**NA - 1) then
-						REG(2**NA - 1) <= (others => '0');	-- Special handling for register 31 (hardwired to 0)
 					else
 						REG(conv_integer(ADD_WR)) <= DATAIN;
 					end if;

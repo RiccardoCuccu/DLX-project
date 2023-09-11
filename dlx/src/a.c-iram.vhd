@@ -13,26 +13,21 @@ library ieee;
 library std;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_arith.all;
---use ieee.numeric_std.all;
 use ieee.std_logic_textio.all;
 use std.textio.all;
 use work.constants.all;
 
--- Instruction IRAM_mem for DLX
--- Memory filled by a process which reads from a file
--- file name is "test.asm.mem"
-
 entity DLX_IRAM is
 	
-	generic (	RAM_DEPTH	: integer := IRAM_SIZE_GLOBAL;
-			I_SIZE		: integer := IR_SIZE_GLOBAL);
+	generic (	RAM_DEPTH	: integer := IRAM_SIZE_GLOBAL;				-- IRAM size				/ 256 addresses
+			I_SIZE		: integer := IR_SIZE_GLOBAL);				-- IRAM registers size			/ 32 bits
 
-	port (		--CLK		: in  std_logic;
-			RST		: in  std_logic;
-			ADDR		: in  std_logic_vector(I_SIZE - 1 downto 0);
-			DOUT		: out std_logic_vector(I_SIZE - 1 downto 0));
+	port (		RST		: in  std_logic;					-- Reset (active low)
+			ADDR		: in  std_logic_vector(I_SIZE - 1 downto 0);		-- Address				/ 32 bits
+			DOUT		: out std_logic_vector(I_SIZE - 1 downto 0));		-- Data out				/ 32 bits
 
 end DLX_IRAM;
+
 
 architecture BEHAVIORAL of DLX_IRAM is
 
@@ -43,10 +38,9 @@ architecture BEHAVIORAL of DLX_IRAM is
 
 begin
 
---	DOUT <= conv_std_logic_vector(IRAM_mem(conv_integer(unsigned(ADDR))),I_SIZE);
 	DOUT <= IRAM_mem(conv_integer(unsigned(ADDR(I_SIZE - 1 downto 2))));
 
-	-- purpose: This process is in charge of filling the Instruction RAM with the firmware
+	-- This process is in charge of filling the Instruction RAM with the firmware
 	FILL_MEM_P: process (RST, ADDR)
 	file mem_fp : text open READ_MODE is "./firmware.asm.mem";
 	variable file_line : line;
@@ -67,6 +61,7 @@ begin
 	end process FILL_MEM_P;
 
 end BEHAVIORAL;
+
 
 configuration CFG_IRAM_BEHAVIORAL of DLX_IRAM is
 	for BEHAVIORAL

@@ -153,7 +153,6 @@ architecture BEHAVIORAL of ALU is
 					OP_A <= OP1;
 					OP_B <= OP2;
 					Y_TMP <= Y_SHIFTL;
-					--Z_TMP <= Z_DET;
 
 --				when OP_SRL =>		-- unsigned, R[regc] <-- R[rega] >> R[regb]_27..31
 --				when OP_SRLI =>		-- unsigned, R[regb] <-- R[rega] >> uimm16_27..31
@@ -163,7 +162,6 @@ architecture BEHAVIORAL of ALU is
 					OP_B <= OP2;
 					OP_SHIFT <= '0';
 					Y_TMP <= Y_SHIFTR;
-					--Z_TMP <= Z_DET;
 
 --				when OP_SRA =>		-- signed, R[regc] <-- (R[rega]_0)^R[regb] ## (R[rega] >> R[regb])_R[regb]..31
 --				when OP_SRAI =>		-- signed, R[regb] <-- (R[rega]_31)^uimm16 ## (R[rega] >> uimm16)_uimm16..31
@@ -173,7 +171,6 @@ architecture BEHAVIORAL of ALU is
 					OP_B <= OP2;
 					OP_SHIFT <= '1';
 					Y_TMP <= Y_SHIFTR;
-					--Z_TMP <= Z_DET;
 
 				-- Arithmetic Operations
 
@@ -184,7 +181,6 @@ architecture BEHAVIORAL of ALU is
 					OP_B <= OP2;
 					OP_Ci <= '0';
 					Y_TMP <= Y_SUM;
-					--Z_TMP <= Z_DET;
 
 --				when OP_ADDU =>		-- unsigned, R[regc] <-- R[rega] + R[regb]
 --				when OP_ADDUI =>	-- unsigned, R[regb] <-- R[rega] + uimm16
@@ -198,13 +194,11 @@ architecture BEHAVIORAL of ALU is
 					OP_B <= NOT OP2;
 					OP_Ci <= '1';
 					Y_TMP <= Y_SUM;
-					--Z_TMP <= Z_DET;
 
 --				when OP_SUBU =>		-- unsigned, R[regc] <-- R[rega] - R[regb]
 --				when OP_SUBUI =>	-- unsigned, R[regb] <-- R[rega] - uimm16
 				when OP_SUBU | OP_SUBUI =>
 					Y_TMP <= std_logic_vector(unsigned(OP1) - unsigned(OP2));
-					--Z_TMP <= Z_DET;
 
 				-- Logic Operations
 
@@ -215,7 +209,6 @@ architecture BEHAVIORAL of ALU is
 					OP_B <= OP2;
 					OP_LOGIC <= "00";
 					Y_TMP <= Y_LOGIC;
-					--Z_TMP <= Z_DET;
 
 --				when OP_OR =>		-- unsigned bitwise basis, R[regc] <-- R[rega] | R[regb]
 --				when OP_ORI =>		-- unsigned bitwise basis, R[regb] <-- R[rega] | uimm16
@@ -224,7 +217,6 @@ architecture BEHAVIORAL of ALU is
 					OP_B <= OP2;
 					OP_LOGIC <= "01";
 					Y_TMP <= Y_LOGIC;
-					--Z_TMP <= Z_DET;
 
 --				when OP_XOR =>		-- unsigned bitwise basis, R[regc] <-- R[rega] XOR R[regb]
 --				when OP_XORI =>		-- unsigned bitwise basis, R[regb] <-- R[rega] XOR uimm16
@@ -233,7 +225,6 @@ architecture BEHAVIORAL of ALU is
 					OP_B <= OP2;
 					OP_LOGIC <= "10";
 					Y_TMP <= Y_LOGIC;
-					--Z_TMP <= Z_DET;
 
 				-- Comparison Operations
 
@@ -244,7 +235,6 @@ architecture BEHAVIORAL of ALU is
 					OP_B <= OP2;
 					OP_COMPARE <= "0000";
 					Y_TMP <= Y_COMPARE;
-					--Z_TMP <= Z_DET;
 
 --				when OP_SNE =>		-- signed, if (R[rega] != R[regb]) R[regc] <-- 1 else R[regc] <-- 0
 --				when OP_SNEI =>		-- signed, if (R[rega] != imm16) R[regb] <-- 1 else R[regb] <-- 0
@@ -253,7 +243,6 @@ architecture BEHAVIORAL of ALU is
 					OP_B <= OP2;
 					OP_COMPARE <= "0001";
 					Y_TMP <= Y_COMPARE;
-					--Z_TMP <= Z_DET;
 
 --				when OP_SLT =>		-- signed, if (R[rega] < R[regb]) R[regc] <-- 1 else R[regc] <-- 0
 --				when OP_SLTI =>		-- signed, if (R[rega] < imm16) R[regb] <-- 1 else R[regb] <-- 0
@@ -262,7 +251,6 @@ architecture BEHAVIORAL of ALU is
 					OP_B <= OP2;
 					OP_COMPARE <= "0010";
 					Y_TMP <= Y_COMPARE;
-					--Z_TMP <= Z_DET;
 
 --				when OP_SLTU =>		-- unsigned, if (R[rega] < R[regb]) R[regc] <-- 1 else R[regc] <-- 0
 --				when OP_SLTUI =>	-- unsigned, if (R[rega] < uimm16) R[regb] <-- 1 else R[regb] <-- 0
@@ -271,7 +259,6 @@ architecture BEHAVIORAL of ALU is
 					OP_B <= OP2;
 					OP_COMPARE <= "0011";
 					Y_TMP <= Y_COMPARE;
-					--Z_TMP <= Z_DET;
 
 --				when OP_SGT =>		-- signed, if (R[rega] > R[regb]) R[regc] <-- 1 else R[regc] <-- 0
 --				when OP_SGTI =>		-- signed, if (R[rega] > imm16) R[regb] <-- 1 else R[regb] <-- 0
@@ -280,7 +267,6 @@ architecture BEHAVIORAL of ALU is
 					OP_B <= OP2;
 					OP_COMPARE <= "0100";
 					Y_TMP <= Y_COMPARE;
-					--Z_TMP <= Z_DET;
 
 --				when OP_SGTU =>		-- unsigned, if (R[rega] > R[regb]) R[regc] <-- 1 else R[regc] <-- 0
 --				when OP_SGTUI =>	-- unsigned, if (R[rega] > uimm16) R[regb] <-- 1 else R[regb] <-- 0
@@ -289,7 +275,6 @@ architecture BEHAVIORAL of ALU is
 					OP_B <= OP2;
 					OP_COMPARE <= "0101";
 					Y_TMP <= Y_COMPARE;
-					--Z_TMP <= Z_DET;
 
 --				when OP_SLE =>		-- signed, if (R[rega] <= R[regb]) R[regc] <-- 1 else R[regc] <-- 0
 --				when OP_SLEI =>		-- signed, if (R[rega] <= imm16) R[regb] <-- 1 else R[regb] <-- 0
@@ -298,7 +283,6 @@ architecture BEHAVIORAL of ALU is
 					OP_B <= OP2;
 					OP_COMPARE <= "0110";
 					Y_TMP <= Y_COMPARE;
-					--Z_TMP <= Z_DET;
 
 --				when OP_SLEU =>		-- unsigned, if (R[rega] <= R[regb]) R[regc] <-- 1 else R[regc] <-- 0
 --				when OP_SLEUI =>	-- unsigned, if (R[rega] <= uimm16) R[regb] <-- 1 else R[regb] <-- 0
@@ -307,7 +291,6 @@ architecture BEHAVIORAL of ALU is
 					OP_B <= OP2;
 					OP_COMPARE <= "0111";
 					Y_TMP <= Y_COMPARE;
-					--Z_TMP <= Z_DET;
 
 --				when OP_SGE =>		-- signed, if (R[rega] >= R[regb]) R[regc] <-- 1 else R[regc] <-- 0
 --				when OP_SGEI =>		-- signed, if (R[rega] >= imm16) R[regb] <-- 1 else R[regb] <-- 0
@@ -316,7 +299,6 @@ architecture BEHAVIORAL of ALU is
 					OP_B <= OP2;
 					OP_COMPARE <= "1000";
 					Y_TMP <= Y_COMPARE;
-					--Z_TMP <= Z_DET;
 
 --				when OP_SGEU =>		-- unsigned, if (R[rega] >= R[regb]) R[regc] <-- 1 else R[regc] <-- 0
 --				when OP_SGEUI =>	-- unsigned, if (R[rega] >= uimm16) R[regb] <-- 1 else R[regb] <-- 0
@@ -325,7 +307,6 @@ architecture BEHAVIORAL of ALU is
 					OP_B <= OP2;
 					OP_COMPARE <= "1001";
 					Y_TMP <= Y_COMPARE;
-					--Z_TMP <= Z_DET;
 
 				-- Loads
 
@@ -336,12 +317,10 @@ architecture BEHAVIORAL of ALU is
 					OP_B <= OP2;
 					OP_Ci <= '0';
 					Y_TMP <= Y_SUM;
-					--Z_TMP <= Z_DET;
 
 --				when OP_LHI =>		-- R[regb] <-- imm16 ## 0^16
 				when OP_LHI =>
 					Y_TMP <= OP2;
-					--Z_TMP <= Z_DET;
 
 				-- Jumps
 
@@ -353,7 +332,6 @@ architecture BEHAVIORAL of ALU is
 					OP_Ci <= '0';
 					Y_TMP <= Y_SUM;
 					--Y_TMP <= std_logic_vector(to_unsigned(4, Y_TMP'length));
-					--Z_TMP <= Z_DET;
 
 				-- Branches
 
@@ -364,18 +342,15 @@ architecture BEHAVIORAL of ALU is
 					OP_B <= OP2;
 					OP_Ci <= '0';
 					Y_TMP <= Y_SUM;
-					--Z_TMP <= Z_DET;
 
 				-- No Operations
 
 --				when OP_NOP =>		-- idles one cycle
 				when OP_NOP =>
 					Y_TMP <= std_logic_vector(to_unsigned(0, Y_TMP'length));
-					--Z_TMP <= Z_DET;
 
 				when others =>
 					Y_TMP <= std_logic_vector(to_unsigned(0, Y_TMP'length));
-					--Z_TMP <= Z_DET;
 
 			end case;
 		end process;

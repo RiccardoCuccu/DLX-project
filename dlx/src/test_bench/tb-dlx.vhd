@@ -1,7 +1,7 @@
 ----------------------------------------------------------------------------------------------------
--- Description:	This VHDL module serves as the testbench for the DLX architecture. It generates 
---		a clock signal and a reset sequence for the DLX core. The testbench includes 
---		instance instantiation of the DLX core and maps the testbench clock and reset 
+-- Description:	This VHDL module serves as the testbench for the DLX architecture. It generates
+--		a clock signal and a reset sequence for the DLX core. The testbench includes
+--		instance instantiation of the DLX core and maps the testbench clock and reset
 --		signals to the core's clock and reset inputs.
 --
 -- Author:	Riccardo Cuccu
@@ -19,7 +19,6 @@ architecture TEST of TB_DLX is
 
 	constant IR_SIZE	: integer := IR_SIZE_GLOBAL;		-- Instruction Register Size
 	constant PC_SIZE	: integer := PC_SIZE_GLOBAL;		-- Program Counter Size
---	constant ALU_OPC_SIZE	: integer := OPC_SIZE_GLOBAL;		-- ALU Op Code Word Size in case explicit coding is used
 
 	signal Clock		: std_logic := '0';
 	signal Reset		: std_logic := '1';

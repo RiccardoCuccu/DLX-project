@@ -1,14 +1,13 @@
---------------------------------------------------------------------------------
--- Description:	This module is a Forwarding Unit that detects data hazards 
---              and resolves them by forwarding the appropriate data to earlier
---              stages of the pipeline. When a register being written in MEM or WB
---              stage is also being read as a source operand in the EX stage, this 
---              unit signals the need to forward data from later stages to ensure 
---              correct data is used.
+----------------------------------------------------------------------------------------------------
+-- Description:	This module serves as a Forwarding Unit in the pipeline, aiming to detect and 
+--		resolve data hazards. It achieves this by forwarding relevant data back to earlier 
+--		stages of the pipeline. Specifically, if a register being updated in the MEM or WB 
+--		stage is simultaneously being read in the EX stage, the unit triggers data 
+--		forwarding to ensure the correct data is utilized.
 --
 -- Author:	Riccardo Cuccu
--- Date:	2023/09/07
---------------------------------------------------------------------------------
+-- Date:	2023/09/11
+----------------------------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;

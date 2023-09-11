@@ -21,6 +21,7 @@ analyze -library WORK -format vhdl {../src/000-functions.vhd} > /dev/null
 analyze -library WORK -format vhdl {../src/000-globals.vhd} > /dev/null
 
 ## Basic Logic Gates
+analyze -library WORK -format vhdl {../src/000-globals/not.vhd} > /dev/null
 analyze -library WORK -format vhdl {../src/000-globals/and.vhd} > /dev/null
 analyze -library WORK -format vhdl {../src/000-globals/nand.vhd} > /dev/null
 analyze -library WORK -format vhdl {../src/000-globals/or.vhd} > /dev/null
