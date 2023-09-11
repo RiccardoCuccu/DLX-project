@@ -49,56 +49,41 @@ vcom -quiet ../src/000-globals/mux41.vhd
 # Arithmetic Components
 vcom -quiet ../src/000-globals/fa.vhd
 vcom -quiet ../src/000-globals/rca.vhd
-vcom -quiet ../src/000-globals/zerodetector.vhd
 
 ## Control Unit (a.a)
 vcom -quiet ../src/a.a-cu.vhd
-#-suppress 1937;				# ** Warning: (vcom-1937) Choice in CASE statement alternative must be locally static.
 
 ## Datapath (a.b)
 vcom -quiet ../src/a.b-datapath.vhd
-vcom -quiet ../src/a.b.a-registerfile.vhd
-vcom -quiet ../src/a.b.c-forwardingunit.vhd
+vcom -quiet ../src/a.b.a-register_file.vhd
+vcom -quiet ../src/a.b.c-forwarding_unit.vhd
 #vcom -quiet ../src/a.b.g-pc.vhd
 #vcom -quiet ../src/a.b.h-ir.vhd
-vcom -quiet ../src/a.b.i-signextend.vhd
-vcom -quiet ../src/a.b.j-registeraddresser.vhd
+vcom -quiet ../src/a.b.i-sign_extend.vhd
+vcom -quiet ../src/a.b.j-register_addresser.vhd
 
 ### ALU (a.b.d)
 vcom -quiet ../src/a.b.d-alu.vhd
+vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4_adder.vhd
+#vcom -quiet ../src/a.b.d-alu/a.b.d.b-boot_hmultiplier.vhd
 vcom -quiet ../src/a.b.d-alu/a.b.d.c-comparator.vhd
 vcom -quiet ../src/a.b.d-alu/a.b.d.d-logic.vhd
-vcom -quiet ../src/a.b.d-alu/a.b.d.e-barrel-shifter-left.vhd
-vcom -quiet ../src/a.b.d-alu/a.b.d.f-barrel-shifter-right.vhd
+vcom -quiet ../src/a.b.d-alu/a.b.d.e-barrel_shifter_left.vhd
+vcom -quiet ../src/a.b.d-alu/a.b.d.f-barrel_shifter_right.vhd
+vcom -quiet ../src/a.b.d-alu/a.b.d.g-zero_detector.vhd
+#vcom -quiet ../src/a.b.d-alu/a.b.d.h-floatingpointadder.vhd
+#vcom -quiet ../src/a.b.d-alu/a.b.d.i-floatingpointmultiplier.vhd
 
-#### P4Adder (a.b.d.a)
-vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4adder.vhd
+##### P4Adder / Carry Generator (a.b.d.a.a)
+vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4_adder/a.b.d.a.a.d-pg_block.vhd
+vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4_adder/a.b.d.a.a.c-propagate.vhd
+vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4_adder/a.b.d.a.a.b-generate.vhd
+vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4_adder/a.b.d.a.a.a-pg_row.vhd
+vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4_adder/a.b.d.a.a-carry_generator.vhd
 
-##### Carry Generator (a.b.d.a.a)
-vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4adder/a.b.d.a.a.d-pg_block.vhd
-vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4adder/a.b.d.a.a.c-propagate.vhd
-vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4adder/a.b.d.a.a.b-generate.vhd
-vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4adder/a.b.d.a.a.a-pg_row.vhd
-vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4adder/a.b.d.a.a-carry_generator.vhd
-
-##### Sum Generator (a.b.d.a.b)
-vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4adder/a.b.d.a.b.a-carry_select_block.vhd
-vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4adder/a.b.d.a.b-sum_generator.vhd
-
-#### Booth Multiplier (a.b.d.b)
-#vcom -quiet ../src/a.b.d-alu/a.b.d.b-boothmultiplier.vhd
-
-#### Comparator (a.b.d.c)
-#vcom -quiet ../src/a.b.d-alu/a.b.d.c-comparator.vhd
-
-#### Logic (a.b.d.d)
-#vcom -quiet ../src/a.b.d-alu/a.b.d.d-logic.vhd
-
-#### Floating Point Adder (a.b.d.e)
-#vcom -quiet ../src/a.b.d-alu/a.b.d.e-floatingpointadder.vhd
-
-#### Floating Point Multiplier (a.b.d.f)
-#vcom -quiet ../src/a.b.d-alu/a.b.d.f-floatingpointmultiplier.vhd
+##### P4Adder / Sum Generator (a.b.d.a.b)
+vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4_adder/a.b.d.a.b.a-carry_select_block.vhd
+vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4_adder/a.b.d.a.b-sum_generator.vhd
 
 ## IRAM (a.c)
 vcom -quiet ../src/a.c-iram.vhd
@@ -410,8 +395,8 @@ if {$tb_waves eq 1} {
 
 		add wave -divider {ZERO_DETECTOR} -position insertpoint \
 		sim:/tb_dlx/U1/DATAPATH_I/ID_EX_RF_OUT1 \
-		sim:/tb_dlx/U1/DATAPATH_I/ZERO_OUT \
-		sim:/tb_dlx/U1/DATAPATH_I/ZERO_OUT_NEG \
+		sim:/tb_dlx/U1/DATAPATH_I/ALU_ZERO \
+		sim:/tb_dlx/U1/DATAPATH_I/ALU_ZERO_NEG \
 		sim:/tb_dlx/U1/DATAPATH_I/BRANCH_DETECT
 
 		add wave -divider {ID-EX Pipeline} -position insertpoint \
@@ -676,8 +661,8 @@ if {$tb_waves eq 2} {
 
 		add wave -divider {ZERO_DETECTOR} -position insertpoint \
 		sim:/tb_datapath/U1/ID_EX_RF_OUT1 \
-		sim:/tb_datapath/U1/ZERO_OUT \
-		sim:/tb_datapath/U1/ZERO_OUT_NEG \
+		sim:/tb_datapath/U1/ALU_ZERO \
+		sim:/tb_datapath/U1/ALU_ZERO_NEG \
 		sim:/tb_datapath/U1/BRANCH_DETECT
 
 		add wave -divider {ID-EX Pipeline} -position insertpoint \
@@ -825,8 +810,8 @@ if {$tb_waves eq 3} {
 
 	#add wave -divider {ZERO_DETECTOR} -position insertpoint \
 	#sim:/tb_dlx/U1/DATAPATH_I/ID_EX_RF_OUT1 \
-	#sim:/tb_dlx/U1/DATAPATH_I/ZERO_OUT \
-	#sim:/tb_dlx/U1/DATAPATH_I/ZERO_OUT_NEG \
+	#sim:/tb_dlx/U1/DATAPATH_I/ALU_ZERO \
+	#sim:/tb_dlx/U1/DATAPATH_I/ALU_ZERO_NEG \
 	#sim:/tb_dlx/U1/DATAPATH_I/BRANCH_DETECT
 
 }

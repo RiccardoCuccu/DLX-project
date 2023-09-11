@@ -266,14 +266,14 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 
 	end component;
 
-	component ZERODET is
-
-		generic	(	N		: integer := ALU_OP_SIZE_GLOBAL);
-
-		port	(	A		: in  std_logic_vector(N - 1 downto 0);
-				Y		: out std_logic);
-
-	end component;
+--	component ZERODET is
+--
+--		generic	(	N		: integer := ALU_OP_SIZE_GLOBAL);
+--
+--		port	(	A		: in  std_logic_vector(N - 1 downto 0);
+--				Y		: out std_logic);
+--
+--	end component;
 
 	-- MEMORY ----------------------------------------------------------------------------------------------------
 
@@ -364,10 +364,10 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 	signal IMM_OUT : std_logic_vector(IR_SIZE_GLOBAL - 1 downto 0);							-- / 32 bits
 
 	-- EXECUTE signals
-	signal ZERO_OUT, ZERO_OUT_NEG : std_logic;
 	signal BRANCH_DETECT : std_logic;
-	signal ALU_ZERO : std_logic;
+	signal ALU_ZERO, ALU_ZERO_NEG : std_logic;
 	signal ALU_PREOP1, ALU_PREOP2, ALU_OP1, ALU_OP2, ALU_OUTPUT : std_logic_vector(RF_SIZE_GLOBAL - 1 downto 0);	-- / 32 bits
+	signal FORWARD_A, FORWARD_B : std_logic_vector(1 downto 0);							-- /  2 bits
 
 	-- MEMORY signals
 	signal PC_MUX_SEL : std_logic;
@@ -377,34 +377,21 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 	signal DRAM_OUTPUT : std_logic_vector(DRAM_WORD_SIZE_GLOBAL - 1 downto 0);					-- / 32 bits
 	signal WB_MUX_OUT : std_logic_vector(DRAM_WORD_SIZE_GLOBAL - 1 downto 0);					-- / 32 bits
 
-	-- Forwarding Unit signals
-	signal FORWARD_A, FORWARD_B : std_logic_vector(1 downto 0);							-- /  2 bits
+	-- ALU signals (testbench)
+	signal IF_ALU_LABEL, IF_ALU_LABEL_NEXT : ALU_label;								-- ALU Opcode
+	signal ID_ALU_LABEL, ID_ALU_LABEL_NEXT : ALU_label;								-- ALU Opcode
+	signal EX_ALU_LABEL, EX_ALU_LABEL_NEXT : ALU_label;								-- ALU Opcode
+	signal MEM_ALU_LABEL, MEM_ALU_LABEL_NEXT : ALU_label;								-- ALU Opcode
+	signal WB_ALU_LABEL, WB_ALU_LABEL_NEXT : ALU_label;								-- ALU Opcode
 
-	-- ALU signals (testbench) -- DELETE
-	signal IF_ALU_LABEL, ID_ALU_LABEL, EX_ALU_LABEL, MEM_ALU_LABEL, WB_ALU_LABEL : ALU_label;					-- ALU Opcode
-	signal IF_ALU_LABEL_NEXT, ID_ALU_LABEL_NEXT, EX_ALU_LABEL_NEXT, MEM_ALU_LABEL_NEXT, WB_ALU_LABEL_NEXT : ALU_label;		-- ALU Opcode
-	
 	-- ALU Func
-	signal IR_opcode : std_logic_vector(5 downto 0);				-- OpCode part of IR
-	signal IR_func   : std_logic_vector(10 downto 0);				-- Func part of IR when Rtype
-
-
+	signal IR_opcode : std_logic_vector(5 downto 0);								-- OpCode
+	signal IR_func   : std_logic_vector(10 downto 0);								-- Func
+	
 	begin
 
-		-- IRAM
-		PC_OUT	<= PC_OUTPUT;
-		IR_BUS	<= IR_IN;
-
-		-- CU		
-		IR_OUT	<= IR_OUTPUT;
-
-		-- DRAM
-		ALU_OUT <= EX_MEM_ALU_OUTPUT;
-		DRAM_IN	<= EX_MEM_RF_OUT2;
-		DRAM_OUTPUT <= DRAM_OUT;
-
 		----------------------------------------------------------------------------------------------------
-		-- LABELS -- DELETE!
+		-- Labels
 		----------------------------------------------------------------------------------------------------
 
 		IR_opcode	<= IR_OUTPUT(IR_SIZE_GLOBAL - 1 downto IR_SIZE_GLOBAL - OPC_SIZE_GLOBAL);
@@ -532,32 +519,6 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 	
 		end process ALU_OP_CODE_P;
 
-		LABEL_PIPE: process(CLK)
-		begin
-			if (CLK'event and CLK = '1') then
-				if (RST = '0') then
-
-					ID_ALU_LABEL		<= L_ITYPE_NOP;
-					EX_ALU_LABEL		<= L_ITYPE_NOP;
-					MEM_ALU_LABEL		<= L_ITYPE_NOP;
-					WB_ALU_LABEL		<= L_ITYPE_NOP;
-
-				else
-
-					ID_ALU_LABEL		<= ID_ALU_LABEL_NEXT;
-					EX_ALU_LABEL		<= EX_ALU_LABEL_NEXT;
-					MEM_ALU_LABEL		<= MEM_ALU_LABEL_NEXT;
-					WB_ALU_LABEL		<= WB_ALU_LABEL_NEXT;
-
-				end if;
-			end if;
-		end process;
-
-		ID_ALU_LABEL_NEXT		<= IF_ALU_LABEL;
-		EX_ALU_LABEL_NEXT		<= ID_ALU_LABEL;
-		MEM_ALU_LABEL_NEXT		<= EX_ALU_LABEL;
-		WB_ALU_LABEL_NEXT		<= MEM_ALU_LABEL;
-
 		----------------------------------------------------------------------------------------------------
 		-- Pipeline
 		----------------------------------------------------------------------------------------------------
@@ -566,6 +527,7 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 		begin
 			if (CLK'event and CLK = '1') then
 				if (RST = '0') then
+
 					-- FETCH-DECODE
 					IF_ID_NPC		<= (others => '0');			-- Program Counter signal
 					IF_ID_IR		<= (others => '0');			-- Instruction Register signal
@@ -594,7 +556,15 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 					MEM_WB_ALU_OUTPUT	<= (others => '0');			-- ALU Output
 					MEM_WB_DRAM_OUTPUT	<= (others => '0');			-- DRAM Output
 					MEM_WB_RD		<= (others => '0');			-- Register File Write Address
+
+					-- LABELS
+					ID_ALU_LABEL		<= L_ITYPE_NOP;
+					EX_ALU_LABEL		<= L_ITYPE_NOP;
+					MEM_ALU_LABEL		<= L_ITYPE_NOP;
+					WB_ALU_LABEL		<= L_ITYPE_NOP;
+
 				else
+
 					-- FETCH-DECODE
 					IF_ID_NPC		<= IF_ID_NPC_NEXT;			-- Program Counter signal
 					IF_ID_IR		<= IF_ID_IR_NEXT;			-- Instruction Register signal
@@ -623,9 +593,40 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 					MEM_WB_ALU_OUTPUT	<= MEM_WB_ALU_OUTPUT_NEXT;		-- ALU Output
 					MEM_WB_DRAM_OUTPUT	<= MEM_WB_DRAM_OUTPUT_NEXT;		-- DRAM Output
 					MEM_WB_RD		<= MEM_WB_RD_NEXT;			-- Register File Write Address
+
+					-- LABELS
+					ID_ALU_LABEL		<= ID_ALU_LABEL_NEXT;
+					EX_ALU_LABEL		<= EX_ALU_LABEL_NEXT;
+					MEM_ALU_LABEL		<= MEM_ALU_LABEL_NEXT;
+					WB_ALU_LABEL		<= WB_ALU_LABEL_NEXT;
+
 				end if;
 			end if;
 		end process PIPELINES;
+
+		----------------------------------------------------------------------------------------------------
+		-- Signals
+		----------------------------------------------------------------------------------------------------
+
+		-- IRAM
+		PC_OUT		<= PC_OUTPUT;
+		IR_BUS		<= IR_IN;
+
+		-- CU		
+		IR_OUT		<= IR_OUTPUT;
+
+		-- DRAM
+		ALU_OUT		<= EX_MEM_ALU_OUTPUT;
+		DRAM_IN		<= EX_MEM_RF_OUT2;
+		DRAM_OUTPUT	<= DRAM_OUT;
+
+		-- EXECUTE
+		NPC_BUS		<= std_logic_vector(unsigned(PC_OUTPUT) + 4);
+		ALU_ZERO_NEG	<= not(ALU_ZERO);
+
+		-- MEMORY
+		BRANCH_COND	<= EX_MEM_BRANCH_DETECT and JUMP_EN;
+		PC_MUX_SEL	<= BRANCH_COND or JUMP_COND;
 
 		-- IF-ID PIPELINE
 		IF_ID_NPC_NEXT		<= NPC_OUT;
@@ -654,29 +655,11 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 		MEM_WB_ALU_OUTPUT_NEXT	<= EX_MEM_ALU_OUTPUT;
 --		MEM_WB_DRAM_OUTPUT_NEXT	<= DRAM_OUTPUT;
 
-		----------------------------------------------------------------------------------------------------
-		-- Processes
-		----------------------------------------------------------------------------------------------------
-
-		NPC_BUS			<= std_logic_vector(unsigned(PC_OUTPUT) + 4);
-
-		ZERO_OUT_NEG		<= not(ZERO_OUT);
-
-		BRANCH_MUX: MUX21_L
-
-			port map (	A	=> ZERO_OUT,
-					B	=> ZERO_OUT_NEG,
-					S	=> EQ_COND,
-					Y	=> BRANCH_DETECT);
-
---		BRANCH_MUX: process(ZERO_OUT, EQ_COND)
---		begin
---			if (EQ_COND = '0') then
---				BRANCH_DETECT <= ZERO_OUT;
---			else
---				BRANCH_DETECT <= ZERO_OUT_NEG;
---			end if;
---		end process;
+		-- LABELS
+		ID_ALU_LABEL_NEXT	<= IF_ALU_LABEL;
+		EX_ALU_LABEL_NEXT	<= ID_ALU_LABEL;
+		MEM_ALU_LABEL_NEXT	<= EX_ALU_LABEL;
+		WB_ALU_LABEL_NEXT	<= MEM_ALU_LABEL;
 
 		----------------------------------------------------------------------------------------------------
 		-- Components Mapping
@@ -826,12 +809,19 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 					Y	=> ALU_OUTPUT,
 					Z	=> ALU_ZERO);
 
-		ZERO_DETECTOR: ZERODET
+		BRANCH_MUX: MUX21_L
 
-			generic map (	N	=> ALU_OP_SIZE_GLOBAL)
+			port map (	A	=> ALU_ZERO,
+					B	=> ALU_ZERO_NEG,
+					S	=> EQ_COND,
+					Y	=> BRANCH_DETECT);
 
-			port map (	A	=> ALU_PREOP1,
-					Y	=> ZERO_OUT);
+--		ZERO_DETECTOR: ZERODET
+--
+--			generic map (	N	=> ALU_OP_SIZE_GLOBAL)
+--
+--			port map (	A	=> ALU_PREOP1,
+--					Y	=> ZERO_OUT);
 
 		FORWARDING_UNIT: FU
 
@@ -851,9 +841,6 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 
 		-- MEMORY (MEM) ----------------------------------------------------------------------------------------------------
 
-		BRANCH_COND		<= EX_MEM_BRANCH_DETECT and JUMP_EN;
-		PC_MUX_SEL		<= BRANCH_COND or JUMP_COND;
-
 --		DATA_MEMORY: DRAM
 --
 --			generic map (	N	=> DRAM_SIZE_GLOBAL,
@@ -866,10 +853,6 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 --					ADDR	=> EX_MEM_ALU_OUTPUT,			-- Address
 --					DIN	=> EX_MEM_RF_OUT2,			-- Data in
 --					DOUT	=> DRAM_OUTPUT);			-- Data out
-
-		
-
-
 
 		LATCH_LMD: LDR		generic map (DRAM_WORD_SIZE_GLOBAL)	port map (RST, LMD_LATCH_EN, DRAM_OUTPUT, MEM_WB_DRAM_OUTPUT_NEXT);
 
