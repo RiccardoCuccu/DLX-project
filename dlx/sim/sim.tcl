@@ -15,7 +15,7 @@
 
 # User-configurable settings for simulation
 quietly set tb_waves 1		; # 0 = Default; 1 = DLX; 2 = DATAPATH ; 3 = ALU
-quietly set pipe_stage 6	; # 1 = Fetch; 2 = Decode; 3 = Execute; 4 = Memory; 5 = Write Back ; 6 = All
+quietly set pipe_stage 3	; # 1 = Fetch; 2 = Decode; 3 = Execute; 4 = Memory; 5 = Write Back ; 6 = All
 
 #----------------------------------------------------------------------------------------------------
 # Compile VHDL files

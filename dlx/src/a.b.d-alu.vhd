@@ -185,7 +185,11 @@ architecture BEHAVIORAL of ALU is
 --				when OP_ADDU =>		-- unsigned, R[regc] <-- R[rega] + R[regb]
 --				when OP_ADDUI =>	-- unsigned, R[regb] <-- R[rega] + uimm16
 				when OP_ADDU | OP_ADDUI =>
-					Y_TMP <= std_logic_vector(unsigned(OP1) + unsigned(OP2));
+--					Y_TMP <= std_logic_vector(unsigned(OP1) + unsigned(OP2));
+					OP_A <= std_logic_vector(unsigned(OP1));
+					OP_B <= std_logic_vector(unsigned(OP2));
+					OP_Ci <= '0';
+					Y_TMP <= Y_SUM;
 
 --				when OP_SUB =>	-- signed, R[regc] <-- R[rega] - R[regb]
 --				when OP_SUBI =>	-- signed, R[regb] <-- R[rega] - imm16
@@ -198,7 +202,11 @@ architecture BEHAVIORAL of ALU is
 --				when OP_SUBU =>		-- unsigned, R[regc] <-- R[rega] - R[regb]
 --				when OP_SUBUI =>	-- unsigned, R[regb] <-- R[rega] - uimm16
 				when OP_SUBU | OP_SUBUI =>
-					Y_TMP <= std_logic_vector(unsigned(OP1) - unsigned(OP2));
+--					Y_TMP <= std_logic_vector(unsigned(OP1) - unsigned(OP2));
+					OP_A <= std_logic_vector(unsigned(OP1));
+					OP_B <= NOT std_logic_vector(unsigned(OP2));
+					OP_Ci <= '1';
+					Y_TMP <= Y_SUM;					
 
 				-- Logic Operations
 
