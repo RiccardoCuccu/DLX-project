@@ -1,14 +1,3 @@
-----------------------------------------------------------------------------------------------------
--- Description:	This module acts as a zero detector within the ALU of the DLX architecture.
---		The purpose is to examine whether all bits in the input signal "A" are zeros.
---		If that is the case, it sets the output "Y" to '1'. Otherwise, if any bit in "A" 
---		is non-zero, "Y" will be set to '0'. The module employs a matrix-based hierarchy 
---		of XNOR and AND gates to accomplish this task.
---
--- Author:	Riccardo Cuccu
--- Date:	2023/09/11
-----------------------------------------------------------------------------------------------------
-
 library ieee;
 use ieee.std_logic_1164.all;
 use work.constants.all;

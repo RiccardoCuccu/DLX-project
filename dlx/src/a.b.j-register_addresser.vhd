@@ -3,11 +3,12 @@
 --		instruction's opcode. It handles R-Type, I-Type, and J-Type instructions.
 --
 -- Author:	Riccardo Cuccu
--- Date:	2023/09/08
+-- Date:	2023/09/12
 ----------------------------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 use work.constants.all;
 
 entity REGADDR is
@@ -53,16 +54,49 @@ begin
 			RD	<= REG3;					-- INSTR(15 downto 11);
 
 		-- I-Type instruction	
-		elsif IR_OPC /= JTYPE_J and IR_OPC /= JTYPE_JAL then
+		elsif IR_OPC /= JTYPE_J and IR_OPC /= JTYPE_JAL and IR_OPC /= ITYPE_JR and IR_OPC /= ITYPE_JALR then
 
 			-- Extract RS1 and RD fields for I-type instruction, RS2 is not applicable
 			RS1	<= REG1;					-- INSTR(25 downto 21);
 			RS2	<= (others => '0');
 			RD	<= REG2;					-- INSTR(20 downto 16);
 
-		-- J-Type instruction
+		-- J instruction
+		elsif IR_OPC = JTYPE_J then
+
+			-- RS1, RS2 and RD are not applicable
+			RS1	<= (others => '0');
+			RS2	<= (others => '0');
+			RD	<= (others => '0');
+
+		-- JR instruction
+		elsif IR_OPC = ITYPE_JR then
+
+			-- Extract RS1 field, RS2 and RD are not applicable
+			RS1	<= REG1;					-- INSTR(25 downto 21);
+			RS2	<= (others => '0');
+			RD	<= (others => '0');
+
+		-- JAL instruction
+		elsif IR_OPC = JTYPE_JAL then
+
+			-- Set RD to 31, RS1 and RS2 are not applicable
+			RS1	<= (others => '0');
+			RS2	<= (others => '0');
+			RD	<= std_logic_vector(to_unsigned(31, RD'length));
+
+		-- JALR instruction
+		elsif IR_OPC = ITYPE_JALR then
+
+			-- Set RD to 31, RS1 and RS2 are not applicable
+			RS1	<= REG1;					-- INSTR(25 downto 21);
+			RS2	<= (others => '0');
+			RD	<= std_logic_vector(to_unsigned(31, RD'length));
+
+		-- Other instructions
 		else
-			-- For J-type instruction, RS1, RS2 and RD are not applicable
+
+			-- RS1, RS2 and RD are not applicable
 			RS1	<= (others => '0');
 			RS2	<= (others => '0');
 			RD	<= (others => '0');

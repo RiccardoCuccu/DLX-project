@@ -2,7 +2,7 @@
 -- Description: This is the top-level module for the DLX architecture.
 --
 -- Author:	Riccardo Cuccu
--- Date:	2023/09/11
+-- Date:	2023/09/12
 ----------------------------------------------------------------------------------------------------
 
 library ieee;
@@ -69,7 +69,8 @@ architecture DLX_RTL of DLX is
 				JUMP_COND		: out std_logic;					-- JUMP Condition
 
 				-- WB Control signals
-				WB_MUX_SEL		: out std_logic);					-- Write Back MUX Sel
+				WB_MUX_SEL		: out std_logic;					-- Write Back MUX Sel
+				JAL_MUX_SEL		: out std_logic);					-- Jump and Link Sel
 
 
 	end component;
@@ -116,6 +117,7 @@ architecture DLX_RTL of DLX is
 
 				-- WB Control signals
 				WB_MUX_SEL		: in  std_logic;					-- Write Back MUX Sel
+				JAL_MUX_SEL		: in  std_logic;					-- Jump and Link Sel
 
 				IR_OUT			: out std_logic_vector(IR_SIZE - 1 downto 0);		-- Instruction Register		/ 32 bits
 				PC_OUT			: out std_logic_vector(PC_SIZE - 1 downto 0);		-- Program Counter		/ 32 bits
@@ -188,6 +190,7 @@ architecture DLX_RTL of DLX is
 	signal JUMP_COND_i : std_logic;
 
 	signal WB_MUX_SEL_i : std_logic;
+	signal JAL_MUX_SEL_i : std_logic;
 
 	-- Data Ram Bus signals
 	signal DATA_ADDR : std_logic_vector(DRAM_SIZE - 1 downto 0);
@@ -208,7 +211,7 @@ architecture DLX_RTL of DLX is
 					FUNC_SIZE	=>  FUNC_SIZE_GLOBAL,		-- Func Field Size for R-Type Ops	/ 11 bits
 					OP_CODE_SIZE	=>  OPC_SIZE_GLOBAL,		-- Op Code Size				/  6 bits
 					IR_SIZE		=>  IR_SIZE_GLOBAL,		-- Instruction Register Size		/ 32 bits
-					CW_SIZE		=>  CW_SIZE_GLOBAL)		-- Control Word Size			/ 17 bits
+					CW_SIZE		=>  CW_SIZE_GLOBAL)		-- Control Word Size			/ 18 bits
 
 			port map (	CLK		=> CLK,				-- Clock
 					RST		=> RST,				-- Reset (active low)
@@ -230,8 +233,8 @@ architecture DLX_RTL of DLX is
 					LMD_LATCH_EN	=> LMD_LATCH_EN_i,		-- LMD Register Latch Enable
 					JUMP_EN		=> JUMP_EN_i,			-- JUMP Enable Signal for PC input MUX
 					JUMP_COND	=> JUMP_COND_i,			-- JUMP Condition
-					WB_MUX_SEL	=> WB_MUX_SEL_i);		-- Write Back MUX Sel
-
+					WB_MUX_SEL	=> WB_MUX_SEL_i,		-- Write Back MUX Sel
+					JAL_MUX_SEL	=> JAL_MUX_SEL_i);		-- Jump and Link Sel
 
 		-- Datapath Instantiation
 		DATAPATH_I: DLX_DATAPATH
@@ -264,6 +267,7 @@ architecture DLX_RTL of DLX is
 					JUMP_EN		=> JUMP_EN_i,			-- JUMP Enable Signal f
 					JUMP_COND	=> JUMP_COND_i,			-- JUMP Condition
 					WB_MUX_SEL	=> WB_MUX_SEL_i,		-- Write Back MUX Sel
+					JAL_MUX_SEL	=> JAL_MUX_SEL_i,		-- Jump and Link Sel
 					IR_OUT		=> IR,				-- Instruction Register			/ 32 bits
 					PC_OUT		=> PC,				-- Program Counter			/ 32 bits
 					ALU_OUT		=> DATA_ADDR,			-- DRAM Address Input			/ 32 bits

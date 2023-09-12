@@ -5,7 +5,7 @@
 --		system configuration and maintenance.
 --
 -- Author:	Riccardo Cuccu
--- Date:	2023/09/11
+-- Date:	2023/09/12
 ----------------------------------------------------------------------------------------------------
 
 library ieee;
@@ -26,7 +26,7 @@ package constants is
 	constant PC_SIZE_GLOBAL			: integer := SIZE_GLOBAL;				-- Program Counter size
 	constant MMEM_SIZE_GLOBAL		: integer := 64;					-- Microcode Memory size
 	--constant RMEM_SIZE_GLOBAL		: integer := 64;					-- Microcode Relocation
-	constant CW_SIZE_GLOBAL			: integer := 17;					-- Control Word size
+	constant CW_SIZE_GLOBAL			: integer := 18;					-- Control Word size
 
 	-- Instruction memory
 	constant IRAM_SIZE_GLOBAL		: integer := 2**8;					-- Instruction Memory size
@@ -158,8 +158,8 @@ package constants is
 	constant ITYPE_LHI	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "00" & x"F";
 --	constant ITYPE_RFE	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "01" & x"0";
 --	constant ITYPE_TRAP	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "01" & x"1";
---	constant ITYPE_JR	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "01" & x"2";
---	constant ITYPE_JALR	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "01" & x"3";
+	constant ITYPE_JR	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "01" & x"2";
+	constant ITYPE_JALR	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "01" & x"3";
 	constant ITYPE_SLLI	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "01" & x"4";
 	constant ITYPE_NOP	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "01" & x"5";
 	constant ITYPE_SRLI	: std_logic_vector(OPC_SIZE_GLOBAL - 1 downto 0) := "01" & x"6";

@@ -4,7 +4,7 @@
 --		and subtraction operations.
 --
 -- Author:	Riccardo Cuccu
--- Date:	2023/09/11
+-- Date:	2023/09/12
 ----------------------------------------------------------------------------------------------------
 
 library ieee;
@@ -186,8 +186,8 @@ architecture BEHAVIORAL of ALU is
 --				when OP_ADDUI =>	-- unsigned, R[regb] <-- R[rega] + uimm16
 				when OP_ADDU | OP_ADDUI =>
 --					Y_TMP <= std_logic_vector(unsigned(OP1) + unsigned(OP2));
-					OP_A <= std_logic_vector(unsigned(OP1));
-					OP_B <= std_logic_vector(unsigned(OP2));
+					OP_A <= OP1;
+					OP_B <= OP2;
 					OP_Ci <= '0';
 					Y_TMP <= Y_SUM;
 
@@ -203,8 +203,8 @@ architecture BEHAVIORAL of ALU is
 --				when OP_SUBUI =>	-- unsigned, R[regb] <-- R[rega] - uimm16
 				when OP_SUBU | OP_SUBUI =>
 --					Y_TMP <= std_logic_vector(unsigned(OP1) - unsigned(OP2));
-					OP_A <= std_logic_vector(unsigned(OP1));
-					OP_B <= NOT std_logic_vector(unsigned(OP2));
+					OP_A <= OP1;
+					OP_B <= NOT OP2;
 					OP_Ci <= '1';
 					Y_TMP <= Y_SUM;					
 
@@ -335,11 +335,16 @@ architecture BEHAVIORAL of ALU is
 --				when OP_J =>		-- PC <-- PC + imm26
 --				when OP_JAL =>		-- R31 <-- PC + 4; PC <-- PC + imm26
 				when OP_J | OP_JAL =>
+					--Y_TMP <= std_logic_vector(to_unsigned(4, Y_TMP'length));
 					OP_A <= OP1;
 					OP_B <= OP2;
 					OP_Ci <= '0';
 					Y_TMP <= Y_SUM;
-					--Y_TMP <= std_logic_vector(to_unsigned(4, Y_TMP'length));
+
+--				when OP_JR =>		-- PC <-- R[rega]
+--				when OP_JALR =>		-- R31 <-- PC + 4; PC <-- R[rega]
+				when OP_JR | OP_JALR =>
+					Y_TMP <= OP1;
 
 				-- Branches
 
