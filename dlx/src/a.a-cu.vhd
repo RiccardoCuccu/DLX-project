@@ -1,11 +1,11 @@
 ----------------------------------------------------------------------------------------------------
 -- Description:	This module serves as the Hardwired Control Unit (CU) for a DLX processor.
 --		It takes an instruction from the Instruction Register (IR) as input and generates
---		control signals for various datapath elements across five pipeline stages.
+--		control signals for various CU_HW elements across five pipeline stages.
 --		These control signals are generated based on opcode and function fields.
 --
 -- Author:	Riccardo Cuccu
--- Date:	2023/09/12
+-- Date:	2023/09/13
 ----------------------------------------------------------------------------------------------------
 
 library ieee;
@@ -104,7 +104,7 @@ architecture DLX_CU_HW of DLX_CU is
 					"000" & "0000" & "0000" & "00000" & "00",		-- x"20" LB	/
 					"000" & "0000" & "0000" & "00000" & "00",		-- x"21" LH	/
 					"000" & "0000" & "0000" & "00000" & "00",		-- x"22"
-					"111" & "1101" & "0110" & "10100" & "00",		-- x"23" LW	*
+					"111" & "1111" & "0110" & "10100" & "00",		-- x"23" LW	*
 					"000" & "0000" & "0000" & "00000" & "00",		-- x"24" LBU	/
 					"000" & "0000" & "0000" & "00000" & "00",		-- x"25" LHU	/
 					"000" & "0000" & "0000" & "00000" & "00",		-- x"26" LF	/
@@ -112,7 +112,7 @@ architecture DLX_CU_HW of DLX_CU is
 					"000" & "0000" & "0000" & "00000" & "00",		-- x"28" SB	/
 					"000" & "0000" & "0000" & "00000" & "00",		-- x"29" SH	/
 					"000" & "0000" & "0000" & "00000" & "00",		-- x"2A"
-					"111" & "0101" & "0110" & "01000" & "10",		-- x"2B" SW	*
+					"111" & "0111" & "0110" & "01000" & "10",		-- x"2B" SW	*
 					"000" & "0000" & "0000" & "00000" & "00",		-- x"2C"
 					"000" & "0000" & "0000" & "00000" & "00",		-- x"2D"
 					"000" & "0000" & "0000" & "00000" & "00",		-- x"2E" SF	/
@@ -376,3 +376,9 @@ begin
 	ALU_OPCODE <= aluOpcode3;
 
 end DLX_CU_HW;
+
+
+configuration CFG_DLX_CU_ARCHITECTURE of DLX_CU is
+	for DLX_CU_HW
+	end for;
+end CFG_DLX_CU_ARCHITECTURE;

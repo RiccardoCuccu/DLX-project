@@ -4,7 +4,7 @@
 --		and subtraction operations.
 --
 -- Author:	Riccardo Cuccu
--- Date:	2023/09/12
+-- Date:	2023/09/13
 ----------------------------------------------------------------------------------------------------
 
 library ieee;
@@ -419,3 +419,8 @@ architecture BEHAVIORAL of ALU is
 		port map (Y_TMP, Z_DET);
 
 end BEHAVIORAL;
+
+configuration CFG_ALU_ARCHITECTURE of ALU is
+	for BEHAVIORAL
+	end for;
+end CFG_ALU_ARCHITECTURE;

@@ -3,7 +3,7 @@
 --		instruction's opcode. It handles R-Type, I-Type, and J-Type instructions.
 --
 -- Author:	Riccardo Cuccu
--- Date:	2023/09/12
+-- Date:	2023/09/13
 ----------------------------------------------------------------------------------------------------
 
 library ieee;
@@ -53,7 +53,14 @@ begin
 			RS2	<= REG2;					-- INSTR(20 downto 16);
 			RD	<= REG3;					-- INSTR(15 downto 11);
 
-		-- I-Type instruction	
+		-- Load and Store instruction	
+		elsif IR_OPC = ITYPE_SW then
+			
+			RS1	<= REG1;					-- INSTR(25 downto 21);
+			RS2	<= REG2;					-- INSTR(20 downto 16);
+			RD	<= (others => '0');
+
+		-- I-Type instruction
 		elsif IR_OPC /= JTYPE_J and IR_OPC /= JTYPE_JAL and IR_OPC /= ITYPE_JR and IR_OPC /= ITYPE_JALR then
 
 			-- Extract RS1 and RD fields for I-type instruction, RS2 is not applicable

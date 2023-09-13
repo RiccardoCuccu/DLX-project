@@ -7,7 +7,7 @@
 --		all stages.
 --
 -- Author:	Riccardo Cuccu
--- Date:	2023/09/12
+-- Date:	2023/09/13
 ----------------------------------------------------------------------------------------------------
 
 library ieee;
@@ -648,8 +648,8 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 		-- EX-MEM PIPELINE
 		EX_MEM_NPC_NEXT		<= ID_EX_NPC;
 		EX_MEM_RF_WE_NEXT	<= ID_EX_RF_WE;
-		EX_MEM_RD_NEXT		<= ID_EX_RD;
 		EX_MEM_RF_OUT2_NEXT	<= ID_EX_RF_OUT2;
+		EX_MEM_RD_NEXT		<= ID_EX_RD;
 
 		-- MEM-WB PIPELINE
 		MEM_WB_NPC_NEXT		<= EX_MEM_NPC;
@@ -754,9 +754,9 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 					RS2		=> RS2,				-- /  5 bits
 					RD		=> RD);				-- /  5 bits
 
-		LATCH_REGA: LDR		generic map (RF_SIZE_GLOBAL)	port map (RST, RegA_LATCH_EN, RF_OUT1, ID_EX_RF_OUT1_NEXT);
-		LATCH_REGB: LDR		generic map (RF_SIZE_GLOBAL)	port map (RST, RegB_LATCH_EN, RF_OUT2, ID_EX_RF_OUT2_NEXT);
-		LATCH_REGIMM: LDR	generic map (RF_SIZE_GLOBAL)	port map (RST, RegIMM_LATCH_EN, IMM_OUT, ID_EX_IMM_NEXT);
+		LATCH_RF1: LDR		generic map (RF_SIZE_GLOBAL)	port map (RST, RegA_LATCH_EN, RF_OUT1, ID_EX_RF_OUT1_NEXT);
+		LATCH_RF2: LDR		generic map (RF_SIZE_GLOBAL)	port map (RST, RegB_LATCH_EN, RF_OUT2, ID_EX_RF_OUT2_NEXT);
+		LATCH_IMM: LDR		generic map (RF_SIZE_GLOBAL)	port map (RST, RegIMM_LATCH_EN, IMM_OUT, ID_EX_IMM_NEXT);
 
 
 		-- EXECUTE (EX) ----------------------------------------------------------------------------------------------------
