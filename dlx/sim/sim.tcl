@@ -6,7 +6,7 @@
 #		settings and focus on specific pipeline stages for detailed observations.
 #
 # Author:	Riccardo Cuccu
-# Date:		2023/09/11
+# Date:		2023/09/13
 #----------------------------------------------------------------------------------------------------
 
 #----------------------------------------------------------------------------------------------------
@@ -14,8 +14,8 @@
 #----------------------------------------------------------------------------------------------------
 
 # User-configurable settings for simulation
-quietly set tb_waves 1		; # 0 = Default; 1 = DLX; 2 = DATAPATH ; 3 = ALU
-quietly set pipe_stage 6	; # 1 = Fetch; 2 = Decode; 3 = Execute; 4 = Memory; 5 = Write Back ; 6 = All
+quietly set dlx_unit 0		; # 0 = DLX; 1 = CONTROL UNIT; 2 = DATAPATH; 3 = IRAM ; 4 = DRAM; 5 = ALU
+quietly set pipe_stage 0	; # 0 = All; 1 = Fetch; 2 = Decode; 3 = Execute; 4 = Memory; 5 = Write Back
 
 #----------------------------------------------------------------------------------------------------
 # Compile VHDL files
@@ -95,19 +95,8 @@ vcom -quiet ../src/a.d-dram.vhd
 vcom -quiet ../src/a-dlx.vhd
 
 # Testbench
-if {$tb_waves eq 1} {
-
-	vcom -quiet ../src/test_bench/tb-dlx.vhd
-
-} elseif {$tb_waves eq 2} {
-
-	vcom -quiet ../src/test_bench/tb-datapath.vhd
-
-} else {
-
-	vcom -quiet ../src/test_bench/tb-dlx.vhd
-
-}
+#vcom -quiet ../src/test_bench/tb-datapath.vhd
+vcom -quiet ../src/test_bench/tb-dlx.vhd
 
 # Simulation
 vsim -quiet -t 10ps work.CFG_TB -voptargs=+acc
@@ -119,99 +108,77 @@ vsim -quiet -t 10ps work.CFG_TB -voptargs=+acc
 # Configure signal name width in waveform for better readability
 config wave -signalnamewidth 1
 
-# Default wave settings
-if {$tb_waves eq 0} {
+#dlx_unit 0		 0 = DLX; 1 = CONTROL UNIT; 2 = DATAPATH; 3 = IRAM ; 4 = DRAM; 5 = ALU
+#pipe_stage 0		 0 = All; 1 = Fetch; 2 = Decode; 3 = Execute; 4 = Memory; 5 = Write Back
 
-	#view -undock wave
-	add wave /*
+# CONTROL UNIT specific waves
+
+if {$dlx_unit eq 0 || $dlx_unit eq 1} {
+
+	add wave -height 50 -divider {CONTROL UNIT} -height 19 \
+	-color white sim:/tb_dlx/U1/CLK \
+	-color gray  sim:/tb_dlx/U1/RST
+
+	add wave -divider {INPUTS} -position insertpoint -radix hex \
+	sim:/tb_dlx/U1/CU_I/IR_IN \
+	sim:/tb_dlx/U1/CU_I/IR_opcode \
+	sim:/tb_dlx/U1/CU_I/IR_func
+
+	add wave -divider {ALU} -position insertpoint \
+	sim:/tb_dlx/U1/CU_I/aluOpcode1 \
+	sim:/tb_dlx/U1/CU_I/aluOpcode2 \
+	sim:/tb_dlx/U1/CU_I/aluOpcode3 \
+	sim:/tb_dlx/U1/CU_I/ALU_OPCODE
+
+	add wave -divider {CONTROL WORDS} -position insertpoint -radix binary \
+	sim:/tb_dlx/U1/CU_I/cw1 \
+	sim:/tb_dlx/U1/CU_I/cw2 \
+	sim:/tb_dlx/U1/CU_I/cw3 \
+	sim:/tb_dlx/U1/CU_I/cw4 \
+	sim:/tb_dlx/U1/CU_I/cw5
+
+	add wave -divider {OUTPUTS - FETCH} -position insertpoint \
+	sim:/tb_dlx/U1/CU_I/IR_LATCH_EN \
+	sim:/tb_dlx/U1/CU_I/PC_LATCH_EN \
+	sim:/tb_dlx/U1/CU_I/NPC_LATCH_EN
+
+	add wave -divider {OUTPUTS - DECODE} -position insertpoint \
+	sim:/tb_dlx/U1/CU_I/RF_WE \
+	sim:/tb_dlx/U1/CU_I/RegA_LATCH_EN \
+	sim:/tb_dlx/U1/CU_I/RegB_LATCH_EN \
+	sim:/tb_dlx/U1/CU_I/RegIMM_LATCH_EN
+
+	add wave -divider {OUTPUTS - EXECUTE} -position insertpoint \
+	sim:/tb_dlx/U1/CU_I/MUXA_SEL \
+	sim:/tb_dlx/U1/CU_I/MUXB_SEL \
+	sim:/tb_dlx/U1/CU_I/ALU_OUTREG_EN \
+	sim:/tb_dlx/U1/CU_I/EQ_COND \
+	sim:/tb_dlx/U1/CU_I/ALU_OPCODE
+
+	add wave -divider {OUTPUTS - MEMORY} -position insertpoint \
+	sim:/tb_dlx/U1/CU_I/DRAM_RE \
+	sim:/tb_dlx/U1/CU_I/DRAM_WE \
+	sim:/tb_dlx/U1/CU_I/LMD_LATCH_EN \
+	sim:/tb_dlx/U1/CU_I/JUMP_EN \
+	sim:/tb_dlx/U1/CU_I/JUMP_COND
+
+	add wave -divider {OUTPUTS - WRITE BACK} -position insertpoint \
+	sim:/tb_dlx/U1/CU_I/WB_MUX_SEL \
+	sim:/tb_dlx/U1/CU_I/JAL_MUX_SEL
 
 }
 
+# DATAPATH specific waves
 
-# DLX-specific waves
-if {$tb_waves eq 1} {
-
-	#view -undock wave
-	#add wave -divider {TB_DLX} /*
-
-	if {$pipe_stage ne 6} {
-
-		add wave -divider {TB_DLX} -position insertpoint \
-		-color white sim:/tb_dlx/U1/CLK \
-		-color gray  sim:/tb_dlx/U1/RST
-
-	}
-
-	# CONTROL UNIT
-
-	if {$pipe_stage eq 0 || $pipe_stage eq 6} {
-
-		if {$pipe_stage eq 6} {
-
-			add wave -height 50 -divider {CONTROL UNIT} -height 19 \
-			-color white sim:/tb_dlx/U1/CLK \
-			-color gray  sim:/tb_dlx/U1/RST
-
-		}
-
-		add wave -divider {INPUTS} -position insertpoint -radix hex \
-		sim:/tb_dlx/U1/CU_I/IR_IN \
-		sim:/tb_dlx/U1/CU_I/IR_opcode \
-		sim:/tb_dlx/U1/CU_I/IR_func
-
-		add wave -divider {ALU} -position insertpoint \
-		sim:/tb_dlx/U1/CU_I/aluOpcode1 \
-		sim:/tb_dlx/U1/CU_I/aluOpcode2 \
-		sim:/tb_dlx/U1/CU_I/aluOpcode3 \
-		sim:/tb_dlx/U1/CU_I/ALU_OPCODE
-
-		add wave -divider {CONTROL WORDS} -position insertpoint -radix binary \
-		sim:/tb_dlx/U1/CU_I/cw1 \
-		sim:/tb_dlx/U1/CU_I/cw2 \
-		sim:/tb_dlx/U1/CU_I/cw3 \
-		sim:/tb_dlx/U1/CU_I/cw4 \
-		sim:/tb_dlx/U1/CU_I/cw5
-
-		add wave -divider {OUTPUTS - FETCH} -position insertpoint \
-		sim:/tb_dlx/U1/CU_I/IR_LATCH_EN \
-		sim:/tb_dlx/U1/CU_I/PC_LATCH_EN \
-		sim:/tb_dlx/U1/CU_I/NPC_LATCH_EN
-
-		add wave -divider {OUTPUTS - DECODE} -position insertpoint \
-		sim:/tb_dlx/U1/CU_I/RF_WE \
-		sim:/tb_dlx/U1/CU_I/RegA_LATCH_EN \
-		sim:/tb_dlx/U1/CU_I/RegB_LATCH_EN \
-		sim:/tb_dlx/U1/CU_I/RegIMM_LATCH_EN
-
-		add wave -divider {OUTPUTS - EXECUTE} -position insertpoint \
-		sim:/tb_dlx/U1/CU_I/MUXA_SEL \
-		sim:/tb_dlx/U1/CU_I/MUXB_SEL \
-		sim:/tb_dlx/U1/CU_I/ALU_OUTREG_EN \
-		sim:/tb_dlx/U1/CU_I/EQ_COND
-
-		add wave -divider {OUTPUTS - MEMORY} -position insertpoint \
-		sim:/tb_dlx/U1/CU_I/DRAM_RE \
-		sim:/tb_dlx/U1/CU_I/DRAM_WE \
-		sim:/tb_dlx/U1/CU_I/LMD_LATCH_EN \
-		sim:/tb_dlx/U1/CU_I/JUMP_EN \
-		sim:/tb_dlx/U1/CU_I/JUMP_COND
-
-		add wave -divider {OUTPUTS - WRITE BACK} -position insertpoint \
-		sim:/tb_dlx/U1/CU_I/WB_MUX_SEL
-
-	}
+if {$dlx_unit eq 0 || $dlx_unit eq 2} {
 
 	# FETCH (IF)
 
-	if {$pipe_stage eq 1 || $pipe_stage eq 6} {
+	if {$pipe_stage eq 0 || $pipe_stage eq 1} {
 
-		if {$pipe_stage eq 6} {
-
-			add wave -height 50 -divider {FETCH (IF)} -height 19 \
-			-color white sim:/tb_dlx/U1/CLK \
-			-color gray  sim:/tb_dlx/U1/RST
-
-		}
+		add wave -height 50 -divider {FETCH (IF)} -height 19 \
+		-color white sim:/tb_dlx/U1/CLK \
+		-color gray  sim:/tb_dlx/U1/RST
 
 		add wave -divider {IF Control Signals} -position insertpoint \
 		sim:/tb_dlx/U1/DATAPATH_I/IR_LATCH_EN \
@@ -257,15 +224,11 @@ if {$tb_waves eq 1} {
 
 	# DECODE (ID)
 
-	if {$pipe_stage eq 2 || $pipe_stage eq 6} {
+	if {$pipe_stage eq 0 || $pipe_stage eq 2} {
 
-		if {$pipe_stage eq 6} {
-
-			add wave -height 50 -divider {DECODE (ID)} -height 19 \
-			-color white sim:/tb_dlx/U1/CLK \
-			-color gray  sim:/tb_dlx/U1/RST
-
-		}
+		add wave -height 50 -divider {DECODE (ID)} -height 19 \
+		-color white sim:/tb_dlx/U1/CLK \
+		-color gray  sim:/tb_dlx/U1/RST
 
 		add wave -divider {ID CONTROL SIGNALS} -position insertpoint \
 		sim:/tb_dlx/U1/DATAPATH_I/RegA_LATCH_EN \
@@ -318,15 +281,11 @@ if {$tb_waves eq 1} {
 
 	# EXECUTE (EX)
 
-	if {$pipe_stage eq 3 || $pipe_stage eq 6} {
+	if {$pipe_stage eq 0 || $pipe_stage eq 3} {
 
-		if {$pipe_stage eq 6} {
-
-			add wave -height 50 -divider {EXECUTE (EX)} -height 19 \
-			-color white sim:/tb_dlx/U1/CLK \
-			-color gray  sim:/tb_dlx/U1/RST
-
-		}
+		add wave -height 50 -divider {EXECUTE (EX)} -height 19 \
+		-color white sim:/tb_dlx/U1/CLK \
+		-color gray  sim:/tb_dlx/U1/RST
 
 		add wave -divider {EX CONTROL SIGNALS} -position insertpoint \
 		sim:/tb_dlx/U1/DATAPATH_I/MUXA_SEL \
@@ -380,12 +339,6 @@ if {$tb_waves eq 1} {
 		sim:/tb_dlx/U1/DATAPATH_I/ALU_OPCODE \
 		sim:/tb_dlx/U1/DATAPATH_I/ALU_OUTPUT
 
-#		add wave -divider {ALU_LOGIC} -position insertpoint -radix binary \
-#		sim:/tb_dlx/U1/DATAPATH_I/ARITHMETIC_LOGIC_UNIT/LOG/*
-
-		add wave -divider {ALU_ADDER} -position insertpoint -radix binary \
-		sim:/tb_dlx/U1/DATAPATH_I/ARITHMETIC_LOGIC_UNIT/SUM/*
-
 		add wave -divider {ZERO_DETECTOR} -position insertpoint \
 		sim:/tb_dlx/U1/DATAPATH_I/ID_EX_RF_OUT1 \
 		sim:/tb_dlx/U1/DATAPATH_I/ZERO_OUT \
@@ -403,22 +356,22 @@ if {$tb_waves eq 1} {
 		sim:/tb_dlx/U1/DATAPATH_I/ID_EX_IMM
 
 		add wave -divider {EX-MEM Pipeline} -position insertpoint \
+		sim:/tb_dlx/U1/DATAPATH_I/EX_MEM_NPC \
 		sim:/tb_dlx/U1/DATAPATH_I/EX_MEM_BRANCH_DETECT \
 		sim:/tb_dlx/U1/DATAPATH_I/EX_MEM_ALU_OUTPUT \
 		sim:/tb_dlx/U1/DATAPATH_I/EX_MEM_RF_WE \
-		sim:/tb_dlx/U1/DATAPATH_I/EX_MEM_RD
+		sim:/tb_dlx/U1/DATAPATH_I/EX_MEM_RD \
+		sim:/tb_dlx/U1/DATAPATH_I/EX_MEM_RF_OUT2
 
 	}
 
 	# MEMORY (MEM)
 
-	if {$pipe_stage eq 4 || $pipe_stage eq 6} {
+	if {$pipe_stage eq 0 || $pipe_stage eq 4} {
 
-		if {$pipe_stage eq 6} {
-			add wave -height 50 -divider {MEMORY (MEM)} -height 19 \
-			-color white sim:/tb_dlx/U1/CLK \
-			-color gray  sim:/tb_dlx/U1/RST
-		}
+		add wave -height 50 -divider {MEMORY (MEM)} -height 19 \
+		-color white sim:/tb_dlx/U1/CLK \
+		-color gray  sim:/tb_dlx/U1/RST
 
 		add wave -divider {MEM CONTROL SIGNALS} -position insertpoint \
 		sim:/tb_dlx/U1/DATAPATH_I/DRAM_RE \
@@ -429,14 +382,6 @@ if {$tb_waves eq 1} {
 
 		add wave -divider {STAGE} -position insertpoint \
 		sim:/tb_dlx/U1/DATAPATH_I/MEM_ALU_LABEL
-
-#		add wave -divider {DRAM} -position insertpoint -radix decimal \
-#		sim:/tb_dlx/U1/DATAPATH_I/DRAM_RE \
-#		sim:/tb_dlx/U1/DATAPATH_I/DRAM_WE \
-#		sim:/tb_dlx/U1/DATAPATH_I/DATA_MEMORY/ADDR \
-#		sim:/tb_dlx/U1/DATAPATH_I/DATA_MEMORY/DIN \
-#		sim:/tb_dlx/U1/DATAPATH_I/DATA_MEMORY/DOUT \
-#		sim:/tb_dlx/U1/DATAPATH_I/DATA_MEMORY/DRAM_mem
 
 		add wave -divider {JUMP} -position insertpoint \
 		sim:/tb_dlx/U1/DATAPATH_I/EX_MEM_BRANCH_DETECT \
@@ -449,12 +394,15 @@ if {$tb_waves eq 1} {
 		sim:/tb_dlx/U1/DATAPATH_I/MEM_WB_DRAM_OUTPUT_NEXT
 
 		add wave -divider {EX-MEM Pipeline} -position insertpoint \
+		sim:/tb_dlx/U1/DATAPATH_I/EX_MEM_NPC \
 		sim:/tb_dlx/U1/DATAPATH_I/EX_MEM_BRANCH_DETECT \
 		sim:/tb_dlx/U1/DATAPATH_I/EX_MEM_ALU_OUTPUT \
 		sim:/tb_dlx/U1/DATAPATH_I/EX_MEM_RF_WE \
-		sim:/tb_dlx/U1/DATAPATH_I/EX_MEM_RD
+		sim:/tb_dlx/U1/DATAPATH_I/EX_MEM_RD \
+		sim:/tb_dlx/U1/DATAPATH_I/EX_MEM_RF_OUT2
 
 		add wave -divider {MEM-WB Pipeline} -position insertpoint \
+		sim:/tb_dlx/U1/DATAPATH_I/MEM_WB_NPC \
 		sim:/tb_dlx/U1/DATAPATH_I/MEM_WB_DRAM_OUTPUT \
 		sim:/tb_dlx/U1/DATAPATH_I/MEM_WB_ALU_OUTPUT \
 		sim:/tb_dlx/U1/DATAPATH_I/MEM_WB_RF_WE \
@@ -464,27 +412,33 @@ if {$tb_waves eq 1} {
 
 	# WRITE BACK (WB)
 
-	if {$pipe_stage eq 5 || $pipe_stage eq 6} {
+	if {$pipe_stage eq 0 || $pipe_stage eq 5} {
 
-		if {$pipe_stage eq 6} {
-			add wave -height 50 -divider {WRITE BACK (WB)} -height 19 \
-			-color white sim:/tb_dlx/U1/CLK \
-			-color gray  sim:/tb_dlx/U1/RST
-		}
+		add wave -height 50 -divider {WRITE BACK (WB)} -height 19 \
+		-color white sim:/tb_dlx/U1/CLK \
+		-color gray  sim:/tb_dlx/U1/RST
 
 		add wave -divider {WB CONTROL SIGNALS} -position insertpoint \
-		sim:/tb_dlx/U1/DATAPATH_I/WB_MUX_SEL
+		sim:/tb_dlx/U1/DATAPATH_I/WB_MUX_SEL \
+		sim:/tb_dlx/U1/DATAPATH_I/JAL_MUX_SEL
 
 		add wave -divider {STAGE} -position insertpoint \
 		sim:/tb_dlx/U1/DATAPATH_I/WB_ALU_LABEL
 
-		add wave -divider {MUX} -position insertpoint \
+		add wave -divider {WB MUX} -position insertpoint \
 		sim:/tb_dlx/U1/DATAPATH_I/MEM_WB_DRAM_OUTPUT \
 		sim:/tb_dlx/U1/DATAPATH_I/MEM_WB_ALU_OUTPUT \
 		sim:/tb_dlx/U1/DATAPATH_I/WB_MUX_SEL \
 		sim:/tb_dlx/U1/DATAPATH_I/WB_MUX_OUT
 
-		add wave -divider {MEM-WB Pipeline} -position insertpoint \
+		add wave -divider {JAL MUX} -position insertpoint -radix decimal \
+		sim:/tb_dlx/U1/DATAPATH_I/WB_MUX_OUT \
+		sim:/tb_dlx/U1/DATAPATH_I/MEM_WB_NPC \
+		sim:/tb_dlx/U1/DATAPATH_I/JAL_MUX_SEL \
+		sim:/tb_dlx/U1/DATAPATH_I/JAL_MUX_OUT
+
+		add wave -divider {MEM-WB Pipeline} -position insertpoint -radix decimal \
+		sim:/tb_dlx/U1/DATAPATH_I/MEM_WB_NPC \
 		sim:/tb_dlx/U1/DATAPATH_I/MEM_WB_DRAM_OUTPUT \
 		sim:/tb_dlx/U1/DATAPATH_I/MEM_WB_ALU_OUTPUT \
 		sim:/tb_dlx/U1/DATAPATH_I/MEM_WB_RF_WE \
@@ -492,55 +446,53 @@ if {$tb_waves eq 1} {
 
 	}
 
-	#add wave -divider -position insertpoint \
-	#sim:/tb_dlx/U1/DATAPATH_I/PC_BUS \
-	#sim:/tb_dlx/U1/DATAPATH_I/PC_OUT
+}
 
-	#add wave -divider {CU} -position insertpoint sim:/tb_dlx/U1/CU_I/*
-	#add wave -divider {IRAM} -position insertpoint sim:/tb_dlx/U1/IRAM_I/*
-	#add wave -divider {DATAPATH} -position insertpoint sim:/tb_dlx/U1/DATAPATH_I/*
+# IRAM specific waves
 
-	#add wave -divider {} -position insertpoint \
-	#sim:/tb_rfw/RG/REGISTERS \
+if {$dlx_unit eq 0 || $dlx_unit eq 3} {
+
+	add wave -height 50 -divider {IRAM} -height 19 -position insertpoint \
+	-color white sim:/tb_dlx/U1/CLK \
+	-color gray  sim:/tb_dlx/U1/RST
+
+	add wave -position insertpoint \
+	sim:/tb_dlx/U1/IRAM_I/ADDR \
+	sim:/tb_dlx/U1/IRAM_I/DOUT \
+	
+	add wave -position insertpoint -radix decimal \
+	sim:/tb_dlx/U1/IRAM_I/IRAM_mem
+
+	add wave -divider {STAGE} -position insertpoint \
+	sim:/tb_dlx/U1/DATAPATH_I/IF_ALU_LABEL
 
 }
 
+# DRAM specific waves
 
-# Datapath-specific waves
-if {$tb_waves eq 2} {
+if {$dlx_unit eq 0 || $dlx_unit eq 4} {
 
-	#view -undock wave
-	#add wave -divider {TB_DATAPATH} /*
+	add wave -height 50 -divider {DRAM} -height 19 -position insertpoint \
+	-color white sim:/tb_dlx/U1/CLK \
+	-color gray  sim:/tb_dlx/U1/RST \
+	
+	add wave -position insertpoint -radix decimal \
+	sim:/tb_dlx/U1/DRAM_I/RE \
+	sim:/tb_dlx/U1/DRAM_I/WE \
+	sim:/tb_dlx/U1/DRAM_I/ADDR \
+	sim:/tb_dlx/U1/DRAM_I/DIN \
+	sim:/tb_dlx/U1/DRAM_I/DOUT \
+	
+	add wave -position insertpoint -radix decimal \
+	sim:/tb_dlx/U1/DRAM_I/DRAM_mem
 
-	add wave -divider {TB_DATAPATH} -position insertpoint \
-	-color white sim:/tb_datapath/U1/CLK \
-	-color gray sim:/tb_datapath/U1/RST
-
-	# FETCH (IF)
-
-
-
-	# DECODE (ID)
-
-
-
-	# EXECUTE (EX)
-
-
-
-	# MEMORY (MEM)
-
-
-
-	# WRITE BACK (WB)
-
-
+	add wave -divider {STAGE} -position insertpoint \
+	sim:/tb_dlx/U1/DATAPATH_I/MEM_ALU_LABEL
 
 }
-
 
 # ALU-specific waves
-if {$tb_waves eq 3} {
+if {$dlx_unit eq 5} {
 
 	add wave -divider {TB_DATAPATH} -position insertpoint \
 	sim:/tb_dlx/U1/DATAPATH_I/CLK \
@@ -608,6 +560,10 @@ if {$tb_waves eq 3} {
 	#sim:/tb_dlx/U1/DATAPATH_I/BRANCH_DETECT
 
 }
+
+# TEMP
+#add wave -divider {TEMP} -position insertpoint \
+#sim:/tb_dlx/U1/*
 
 #----------------------------------------------------------------------------------------------------
 # Simulation Run

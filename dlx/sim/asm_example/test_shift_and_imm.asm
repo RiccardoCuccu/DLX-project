@@ -1,0 +1,13 @@
+addi	r1, r0, 42		; r1 <= 42
+addi	r2, r0, 0xAAAAAAAA	; r2 <= -21846 (the immediate field can only contain 16 bits: max. 0xFFFF)
+or	r3, r1, r2		; r3 <= -21846
+addi	r1, r0, 2		; r1 <= 2
+sll	r4, r3, r1		; r2 <= -87384
+slli	r5, r3, 2		; r3 <= -87384
+srl	r6, r5, r1		; r4 <= 1073719978
+srli	r7, r4, 2		; r7 <= 1073719978
+addi	r2, r0, 0xF0000000	; r2 <= 0
+ori	r3, r0, 0xF0F0F0F0	; r3 <= -3856
+addi	r1, r0, 5		; r1 <= 5
+sra	r8, r3, r1		; r8 <= -121
+srai	r9, r3, 5		; r9 <= -121

@@ -1,8 +1,7 @@
 #----------------------------------------------------------------------------------------------------
-# Description:	This bash script is designed to manage the simulation process 
-#		for the DLX project. It allows users to select the test file to 
-#		be used for the simulation and to run the simulation in the 
-#		background or not.
+# Description:	This bash script manages the simulation process for the DLX project. It allows
+#		users to select the test file for simulation and choose whether to run the
+#		simulation in the background.
 #
 # Author:	Riccardo Cuccu
 # Date:		2023/09/04
