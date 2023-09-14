@@ -67,8 +67,6 @@ vcom -quiet ../src/a.b.j-register_addresser.vhd
 
 ### ALU (a.b.d)
 vcom -quiet ../src/a.b.d-alu.vhd
-vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4_adder.vhd
-vcom -quiet ../src/a.b.d-alu/a.b.d.b-booth_multiplier.vhd
 vcom -quiet ../src/a.b.d-alu/a.b.d.c-comparator.vhd
 vcom -quiet ../src/a.b.d-alu/a.b.d.d-logic.vhd
 vcom -quiet ../src/a.b.d-alu/a.b.d.e-barrel_shifter_left.vhd
@@ -76,18 +74,18 @@ vcom -quiet ../src/a.b.d-alu/a.b.d.f-barrel_shifter_right.vhd
 #vcom -quiet ../src/a.b.d-alu/a.b.d.h-floatingpoint_adder.vhd
 #vcom -quiet ../src/a.b.d-alu/a.b.d.i-floatingpoint_multiplier.vhd
 
-##### P4 Adder / Carry Generator (a.b.d.a.a)
-vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4_adder/a.b.d.a.a.d-pg_block.vhd
-vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4_adder/a.b.d.a.a.c-propagate.vhd
-vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4_adder/a.b.d.a.a.b-generate.vhd
-vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4_adder/a.b.d.a.a.a-pg_row.vhd
-vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4_adder/a.b.d.a.a-carry_generator.vhd
+#### P4 Adder (a.b.d.a)
+vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4_adder.vhd
+vcom -quiet ../src/a.b.d-alu/a.b.d.a.a.d-pg_block.vhd
+vcom -quiet ../src/a.b.d-alu/a.b.d.a.a.c-propagate.vhd
+vcom -quiet ../src/a.b.d-alu/a.b.d.a.a.b-generate.vhd
+vcom -quiet ../src/a.b.d-alu/a.b.d.a.a.a-pg_row.vhd
+vcom -quiet ../src/a.b.d-alu/a.b.d.a.a-carry_generator.vhd
+vcom -quiet ../src/a.b.d-alu/a.b.d.a.b.a-carry_select_block.vhd
+vcom -quiet ../src/a.b.d-alu/a.b.d.a.b-sum_generator.vhd
 
-##### P4 Adder / Sum Generator (a.b.d.a.b)
-vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4_adder/a.b.d.a.b.a-carry_select_block.vhd
-vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4_adder/a.b.d.a.b-sum_generator.vhd
-
-#### Booth Multiplier
+#### Booth Multiplier (a.b.d.b)
+vcom -quiet ../src/a.b.d-alu/a.b.d.b-booth_multiplier.vhd
 vcom -quiet ../src/a.b.d-alu/a.b.d.b.a-booth_encoder.vhd
 vcom -quiet ../src/a.b.d-alu/a.b.d.b.a.a-encoder.vhd
 
