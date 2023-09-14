@@ -10,7 +10,7 @@ Report : power
         -analysis_effort low
 Design : DLX
 Version: S-2021.06-SP4
-Date   : Sun Sep 10 20:15:12 2023
+Date   : Thu Sep 14 17:59:28 2023
 ****************************************
 
 
@@ -24,7 +24,7 @@ Wire Load Model Mode: top
 
 Design        Wire Load Model            Library
 ------------------------------------------------
-DLX                    5K_hvratio_1_1    NangateOpenCellLibrary
+DLX                    5K_hvratio_1_4    NangateOpenCellLibrary
 
 
 Global Operating Voltage = 1.1  
@@ -36,12 +36,12 @@ Power-specific unit information :
     Leakage Power Units = 1nW
 
 
-  Cell Internal Power  = 648.4753 uW   (58%)
-  Net Switching Power  = 467.4947 uW   (42%)
+  Cell Internal Power  = 695.6281 uW   (70%)
+  Net Switching Power  = 302.2030 uW   (30%)
                          ---------
-Total Dynamic Power    =   1.1160 mW  (100%)
+Total Dynamic Power    = 997.8312 uW  (100%)
 
-Cell Leakage Power     = 181.0204 uW
+Cell Leakage Power     = 259.6731 uW
 
 Information: report_power power group summary does not include estimated clock tree power. (PWR-789)
 
@@ -50,11 +50,11 @@ Power Group      Power            Power               Power              Power  
 --------------------------------------------------------------------------------------------------
 io_pad             0.0000            0.0000            0.0000            0.0000  (   0.00%)
 memory             0.0000            0.0000            0.0000            0.0000  (   0.00%)
-black_box          0.0000            1.1993            0.0000            1.1993  (   0.09%)
+black_box          0.0000            5.1784            0.0000            5.1784  (   0.41%)
 clock_network      0.0000            0.0000            0.0000            0.0000  (   0.00%)
 register           0.0000            0.0000            0.0000            0.0000  (   0.00%)
-sequential       443.5569            7.7084        7.5124e+04          526.3890  (  40.59%)
-combinational    204.9182          458.5841        1.0590e+05          769.4028  (  59.32%)
+sequential       594.7584            0.4285        8.9087e+04          684.2737  (  54.42%)
+combinational    100.8558          296.5949        1.7059e+05          568.0381  (  45.17%)
 --------------------------------------------------------------------------------------------------
-Total            648.4751 uW       467.4919 uW     1.8102e+05 nW     1.2970e+03 uW
+Total            695.6142 uW       302.2018 uW     2.5967e+05 nW     1.2575e+03 uW
 1

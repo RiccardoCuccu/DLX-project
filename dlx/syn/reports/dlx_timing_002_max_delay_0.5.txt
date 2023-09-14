@@ -1,0 +1,58 @@
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 1
+Design : DLX
+Version: S-2021.06-SP4
+Date   : Thu Sep 14 18:02:46 2023
+****************************************
+
+Operating Conditions: typical   Library: NangateOpenCellLibrary
+Wire Load Model Mode: top
+
+  Startpoint: DATAPATH_I/IF_ID_IR_reg[26]
+              (rising edge-triggered flip-flop clocked by CK)
+  Endpoint: DATAPATH_I/ID_EX_RS2_reg[0]
+            (rising edge-triggered flip-flop clocked by CK)
+  Path Group: CK
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  DLX                5K_hvratio_1_4        NangateOpenCellLibrary
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock CK (rise edge)                                    0.00       0.00
+  clock network delay (ideal)                             0.00       0.00
+  DATAPATH_I/IF_ID_IR_reg[26]/CK (DFF_X1)                 0.00       0.00 r
+  DATAPATH_I/IF_ID_IR_reg[26]/Q (DFF_X1)                  0.09       0.09 r
+  DATAPATH_I/REGISTER_ADDRESSER/INSTR[26] (REGADDR_N32_OPC6_REG5)
+                                                          0.00       0.09 r
+  DATAPATH_I/REGISTER_ADDRESSER/U49/ZN (XNOR2_X1)         0.07       0.16 r
+  DATAPATH_I/REGISTER_ADDRESSER/U38/Z (MUX2_X1)           0.09       0.25 f
+  DATAPATH_I/REGISTER_ADDRESSER/U3/ZN (NAND2_X1)          0.03       0.28 r
+  DATAPATH_I/REGISTER_ADDRESSER/U31/ZN (NAND2_X1)         0.04       0.32 f
+  DATAPATH_I/REGISTER_ADDRESSER/U73/ZN (NOR2_X1)          0.04       0.36 r
+  DATAPATH_I/REGISTER_ADDRESSER/RS2[0] (REGADDR_N32_OPC6_REG5)
+                                                          0.00       0.36 r
+  DATAPATH_I/U453/ZN (AND2_X1)                            0.04       0.40 r
+  DATAPATH_I/ID_EX_RS2_reg[0]/D (DFF_X2)                  0.01       0.42 r
+  data arrival time                                                  0.42
+
+  clock CK (rise edge)                                    0.50       0.50
+  clock network delay (ideal)                             0.00       0.50
+  clock uncertainty                                      -0.07       0.43
+  DATAPATH_I/ID_EX_RS2_reg[0]/CK (DFF_X2)                 0.00       0.43 r
+  library setup time                                     -0.03       0.40
+  data required time                                                 0.40
+  --------------------------------------------------------------------------
+  data required time                                                 0.40
+  data arrival time                                                 -0.42
+  --------------------------------------------------------------------------
+  slack (VIOLATED)                                                  -0.02
+
+
+1

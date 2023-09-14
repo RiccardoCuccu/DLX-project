@@ -1,4 +1,7 @@
+Loading db file '/home/mariagrazia.graziano/do/libnangate/NangateOpenCellLibrary_typical_ecsm.db'
 Information: Propagating switching activity (low effort zero delay simulation). (PWR-6)
+Warning: There is no defined clock in the design. (PWR-80)
+Warning: Design has unannotated primary inputs. (PWR-414)
 Warning: Design has unannotated sequential cell outputs. (PWR-415)
 Warning: Design has unannotated black box outputs. (PWR-428)
  
@@ -7,7 +10,7 @@ Report : power
         -analysis_effort low
 Design : DLX
 Version: S-2021.06-SP4
-Date   : Sun Sep 10 20:14:47 2023
+Date   : Thu Sep 14 18:01:04 2023
 ****************************************
 
 
@@ -21,7 +24,7 @@ Wire Load Model Mode: top
 
 Design        Wire Load Model            Library
 ------------------------------------------------
-DLX                    5K_hvratio_1_1    NangateOpenCellLibrary
+DLX                    5K_hvratio_1_4    NangateOpenCellLibrary
 
 
 Global Operating Voltage = 1.1  
@@ -33,12 +36,12 @@ Power-specific unit information :
     Leakage Power Units = 1nW
 
 
-  Cell Internal Power  =   7.8770 mW   (93%)
-  Net Switching Power  = 612.9278 uW    (7%)
+  Cell Internal Power  = 537.6809 uW   (65%)
+  Net Switching Power  = 284.0869 uW   (35%)
                          ---------
-Total Dynamic Power    =   8.4899 mW  (100%)
+Total Dynamic Power    = 821.7678 uW  (100%)
 
-Cell Leakage Power     = 271.6447 uW
+Cell Leakage Power     = 302.3591 uW
 
 
                  Internal         Switching           Leakage            Total
@@ -46,11 +49,11 @@ Power Group      Power            Power               Power              Power  
 --------------------------------------------------------------------------------------------------
 io_pad             0.0000            0.0000            0.0000            0.0000  (   0.00%)
 memory             0.0000            0.0000            0.0000            0.0000  (   0.00%)
-black_box          0.0000           12.4327            0.0000           12.4327  (   0.14%)
-clock_network     20.6873            5.7387          802.1140           27.2281  (   0.31%)
-register       6.9561e+03            1.1283        3.1419e+04        6.9887e+03  (  79.76%)
-sequential       572.4800            0.6717        5.5697e+04          628.8490  (   7.18%)
-combinational    327.7105          592.9515        1.8373e+05        1.1044e+03  (  12.61%)
+black_box          0.0000            5.1784            0.0000            5.1784  (   0.46%)
+clock_network      8.3514            2.3928          802.1140           11.5464  (   1.03%)
+register          43.6156        1.2313e-02        3.6542e+04           80.1700  (   7.13%)
+sequential       330.0715            0.0000        5.2540e+04          382.6120  (  34.04%)
+combinational    155.6432          276.5054        2.1247e+05          644.6211  (  57.34%)
 --------------------------------------------------------------------------------------------------
-Total          7.8770e+03 uW       612.9229 uW     2.7164e+05 nW     8.7616e+03 uW
+Total            537.6817 uW       284.0890 uW     3.0236e+05 nW     1.1241e+03 uW
 1

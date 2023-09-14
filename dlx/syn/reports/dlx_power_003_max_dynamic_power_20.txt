@@ -9,7 +9,7 @@ Report : power
         -analysis_effort low
 Design : DLX
 Version: S-2021.06-SP4
-Date   : Sun Sep 10 20:14:01 2023
+Date   : Thu Sep 14 18:04:39 2023
 ****************************************
 
 
@@ -23,7 +23,7 @@ Wire Load Model Mode: top
 
 Design        Wire Load Model            Library
 ------------------------------------------------
-DLX                    5K_hvratio_1_1    NangateOpenCellLibrary
+DLX                    5K_hvratio_1_4    NangateOpenCellLibrary
 
 
 Global Operating Voltage = 1.1  
@@ -35,12 +35,12 @@ Power-specific unit information :
     Leakage Power Units = 1nW
 
 
-  Cell Internal Power  =   8.0198 mW   (93%)
-  Net Switching Power  = 602.2430 uW    (7%)
+  Cell Internal Power  =   7.3616 mW   (93%)
+  Net Switching Power  = 535.3169 uW    (7%)
                          ---------
-Total Dynamic Power    =   8.6220 mW  (100%)
+Total Dynamic Power    =   7.8969 mW  (100%)
 
-Cell Leakage Power     = 264.7981 uW
+Cell Leakage Power     = 305.3099 uW
 
 
                  Internal         Switching           Leakage            Total
@@ -48,11 +48,11 @@ Power Group      Power            Power               Power              Power  
 --------------------------------------------------------------------------------------------------
 io_pad             0.0000            0.0000            0.0000            0.0000  (   0.00%)
 memory             0.0000            0.0000            0.0000            0.0000  (   0.00%)
-black_box          0.0000           12.4327            0.0000           12.4327  (   0.14%)
-clock_network     20.7540            5.7570          802.1140           27.3131  (   0.31%)
-register       6.8884e+03            0.9347        3.1615e+04        6.9209e+03  (  77.88%)
-sequential       817.9974            0.0000        5.2541e+04          870.5381  (   9.80%)
-combinational    292.6279          583.1183        1.7984e+05        1.0556e+03  (  11.88%)
+black_box          0.0000           10.3568            0.0000           10.3568  (   0.13%)
+clock_network     16.7714            4.8051          802.1140           22.3787  (   0.27%)
+register       6.4068e+03        4.8829e-02        3.6447e+04        6.4433e+03  (  78.55%)
+sequential       656.7025            0.0000        5.2541e+04          709.2431  (   8.65%)
+combinational    281.3710          520.1109        2.1552e+05        1.0170e+03  (  12.40%)
 --------------------------------------------------------------------------------------------------
-Total          8.0198e+03 uW       602.2428 uW     2.6480e+05 nW     8.8868e+03 uW
+Total          7.3616e+03 uW       535.3217 uW     3.0531e+05 nW     8.2022e+03 uW
 1
