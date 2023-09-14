@@ -4,7 +4,7 @@
 --		and subtraction operations.
 --
 -- Author:	Riccardo Cuccu
--- Date:	2023/09/13
+-- Date:	2023/09/14
 ----------------------------------------------------------------------------------------------------
 
 library ieee;
@@ -94,14 +94,15 @@ architecture BEHAVIORAL of ALU is
 
 	end component;
 
---	component BOOTHMUL is
---		generic (
---			NBIT :		integer := 32);
---		port (
---			A :		in	std_logic_vector(NBIT/2 -1 downto 0);
---			B :		in	std_logic_vector(NBIT/2 -1 downto 0);
---			C :		out	std_logic_vector(NBIT-1 downto 0));
---	end component;
+	component BOOTH_MULTIPLIER is
+	
+		generic (	N:	integer := ALU_OP_SIZE_GLOBAL);			-- / 32 bits
+	
+		port	(	A:	in	std_logic_vector(N/2 - 1 downto 0);
+				B:	in	std_logic_vector(N/2 - 1 downto 0);
+				P:	out	std_logic_vector(N - 1 downto 0));
+	
+	end component;
 
 --	component fpAdderTOP is
 --		Port
@@ -126,7 +127,7 @@ architecture BEHAVIORAL of ALU is
 	signal Y_TMP : std_logic_vector(N - 1 downto 0);
 	signal Z_TMP : std_logic;
 
-	signal Y_SUM, Y_LOGIC, Y_SHIFTR, Y_SHIFTL, Y_COMPARE : std_logic_vector(N - 1 downto 0);
+	signal Y_SUM, Y_MUL, Y_LOGIC, Y_SHIFTR, Y_SHIFTL, Y_COMPARE : std_logic_vector(N - 1 downto 0);
 	signal Z_DET : std_logic;
 
 	signal OP_COMPARE : std_logic_vector(3 downto 0);
@@ -140,7 +141,7 @@ architecture BEHAVIORAL of ALU is
 		-- Processes
 		----------------------------------------------------------------------------------------------------
 
-		Y_COMPUTATION: process(OP1, OP2, OPC, Y_SUM, Y_LOGIC, Y_SHIFTR, Y_SHIFTL, Y_COMPARE)
+		Y_COMPUTATION: process(OP1, OP2, OPC, Y_SUM, Y_MUL, Y_LOGIC, Y_SHIFTR, Y_SHIFTL, Y_COMPARE)
 		begin
 			case OPC is
 
@@ -207,6 +208,13 @@ architecture BEHAVIORAL of ALU is
 					OP_B <= NOT OP2;
 					OP_Ci <= '1';
 					Y_TMP <= Y_SUM;					
+
+--				when OP_MULT =>		-- signed, R[regc] <-- R[rega] * R[regb]
+--				when OP_MULTU =>	-- unsigned, R[regc] <-- R[rega] * R[regb]
+				when OP_MULT | OP_MULTU =>
+					OP_A <= OP1;
+					OP_B <= OP2;
+					Y_TMP <= Y_MUL;
 
 				-- Logic Operations
 
@@ -397,6 +405,10 @@ architecture BEHAVIORAL of ALU is
 		SUM: P4_ADDER
 		generic map (N, NB)
 		port map (OP_A, OP_B, OP_Ci, Y_SUM, open);
+
+		MUL: BOOTH_MULTIPLIER
+		generic map (N)
+		port map (OP_A(N/2 - 1 downto 0), OP_B(N/2 - 1 downto 0), Y_MUL);
 
 		BSL: BARREL_SHIFTER_LEFT
 		generic map (N)

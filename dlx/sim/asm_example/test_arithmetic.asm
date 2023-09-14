@@ -60,3 +60,6 @@ srai	r22, r12, #1		; r22 = -32768
 xor	r23, r1, r1		; r23 = 0
 xori	r24, r1, #2		; r24 = 0
 mult	r25, r1, r5		; r25 = 12
+multu	r26, r1, r5		; r26 = 12
+mult	r27, r1, r3		; r27 = -4
+multu	r28, r1, r3		; r28 = -4

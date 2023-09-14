@@ -7,7 +7,7 @@
 --		all stages.
 --
 -- Author:	Riccardo Cuccu
--- Date:	2023/09/13
+-- Date:	2023/09/14
 ----------------------------------------------------------------------------------------------------
 
 library ieee;
@@ -448,7 +448,7 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 --				elsif IR_func = RTYPE_CVTD2I	then	IF_ALU_LABEL <= L_RTYPE_CVTD2I;
 --				elsif IR_func = RTYPE_CVTI2F	then	IF_ALU_LABEL <= L_RTYPE_CVTI2F;
 --				elsif IR_func = RTYPE_CVTI2D	then	IF_ALU_LABEL <= L_RTYPE_CVTI2D;
---				elsif IR_func = RTYPE_MULT	then	IF_ALU_LABEL <= L_RTYPE_MUL;
+				elsif IR_func = RTYPE_MULT	then	IF_ALU_LABEL <= L_RTYPE_MULT;
 --				elsif IR_func = RTYPE_DIV	then	IF_ALU_LABEL <= L_RTYPE_DIV;
 --				elsif IR_func = RTYPE_EQF	then	IF_ALU_LABEL <= L_RTYPE_EQF;
 --				elsif IR_func = RTYPE_NEF	then	IF_ALU_LABEL <= L_RTYPE_NEF;
@@ -456,7 +456,7 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 --				elsif IR_func = RTYPE_GTF	then	IF_ALU_LABEL <= L_RTYPE_GTF;
 --				elsif IR_func = RTYPE_LEF	then	IF_ALU_LABEL <= L_RTYPE_LEF;
 --				elsif IR_func = RTYPE_GEF	then	IF_ALU_LABEL <= L_RTYPE_GEF;
---				elsif IR_func = RTYPE_MULTU	then	IF_ALU_LABEL <= L_RTYPE_MULTU;
+				elsif IR_func = RTYPE_MULTU	then	IF_ALU_LABEL <= L_RTYPE_MULTU;
 --				elsif IR_func = RTYPE_DIVU	then	IF_ALU_LABEL <= L_RTYPE_DIVU;
 --				elsif IR_func = RTYPE_EQD	then	IF_ALU_LABEL <= L_RTYPE_EQD;
 --				elsif IR_func = RTYPE_NED	then	IF_ALU_LABEL <= L_RTYPE_NED;

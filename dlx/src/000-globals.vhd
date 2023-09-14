@@ -5,7 +5,7 @@
 --		system configuration and maintenance.
 --
 -- Author:	Riccardo Cuccu
--- Date:	2023/09/12
+-- Date:	2023/09/14
 ----------------------------------------------------------------------------------------------------
 
 library ieee;
@@ -42,6 +42,8 @@ package constants is
 	constant ALU_OP_MUX_SIZE_GLOBAL		: integer := ALU_BITBLOCK_SIZE_GLOBAL;			-- ALU MUX operands size
 	constant ALU_OP_RCA_SIZE_GLOBAL		: integer := ALU_BITBLOCK_SIZE_GLOBAL;			-- ALU RCA operands size
 	constant ALU_EXPP4_GLOBAL		: integer := log2(ALU_OP_SIZE_GLOBAL);			-- ALU exponent size
+	constant ALU_MUL_RADIX_GLOBAL		: integer := 8;						-- ALU Booth Multiplier radix
+	constant ALU_MUL_ENCODER_GLOBAL		: integer := ALU_OP_SIZE_GLOBAL/2;			-- ALU Booth Multiplier Encoder size
 
 	-- DRAM
 	constant DRAM_SIZE_GLOBAL		: integer := 2**8;					-- DRAM size
@@ -124,6 +126,7 @@ package constants is
 --	constant RTYPE_CVTI2F	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"0C";
 --	constant RTYPE_CVTI2D	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"0D";
 --	constant RTYPE_MULT	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"0E";
+	constant RTYPE_MULT	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"1E";	-- remapped
 --	constant RTYPE_DIV	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"0F";
 --	constant RTYPE_EQF	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"10";
 --	constant RTYPE_NEF	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"11";
@@ -132,6 +135,7 @@ package constants is
 --	constant RTYPE_LEF	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"14";
 --	constant RTYPE_GEF	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"15";
 --	constant RTYPE_MULTU	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"16";
+	constant RTYPE_MULTU	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"1F";	-- remapped
 --	constant RTYPE_DIVU	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"17";
 --	constant RTYPE_EQD	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"18";
 --	constant RTYPE_NED	: std_logic_vector(FUNC_SIZE_GLOBAL - 1 downto 0) := "000" & x"19";

@@ -6,7 +6,7 @@
 #		settings and focus on specific pipeline stages for detailed observations.
 #
 # Author:	Riccardo Cuccu
-# Date:		2023/09/13
+# Date:		2023/09/14
 #----------------------------------------------------------------------------------------------------
 
 #----------------------------------------------------------------------------------------------------
@@ -45,6 +45,8 @@ vcom -quiet ../src/000-globals/mux21.vhd
 vcom -quiet ../src/000-globals/mux21_logic.vhd
 vcom -quiet ../src/000-globals/mux41.vhd
 #vcom -quiet ../src/000-globals/mux41_logic.vhd
+vcom -quiet ../src/000-globals/mux81.vhd
+#vcom -quiet ../src/000-globals/mux81_logic.vhd
 
 # Arithmetic Components
 vcom -quiet ../src/000-globals/fa.vhd
@@ -66,7 +68,7 @@ vcom -quiet ../src/a.b.j-register_addresser.vhd
 ### ALU (a.b.d)
 vcom -quiet ../src/a.b.d-alu.vhd
 vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4_adder.vhd
-#vcom -quiet ../src/a.b.d-alu/a.b.d.b-booth_multiplier.vhd
+vcom -quiet ../src/a.b.d-alu/a.b.d.b-booth_multiplier.vhd
 vcom -quiet ../src/a.b.d-alu/a.b.d.c-comparator.vhd
 vcom -quiet ../src/a.b.d-alu/a.b.d.d-logic.vhd
 vcom -quiet ../src/a.b.d-alu/a.b.d.e-barrel_shifter_left.vhd
@@ -74,16 +76,20 @@ vcom -quiet ../src/a.b.d-alu/a.b.d.f-barrel_shifter_right.vhd
 #vcom -quiet ../src/a.b.d-alu/a.b.d.h-floatingpoint_adder.vhd
 #vcom -quiet ../src/a.b.d-alu/a.b.d.i-floatingpoint_multiplier.vhd
 
-##### P4Adder / Carry Generator (a.b.d.a.a)
+##### P4 Adder / Carry Generator (a.b.d.a.a)
 vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4_adder/a.b.d.a.a.d-pg_block.vhd
 vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4_adder/a.b.d.a.a.c-propagate.vhd
 vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4_adder/a.b.d.a.a.b-generate.vhd
 vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4_adder/a.b.d.a.a.a-pg_row.vhd
 vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4_adder/a.b.d.a.a-carry_generator.vhd
 
-##### P4Adder / Sum Generator (a.b.d.a.b)
+##### P4 Adder / Sum Generator (a.b.d.a.b)
 vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4_adder/a.b.d.a.b.a-carry_select_block.vhd
 vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4_adder/a.b.d.a.b-sum_generator.vhd
+
+#### Booth Multiplier
+vcom -quiet ../src/a.b.d-alu/a.b.d.b.a-booth_encoder.vhd
+vcom -quiet ../src/a.b.d-alu/a.b.d.b.a.a-encoder.vhd
 
 ## IRAM (a.c)
 vcom -quiet ../src/a.c-iram.vhd
@@ -107,9 +113,6 @@ vsim -quiet -t 10ps work.CFG_TB -voptargs=+acc
 
 # Configure signal name width in waveform for better readability
 config wave -signalnamewidth 1
-
-#dlx_unit 0		 0 = DLX; 1 = CONTROL UNIT; 2 = DATAPATH; 3 = IRAM ; 4 = DRAM; 5 = ALU
-#pipe_stage 0		 0 = All; 1 = Fetch; 2 = Decode; 3 = Execute; 4 = Memory; 5 = Write Back
 
 # CONTROL UNIT specific waves
 

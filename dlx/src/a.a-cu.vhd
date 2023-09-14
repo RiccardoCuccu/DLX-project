@@ -5,7 +5,7 @@
 --		These control signals are generated based on opcode and function fields.
 --
 -- Author:	Riccardo Cuccu
--- Date:	2023/09/13
+-- Date:	2023/09/14
 ----------------------------------------------------------------------------------------------------
 
 library ieee;
@@ -82,12 +82,12 @@ architecture DLX_CU_HW of DLX_CU is
 					"111" & "1101" & "0110" & "00000" & "10",		-- x"0C" ANDI	*
 					"111" & "1101" & "0110" & "00000" & "10",		-- x"0D" ORI	*
 					"111" & "1101" & "0110" & "00000" & "10",		-- x"0E" XORI	*
-					"111" & "1001" & "0110" & "00000" & "10",		-- x"0F" LHI	/
+					"111" & "1001" & "0110" & "00000" & "10",		-- x"0F" LHI	**
 
 					"000" & "0000" & "0000" & "00000" & "00",		-- x"10" RFE	/
 					"000" & "0000" & "0000" & "00000" & "00",		-- x"11" TRAP	/
-					"111" & "0100" & "0110" & "00001" & "10",		-- x"12" JR	/
-					"111" & "1100" & "0110" & "00001" & "11",		-- x"13" JALR	/
+					"111" & "0100" & "0110" & "00001" & "10",		-- x"12" JR	**
+					"111" & "1100" & "0110" & "00001" & "11",		-- x"13" JALR	**
 					"111" & "1101" & "0110" & "00000" & "10",		-- x"14" SLLI	*
 					"111" & "0000" & "0000" & "00000" & "10",		-- x"15" NOP	*
 					"111" & "1101" & "0110" & "00000" & "10",		-- x"16" SRLI	*
@@ -251,7 +251,7 @@ begin
 --			elsif IR_func = RTYPE_CVTD2I	then	aluOpcode1 <= OP_CVTD2I;	IR_func_LABEL1 <= L_RTYPE_CVTD2I;
 --			elsif IR_func = RTYPE_CVTI2F	then	aluOpcode1 <= OP_CVTI2F;	IR_func_LABEL1 <= L_RTYPE_CVTI2F;
 --			elsif IR_func = RTYPE_CVTI2D	then	aluOpcode1 <= OP_CVTI2D;	IR_func_LABEL1 <= L_RTYPE_CVTI2D;
---			elsif IR_func = RTYPE_MULT	then	aluOpcode1 <= OP_MULT;		IR_func_LABEL1 <= L_RTYPE_MUL;
+			elsif IR_func = RTYPE_MULT	then	aluOpcode1 <= OP_MULT;		IR_func_LABEL1 <= L_RTYPE_MULT;
 --			elsif IR_func = RTYPE_DIV	then	aluOpcode1 <= OP_DIV;		IR_func_LABEL1 <= L_RTYPE_DIV;
 --			elsif IR_func = RTYPE_EQF	then	aluOpcode1 <= OP_EQF;		IR_func_LABEL1 <= L_RTYPE_EQF;
 --			elsif IR_func = RTYPE_NEF	then	aluOpcode1 <= OP_NEF;		IR_func_LABEL1 <= L_RTYPE_NEF;
@@ -259,7 +259,7 @@ begin
 --			elsif IR_func = RTYPE_GTF	then	aluOpcode1 <= OP_GTF;		IR_func_LABEL1 <= L_RTYPE_GTF;
 --			elsif IR_func = RTYPE_LEF	then	aluOpcode1 <= OP_LEF;		IR_func_LABEL1 <= L_RTYPE_LEF;
 --			elsif IR_func = RTYPE_GEF	then	aluOpcode1 <= OP_GEF;		IR_func_LABEL1 <= L_RTYPE_GEF;
---			elsif IR_func = RTYPE_MULTU	then	aluOpcode1 <= OP_MULTU;		IR_func_LABEL1 <= L_RTYPE_MULTU;
+			elsif IR_func = RTYPE_MULTU	then	aluOpcode1 <= OP_MULTU;		IR_func_LABEL1 <= L_RTYPE_MULTU;
 --			elsif IR_func = RTYPE_DIVU	then	aluOpcode1 <= OP_DIVU;		IR_func_LABEL1 <= L_RTYPE_DIVU;
 --			elsif IR_func = RTYPE_EQD	then	aluOpcode1 <= OP_EQD;		IR_func_LABEL1 <= L_RTYPE_EQD;
 --			elsif IR_func = RTYPE_NED	then	aluOpcode1 <= OP_NED;		IR_func_LABEL1 <= L_RTYPE_NED;
