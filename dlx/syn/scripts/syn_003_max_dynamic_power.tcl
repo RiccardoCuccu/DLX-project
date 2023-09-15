@@ -53,10 +53,13 @@ report_power -cell > reports/dlx_power_${label}_${power}_cell.txt
 report_power -net > reports/dlx_power_${label}_${power}_net.txt
 
 # Save Design
-#write -hierarchy -format ddc -output designs/dlx_${label}_${power}.ddc
+write -hierarchy -format ddc -output designs/dlx_${label}_${power}.ddc
 
 # Generate VHDL and Verilog
-#write -hierarchy -format vhdl -output designs/dlx_${label}_${power}.vhd
-#write -hierarchy -format verilog -output designs/dlx_${label}_${power}.v
+write -hierarchy -format vhdl -output designs/dlx_${label}_${power}.vhd
+write -hierarchy -format verilog -output designs/dlx_${label}_${power}.v
+
+# Generate SDC script
+write_sdc scripts/dlx_${label}_${power}.sdc
 
 quit

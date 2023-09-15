@@ -2,7 +2,7 @@
 # Description:	This bash script is designed to manage the synthesis process for the DLX project.
 #
 # Author:	Riccardo Cuccu
-# Date:		2023/09/14
+# Date:		2023/09/15
 #----------------------------------------------------------------------------------------------------
 
 #!/bin/bash
@@ -13,7 +13,7 @@ background=n
 file_name="all"
 file_list=()
 
-# Populate file_list with .tcl files that match the regular expression
+# Populate file_list with scripts that match the regular expression
 for file in $path*.tcl; do
 	if [[ $file =~ syn_([0-9]+_.+)\.tcl ]]; then
 		file_list+=("$file")
@@ -33,8 +33,9 @@ done
 source /eda/scripts/init_design_vision &> /dev/null #setsynopsys
 
 # Cleanup and create new working directories
-rm -r -f work designs reports
-mkdir -p work designs reports
+rm -f {$path}*.sdc
+rm -r -f designs reports
+mkdir -p designs reports
 
 # Check whether a specific filename was provided or run all by default
 if [ $file_name != "all" ]; then
@@ -44,18 +45,29 @@ fi
 # Execute the synthesis based on the background option and filename
 for file in "${file_list[@]}"
 do
-	if [ $background == "y" ]; then
+	if [ $background == "y" ]; then		
 
 		# Execute the simulation in the background
 		dc_shell-xg-t -f $file > /dev/null
+
+		# Cleanup and create new working directories
+		rm -r -f work
+		mkdir -p work
 
 	elif [ $background == "n" ]; then
 
 		# Execute the simulation in the foreground
 		dc_shell-xg-t -f $file
 
+		# Cleanup and create new working directories
+		rm -r -f work
+		mkdir -p work
+
 	fi
 done
+
+# Cleanup
+rm -r -f work
 
 #dc_shell-xg-t -f syn.tcl
 #dc_shell-xg-t -help

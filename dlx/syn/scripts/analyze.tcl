@@ -10,8 +10,9 @@
 #----------------------------------------------------------------------------------------------------
 
 # Suppress warning messages
-suppress_message ELAB-130
-suppress_message ELAB-311
+suppress_message ELAB-130	# The initial value for signal '%s' is not supported for synthesis
+suppress_message ELAB-311	# DEFAULT branch of CASE statement cannot be reached
+suppress_message VHDL-290	# A dummy net '%s' is created to connect open pin '%s'
 
 # Open file_list.lst
 set file_id [open "file_list.lst" r]

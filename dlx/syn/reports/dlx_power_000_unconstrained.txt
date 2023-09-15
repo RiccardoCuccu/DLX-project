@@ -10,7 +10,7 @@ Report : power
         -analysis_effort low
 Design : DLX
 Version: S-2021.06-SP4
-Date   : Thu Sep 14 17:59:28 2023
+Date   : Fri Sep 15 06:03:35 2023
 ****************************************
 
 

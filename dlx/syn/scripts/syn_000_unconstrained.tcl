@@ -33,10 +33,13 @@ report_timing > reports/dlx_timing_${label}.txt
 report_power > reports/dlx_power_${label}.txt
 
 # Save Design
-#write -hierarchy -format ddc -output designs/dlx_${label}.ddc
+write -hierarchy -format ddc -output designs/dlx_${label}.ddc
 
 # Generate VHDL and Verilog
-#write -hierarchy -format vhdl -output designs/dlx_${label}.vhd
-#write -hierarchy -format verilog -output designs/dlx_${label}.v
+write -hierarchy -format vhdl -output designs/dlx_${label}.vhd
+write -hierarchy -format verilog -output designs/dlx_${label}.v
+
+# Generate SDC script
+write_sdc scripts/dlx_${label}.sdc
 
 quit
