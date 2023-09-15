@@ -4,7 +4,7 @@
 #		simulation in the background.
 #
 # Author:	Riccardo Cuccu
-# Date:		2023/09/04
+# Date:		2023/09/15
 #----------------------------------------------------------------------------------------------------
 
 #!/bin/bash
@@ -25,8 +25,7 @@ done
 # Initialize environment
 source /eda/scripts/init_questa_core_prime &> /dev/null #setmentor
 
-# Cleanup and create a new working directory
-rm -r -f work
+# Create a new working directory
 vlib work
 
 # Run assembler script for the chosen test file
@@ -59,5 +58,6 @@ fi
 wait $!
 
 # Cleanup
+rm -r -f work
 rm firmware.asm.mem
 rm transcript
