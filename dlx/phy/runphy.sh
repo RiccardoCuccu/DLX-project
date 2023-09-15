@@ -21,6 +21,7 @@ cp -r ../syn/scripts/*.sdc ./scripts
 
 #innovus
 
-# After launching Innovus, select "File" > "Import Design."
-# In the "Load" window, choose the dlx.globals file and click "OK."
-# Then execute the source phy.tcl command to generate the physical design and save it in the current directory.
+# After launching Innovus:
+# 1. Execute the "source dlx.globals" command to import the design.
+# 2. Execute the "source phy.tcl" command to generate the physical design.
+# 3. Execute the "source analyses.tcl" command to generate the reports.

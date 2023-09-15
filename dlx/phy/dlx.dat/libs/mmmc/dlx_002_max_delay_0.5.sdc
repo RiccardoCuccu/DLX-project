@@ -1,0 +1,1 @@
+/home/ms23.32/DLX-project/dlx/phy/scripts/dlx_002_max_delay_0.5.sdc

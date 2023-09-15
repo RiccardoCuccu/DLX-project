@@ -1,0 +1,33 @@
+Gate area 0.7980 um^2
+Level 0 Module DLX                                      Gates=     16992 Cells=    9127 Area=   13560.1 um^2
+Level 1 Module CU_I                                     Gates=276        Cells=165      Area=     220.8 um^2
+Level 1 Module DATAPATH_I                               Gates=16708      Cells=8959     Area=   13333.5 um^2
+Level 2 Module DATAPATH_I/PROGRAM_COUNTER               Gates=256        Cells=128      Area=     204.3 um^2
+Level 2 Module DATAPATH_I/NEXT_PROGRAM_COUNTER          Gates=192        Cells=118      Area=     153.7 um^2
+Level 2 Module DATAPATH_I/INSTRUCTION_REGISTER          Gates=194        Cells=120      Area=     155.3 um^2
+Level 2 Module DATAPATH_I/REGISTER_FILE                 Gates=6337       Cells=2755     Area=    5056.9 um^2
+Level 2 Module DATAPATH_I/LATCH_RF1                     Gates=189        Cells=115      Area=     151.4 um^2
+Level 2 Module DATAPATH_I/LATCH_RF2                     Gates=195        Cells=121      Area=     156.1 um^2
+Level 2 Module DATAPATH_I/LATCH_IMM                     Gates=196        Cells=122      Area=     156.9 um^2
+Level 2 Module DATAPATH_I/ALU_PRE_MUX1                  Gates=141        Cells=104      Area=     112.8 um^2
+Level 2 Module DATAPATH_I/ALU_PRE_MUX2                  Gates=148        Cells=104      Area=     118.1 um^2
+Level 2 Module DATAPATH_I/ARITHMETIC_LOGIC_UNIT         Gates=4841       Cells=3592     Area=    3863.4 um^2
+Level 3 Module DATAPATH_I/ARITHMETIC_LOGIC_UNIT/SUM     Gates=772        Cells=566      Area=     616.1 um^2
+Level 4 Module DATAPATH_I/ARITHMETIC_LOGIC_UNIT/SUM/CARRY_GENERATOR_INSTANCE Gates=247        Cells=192      Area=     197.4 um^2
+Level 4 Module DATAPATH_I/ARITHMETIC_LOGIC_UNIT/SUM/SUM_GENERATOR_INSTANCE Gates=524        Cells=374      Area=     418.7 um^2
+Level 3 Module DATAPATH_I/ARITHMETIC_LOGIC_UNIT/MUL     Gates=1792       Cells=1244     Area=    1430.3 um^2
+Level 4 Module DATAPATH_I/ARITHMETIC_LOGIC_UNIT/MUL/FIRST_MUX Gates=244        Cells=166      Area=     195.0 um^2
+Level 4 Module DATAPATH_I/ARITHMETIC_LOGIC_UNIT/MUL/MUXES_1 Gates=231        Cells=158      Area=     184.9 um^2
+Level 4 Module DATAPATH_I/ARITHMETIC_LOGIC_UNIT/MUL/FIRST_RCA_1 Gates=241        Cells=172      Area=     192.6 um^2
+Level 4 Module DATAPATH_I/ARITHMETIC_LOGIC_UNIT/MUL/MUXES_2 Gates=224        Cells=151      Area=     178.8 um^2
+Level 4 Module DATAPATH_I/ARITHMETIC_LOGIC_UNIT/MUL/RCAS_2 Gates=241        Cells=172      Area=     192.6 um^2
+Level 4 Module DATAPATH_I/ARITHMETIC_LOGIC_UNIT/MUL/MUXES_3 Gates=208        Cells=144      Area=     166.2 um^2
+Level 4 Module DATAPATH_I/ARITHMETIC_LOGIC_UNIT/MUL/RCAS_3 Gates=241        Cells=172      Area=     192.6 um^2
+Level 3 Module DATAPATH_I/ARITHMETIC_LOGIC_UNIT/BSL     Gates=411        Cells=337      Area=     328.5 um^2
+Level 3 Module DATAPATH_I/ARITHMETIC_LOGIC_UNIT/BSR     Gates=451        Cells=387      Area=     360.4 um^2
+Level 3 Module DATAPATH_I/ARITHMETIC_LOGIC_UNIT/LOG     Gates=209        Cells=165      Area=     166.8 um^2
+Level 3 Module DATAPATH_I/ARITHMETIC_LOGIC_UNIT/CMP     Gates=443        Cells=423      Area=     353.8 um^2
+Level 4 Module DATAPATH_I/ARITHMETIC_LOGIC_UNIT/CMP/r71 Gates=212        Cells=204      Area=     169.7 um^2
+Level 4 Module DATAPATH_I/ARITHMETIC_LOGIC_UNIT/CMP/r70 Gates=211        Cells=205      Area=     168.9 um^2
+Level 2 Module DATAPATH_I/LATCH_ALUOUT                  Gates=192        Cells=118      Area=     153.7 um^2
+Level 2 Module DATAPATH_I/LATCH_LMD                     Gates=198        Cells=124      Area=     158.5 um^2

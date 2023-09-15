@@ -1,3 +1,4 @@
+init_design
 getIoFlowFlag
 setIoFlowFlag 0
 floorPlan -coreMarginsBy die -site FreePDK45_38x28_10R_NP_162NW_34O -r 1.0 0.6 5 5 5 5
