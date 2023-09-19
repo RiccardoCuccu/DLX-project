@@ -36,11 +36,9 @@
 ## Datapath (a.b)
 ../src/a.b-datapath.vhd
 ../src/a.b.a-register_file.vhd
-../src/a.b.c-forwarding_unit.vhd
-#../src/a.b.g-pc.vhd
-#../src/a.b.h-ir.vhd
-../src/a.b.i-sign_extend.vhd
-../src/a.b.j-register_addresser.vhd
+../src/a.b.b-sign_extend.vhd
+../src/a.b.c-register_addresser.vhd
+../src/a.b.e-forwarding_unit.vhd
 
 ### ALU (a.b.d)
 ../src/a.b.d-alu.vhd
@@ -48,8 +46,6 @@
 ../src/a.b.d-alu/a.b.d.d-logic.vhd
 ../src/a.b.d-alu/a.b.d.e-barrel_shifter_left.vhd
 ../src/a.b.d-alu/a.b.d.f-barrel_shifter_right.vhd
-#../src/a.b.d-alu/a.b.d.h-floatingpoint_adder.vhd
-#../src/a.b.d-alu/a.b.d.i-floatingpoint_multiplier.vhd
 
 #### P4 Adder (a.b.d.a)
 ../src/a.b.d-alu/a.b.d.a-p4_adder.vhd
