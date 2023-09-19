@@ -104,25 +104,6 @@ architecture BEHAVIORAL of ALU is
 	
 	end component;
 
---	component fpAdderTOP is
---		Port
---		(
---			A	:   in  std_logic_vector(31 downto 0);
---			B	:   in  std_logic_vector(31 downto 0);
---			AddSub	:   in  std_logic;                      --0 add, 1 sub
---			Y	:   out std_logic_vector(31 downto 0)
---		);
---	end component;
-
---	component fpMultiplier is
---		Port
---		(
---			A : in  std_logic_vector(31 downto 0);	-- 2nd operand
---			B : in  std_logic_vector(31 downto 0);	-- 1st operand
---			Y : out std_logic_vector(31 downto 0)	-- result
---		);
---	end component;
-
 	signal OP_A, OP_B : std_logic_vector(N - 1 downto 0);
 	signal Y_TMP : std_logic_vector(N - 1 downto 0);
 	signal Z_TMP : std_logic;
@@ -382,18 +363,6 @@ architecture BEHAVIORAL of ALU is
 			Z_TMP <= Z_DET;
 
 		end process;
-
-
---		BRANCHES: process (OPC, Y_TMP)
---		begin
---			if (Y_TMP = std_logic_vector(to_unsigned(0, Y_TMP'length)) and OPC = OP_BEQZ) then
---				Z <= '1';
---			elsif (Y_TMP /= std_logic_vector(to_unsigned(0, Y_TMP'length)) and OPC = OP_BNEZ) then
---				Z <= '1';
---			else
---				Z <= '0';
---			end if;
---		end process;
 
 		Y <= Y_TMP;
 		Z <= Z_TMP;

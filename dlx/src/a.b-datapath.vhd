@@ -75,29 +75,6 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 
 	-- GLOBALS ----------------------------------------------------------------------------------------------------
 
---	component NOT1 is
---
---		port	(	A		: in std_logic;
---				Y		: out std_logic);
---
---	end component;
-
---	component AND2 is
---
---		port	(	A		: in std_logic;
---				B		: in std_logic;
---				Y		: out std_logic);
---
---	end component;
-
---	component OR2 is
---
---		port	(	A		: in std_logic;
---				B		: in std_logic;
---				Y		: out std_logic);
---
---	end component;
-
 	component LD is
 
 		port	(	RST		: in  std_logic;				-- Reset (active low)
@@ -162,30 +139,6 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 				Y		: out std_logic_vector(N - 1 downto 0));	-- / 32 bits
 
 	end component;
-
---	component PC is
---
---		generic (	N		: integer := PC_SIZE_GLOBAL);			-- / 32 bits
---
---		port (		CLK		: in  std_logic;				-- Clock
---				RST		: in  std_logic;				-- Reset (active low)
---				EN		: in  std_logic;				-- Enable
---				REGIN		: in  std_logic_vector(N - 1 downto 0);		-- / 32 bits
---				REGOUT		: out std_logic_vector(N - 1 downto 0));	-- / 32 bits
---
---	end component;
---
---	component IR is
---
---		generic (	N		: integer := IR_SIZE_GLOBAL);			-- / 32 bits
---
---		port (		CLK		: in  std_logic;				-- Clock
---				RST		: in  std_logic;				-- Reset (active low)
---				EN		: in  std_logic;				-- Enable
---				REGIN		: in  std_logic_vector(N - 1 downto 0);		-- / 32 bits
---				REGOUT		: out std_logic_vector(N - 1 downto 0));	-- / 32 bits
---
---	end component;
 
 	-- FETCH ----------------------------------------------------------------------------------------------------
 
@@ -275,20 +228,20 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 
 	-- MEMORY ----------------------------------------------------------------------------------------------------
 
-	component DRAM is
-
-		generic (	N		: integer := DRAM_SIZE_GLOBAL;			-- / 2^8 bits
-				NW		: integer := DRAM_WORD_SIZE_GLOBAL);		-- / 32 bits
-
-		port (		CLK		: in  std_logic;				-- Clock
-				RST		: in  std_logic;				-- Reset (active low)
-				RE		: in  std_logic;				-- Read Enable
-				WE		: in  std_logic;				-- Write Enable
-				ADDR		: in  std_logic_vector(NW - 1 downto 0);	-- Address		/ 32 bits
-				DIN		: in  std_logic_vector(NW - 1 downto 0);	-- Data in		/ 32 bits
-				DOUT		: out std_logic_vector(NW - 1 downto 0));	-- Data out		/ 32 bits
-
-	end component;
+--	component DRAM is
+--
+--		generic (	N		: integer := DRAM_SIZE_GLOBAL;			-- / 2^8 bits
+--				NW		: integer := DRAM_WORD_SIZE_GLOBAL);		-- / 32 bits
+--
+--		port (		CLK		: in  std_logic;				-- Clock
+--				RST		: in  std_logic;				-- Reset (active low)
+--				RE		: in  std_logic;				-- Read Enable
+--				WE		: in  std_logic;				-- Write Enable
+--				ADDR		: in  std_logic_vector(NW - 1 downto 0);	-- Address		/ 32 bits
+--				DIN		: in  std_logic_vector(NW - 1 downto 0);	-- Data in		/ 32 bits
+--				DOUT		: out std_logic_vector(NW - 1 downto 0));	-- Data out		/ 32 bits
+--
+--	end component;
 
 
 	component FU is
@@ -316,9 +269,6 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 	signal PC_OUTPUT : std_logic_vector(PC_SIZE - 1 downto 0);							-- Program Counter signal		/ 32 bits
 	signal NPC_OUT : std_logic_vector(PC_SIZE - 1 downto 0);							-- Next Program Counter signal		/ 32 bits
 
-	-- Instruction Ram Bus signals
---	signal IRam_DOut : std_logic_vector(SIZE_IR - 1 downto 0);
-
 	-- Datapath Bus signals
 	signal IR_BUS : std_logic_vector(IR_SIZE - 1 downto 0);								-- Instruction Register Bus		/ 32 bits
 	signal PC_BUS : std_logic_vector(PC_SIZE - 1 downto 0);								-- Program Counter Bus			/ 32 bits
@@ -334,7 +284,6 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 	signal ID_EX_RS1, ID_EX_RS1_NEXT : std_logic_vector(RS_SIZE - 1 downto 0);					-- Register Source 1			/  5 bits
 	signal ID_EX_RS2, ID_EX_RS2_NEXT : std_logic_vector(RS_SIZE - 1 downto 0);					-- Register Source 2			/  5 bits
 	signal ID_EX_RD, ID_EX_RD_NEXT : std_logic_vector(RS_SIZE - 1 downto 0);					-- Register File Write Address		/  5 bits
---	signal ID_EX_RF_DATAIN, ID_EX_RF_DATAIN_NEXT : std_logic_vector(RF_SIZE_GLOBAL - 1 downto 0);			-- Register File Write Data		/ 32 bits
 	signal ID_EX_RF_OUT1, ID_EX_RF_OUT1_NEXT : std_logic_vector(RF_SIZE_GLOBAL - 1 downto 0);			-- Register File Read Data 1		/ 32 bits
 	signal ID_EX_RF_OUT2, ID_EX_RF_OUT2_NEXT : std_logic_vector(RF_SIZE_GLOBAL - 1 downto 0);			-- Register File Read Data 2		/ 32 bits
 	signal ID_EX_IMM, ID_EX_IMM_NEXT : std_logic_vector(RF_SIZE_GLOBAL - 1 downto 0);				-- Immediate				/ 32 bits
@@ -345,7 +294,6 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 	signal EX_MEM_BRANCH_DETECT, EX_MEM_BRANCH_DETECT_NEXT : std_logic;						-- Branch Condition
 	signal EX_MEM_RD, EX_MEM_RD_NEXT : std_logic_vector(RS_SIZE - 1 downto 0);					-- Register File Write Address		/  5 bits
 	signal EX_MEM_RF_OUT2, EX_MEM_RF_OUT2_NEXT : std_logic_vector(RF_SIZE_GLOBAL - 1 downto 0);			-- Register File Read Data 2
---	signal EX_MEM_RF_DATAIN, EX_MEM_RF_DATAIN_NEXT : std_logic_vector(RF_SIZE_GLOBAL - 1 downto 0);			-- Register File Write Data		/ 32 bits
 	signal EX_MEM_ALU_OUTPUT, EX_MEM_ALU_OUTPUT_NEXT : std_logic_vector(RF_SIZE_GLOBAL - 1 downto 0);		-- ALU Output				/ 32 bits
 
 	-- MEMORY-WRITE BACK (MEM_WB) Pipeline signals
@@ -372,7 +320,6 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 	signal PC_MUX_SEL : std_logic;
 	signal BRANCH_COND : std_logic;
 	signal PC_MUXA, PC_MUXB : std_logic_vector(PC_SIZE - 1 downto 0);						-- / 32 bits
---	signal PC_JUMP, REL_JUMP : std_logic_vector(PC_SIZE - 1 downto 0);						-- / 32 bits
 	signal DRAM_OUTPUT : std_logic_vector(DRAM_WORD_SIZE_GLOBAL - 1 downto 0);					-- / 32 bits
 
 	-- WRITE BACK signals
@@ -540,7 +487,6 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 					ID_EX_RS1		<= (others => '0');			-- Register Source 1
 					ID_EX_RS2		<= (others => '0');			-- Register Source 2
 					ID_EX_RD		<= (others => '0');			-- Register File Write Address
---					ID_EX_RF_DATAIN		<= (others => '0');			-- Register File Write Data
 					ID_EX_RF_OUT1		<= (others => '0');			-- Register File Read Data 1
 					ID_EX_RF_OUT2		<= (others => '0');			-- Register File Read Data 2
 					ID_EX_IMM		<= (others => '0');			-- Immediate
@@ -548,7 +494,6 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 					-- EXECUTE-MEMORY
 					EX_MEM_NPC		<= (others => '0');			-- Next Program Counter signal
 					EX_MEM_RF_WE		<= '0';					-- Register File Write Enable
---					EX_MEM_RF_DATAIN	<= (others => '0');			-- Register File Write Data
 					EX_MEM_RF_OUT2		<= (others => '0');			-- Register Source 2
 					EX_MEM_ALU_OUTPUT	<= (others => '0');			-- ALU Output
 					EX_MEM_BRANCH_DETECT	<= '0';					-- Branch Condition
@@ -579,7 +524,6 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 					ID_EX_RS1		<= ID_EX_RS1_NEXT;			-- Register Source 1
 					ID_EX_RS2		<= ID_EX_RS2_NEXT;			-- Register Source 2
 					ID_EX_RD		<= ID_EX_RD_NEXT;			-- Register File Write Address
---					ID_EX_RF_DATAIN		<= ID_EX_RF_DATAIN_NEXT;		-- Register File Write Data
 					ID_EX_RF_OUT1		<= ID_EX_RF_OUT1_NEXT;			-- Register File Read Data 1
 					ID_EX_RF_OUT2		<= ID_EX_RF_OUT2_NEXT;			-- Register File Read Data 2
 					ID_EX_IMM		<= ID_EX_IMM_NEXT;			-- Immediate
@@ -587,7 +531,6 @@ architecture DLX_DATAPATH_ARCH of DLX_DATAPATH is
 					-- EXECUTE-MEMORY
 					EX_MEM_NPC		<= EX_MEM_NPC_NEXT;			-- Next Program Counter signal
 					EX_MEM_RF_WE		<= EX_MEM_RF_WE_NEXT;			-- Register File Write Enable
---					EX_MEM_RF_DATAIN	<= EX_MEM_RF_DATAIN_NEXT;		-- Register File Write Data
 					EX_MEM_RF_OUT2		<= EX_MEM_RF_OUT2_NEXT;			-- Register Source 2
 					EX_MEM_ALU_OUTPUT	<= EX_MEM_ALU_OUTPUT_NEXT;		-- ALU Output
 					EX_MEM_BRANCH_DETECT	<= EX_MEM_BRANCH_DETECT_NEXT;		-- Branch Condition

@@ -18,8 +18,6 @@ entity FU is
 
 	generic (	N:		integer := RS_SIZE_GLOBAL);
 
--- mi serve in input: EX_MEM_ALU_OUT e WB_MUX_OUT
-
 	port (		RS1:		in	std_logic_vector(N - 1 downto 0);	-- Source register 1
 			RS2:		in	std_logic_vector(N - 1 downto 0);	-- Source register 2
 			RD_MEM:		in	std_logic_vector(N - 1 downto 0);	-- Destination Registers at MEM stage

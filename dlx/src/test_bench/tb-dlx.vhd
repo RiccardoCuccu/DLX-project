@@ -5,7 +5,7 @@
 --		signals to the core's clock and reset inputs.
 --
 -- Author:	Riccardo Cuccu
--- Date:	2023/09/10
+-- Date:	2023/09/19
 ----------------------------------------------------------------------------------------------------
 
 library ieee;
@@ -29,8 +29,8 @@ architecture TEST of TB_DLX is
 				PC_SIZE		: integer := PC_SIZE_GLOBAL;		-- Program Counter Size			/ 32 bits
 				DRAM_SIZE	: integer := DRAM_WORD_SIZE_GLOBAL);	-- DRAM Word Size			/ 32 bits
 
-		port (		CLK	: in std_logic;
-				RST	: in std_logic);		-- Active Low
+		port (		CLK		: in std_logic;
+				RST		: in std_logic);			-- Active Low
 
 	end component;
 

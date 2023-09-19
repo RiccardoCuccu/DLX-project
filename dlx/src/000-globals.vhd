@@ -5,7 +5,7 @@
 --		system configuration and maintenance.
 --
 -- Author:	Riccardo Cuccu
--- Date:	2023/09/14
+-- Date:	2023/09/19
 ----------------------------------------------------------------------------------------------------
 
 library ieee;
@@ -50,11 +50,7 @@ package constants is
 	constant DRAM_WORD_SIZE_GLOBAL		: integer := SIZE_GLOBAL;				-- DRAM registers size
 
 	-- ALU Operations
-	type aluOp is (		--OP_SLL, OP_SRL, OP_ADD, OP_SUB, OP_AND, OP_OR, OP_XOR, OP_SNE, OP_SLE, OP_SGE,
-				--OP_BEQZ, OP_BNEZ, OP_ADDI, OP_SUBI, OP_ANDI, OP_ORI, OP_XORI, OP_SLLI, OP_NOP, OP_SRLI, OP_SNEI, OP_SLEI, OP_SGEI, OP_LW, OP_SW,
-				--OP_J, OP_JAL
-
-				-- FUNC labels
+	type aluOp is (		-- FUNC labels
 				OP_SLL, OP_SRL, OP_SRA, OP_ADD, OP_ADDU, OP_SUB, OP_SUBU, OP_AND, OP_OR, OP_XOR, OP_SEQ, OP_SNE, OP_SLT, OP_SGT, OP_SLE, OP_SGE, OP_MOVI2S, OP_MOVS2I, OP_MOVF, OP_MOVD, OP_MOVFP2I, OP_MOVI2FP, OP_MOVI2T, OP_MOVT2I, OP_SLTU, OP_SGTU, OP_SLEU, OP_SGEU,
 				OP_ADDF, OP_SUBF, OP_MULTF, OP_DIVF, OP_ADDD, OP_SUBD, OP_MULTD, OP_DIVD, OP_CVTF2D, OP_CVTF2I, OP_CVTD2F, OP_CVTD2I, OP_CVTI2F, OP_CVTI2D, OP_MULT, OP_DIV, OP_EQF, OP_NEF, OP_LTF, OP_GTF, OP_LEF, OP_GEF, OP_MULTU, OP_DIVU, OP_EQD, OP_NED, OP_LTD, OP_GTD, OP_LED, OP_GED,
 

@@ -1,11 +1,11 @@
+#!/bin/bash
+
 #----------------------------------------------------------------------------------------------------
 # Description:	This bash script is designed to manage the synthesis process for the DLX project.
 #
 # Author:	Riccardo Cuccu
 # Date:		2023/09/19
 #----------------------------------------------------------------------------------------------------
-
-#!/bin/bash
 
 # Initialize default values for variables
 path="./"

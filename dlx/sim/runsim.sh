@@ -1,13 +1,13 @@
+#!/bin/bash
+
 #----------------------------------------------------------------------------------------------------
 # Description:	This bash script manages the simulation process for the DLX project. It allows
 #		users to select the test file for simulation and choose whether to run the
 #		simulation in the background.
 #
 # Author:	Riccardo Cuccu
-# Date:		2023/09/15
+# Date:		2023/09/19
 #----------------------------------------------------------------------------------------------------
-
-#!/bin/bash
 
 # Initialize default values for variables
 filename=test.asm
@@ -31,9 +31,8 @@ vlib work
 # Run assembler script for the chosen test file
 source ./assembler.sh asm_example/$filename > /dev/null
 
-#source ./assembler.sh asm_example/test.asm > /dev/null
-#./assembler.bin/dlxasm.pl asm_example/test.asm
-#./assembler.bin/conv2memory asm_example/test.asm.exe > test.txt
+#./assembler.bin/dlxasm.pl asm_example/$filename
+#./assembler.bin/conv2memory asm_example/{$filename}.exe > {$filename}.txt
 
 sleep 1
 

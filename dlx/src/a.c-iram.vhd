@@ -31,9 +31,7 @@ end DLX_IRAM;
 
 architecture BEHAVIORAL of DLX_IRAM is
 
---	type RAMtype is array (0 to RAM_DEPTH - 1) of integer; -- std_logic_vector(I_SIZE - 1 downto 0);
 	type RAMtype is array (0 to RAM_DEPTH - 1) of std_logic_vector(I_SIZE - 1 downto 0);
-
 	signal IRAM_mem: RAMtype := (others => (others => '0'));
 
 begin
@@ -55,8 +53,6 @@ begin
 				IRAM_mem(index) <= tmp_data;		-- Store the instruction into internal memory
 				index := index + 1;			-- Increment index
 			end loop;
---		elsif (CLK = '0') then
---			DOUT <= IRAM_mem(conv_integer(unsigned(ADDR(I_SIZE - 1 downto 2))));
 		end if;
 	end process FILL_MEM_P;
 

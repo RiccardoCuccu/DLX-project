@@ -1,11 +1,11 @@
+#!/bin/bash
+
 #----------------------------------------------------------------------------------------------------
 # Description:	This bash script is designed to manage the physical design process for the DLX project.
 #
 # Author:	Riccardo Cuccu
-# Date:		2023/09/15
+# Date:		2023/09/19
 #----------------------------------------------------------------------------------------------------
-
-#!/bin/bash
 
 # Initialize environment
 source /eda/scripts/init_cadence_2020-21 &> /dev/null #setinnovus

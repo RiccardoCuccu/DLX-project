@@ -6,7 +6,7 @@
 #		settings and focus on specific pipeline stages for detailed observations.
 #
 # Author:	Riccardo Cuccu
-# Date:		2023/09/14
+# Date:		2023/09/19
 #----------------------------------------------------------------------------------------------------
 
 #----------------------------------------------------------------------------------------------------
@@ -59,11 +59,9 @@ vcom -quiet ../src/a.a-cu.vhd
 ## Datapath (a.b)
 vcom -quiet ../src/a.b-datapath.vhd
 vcom -quiet ../src/a.b.a-register_file.vhd
-vcom -quiet ../src/a.b.c-forwarding_unit.vhd
-#vcom -quiet ../src/a.b.g-pc.vhd
-#vcom -quiet ../src/a.b.h-ir.vhd
-vcom -quiet ../src/a.b.i-sign_extend.vhd
-vcom -quiet ../src/a.b.j-register_addresser.vhd
+vcom -quiet ../src/a.b.b-sign_extend.vhd
+vcom -quiet ../src/a.b.c-register_addresser.vhd
+vcom -quiet ../src/a.b.e-forwarding_unit.vhd
 
 ### ALU (a.b.d)
 vcom -quiet ../src/a.b.d-alu.vhd
@@ -71,8 +69,6 @@ vcom -quiet ../src/a.b.d-alu/a.b.d.c-comparator.vhd
 vcom -quiet ../src/a.b.d-alu/a.b.d.d-logic.vhd
 vcom -quiet ../src/a.b.d-alu/a.b.d.e-barrel_shifter_left.vhd
 vcom -quiet ../src/a.b.d-alu/a.b.d.f-barrel_shifter_right.vhd
-#vcom -quiet ../src/a.b.d-alu/a.b.d.h-floatingpoint_adder.vhd
-#vcom -quiet ../src/a.b.d-alu/a.b.d.i-floatingpoint_multiplier.vhd
 
 #### P4 Adder (a.b.d.a)
 vcom -quiet ../src/a.b.d-alu/a.b.d.a-p4_adder.vhd
@@ -561,10 +557,6 @@ if {$dlx_unit eq 5} {
 	#sim:/tb_dlx/U1/DATAPATH_I/BRANCH_DETECT
 
 }
-
-# TEMP
-#add wave -divider {TEMP} -position insertpoint \
-#sim:/tb_dlx/U1/*
 
 #----------------------------------------------------------------------------------------------------
 # Simulation Run

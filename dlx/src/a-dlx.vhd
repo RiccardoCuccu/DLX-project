@@ -2,7 +2,7 @@
 -- Description: This is the top-level module for the DLX architecture.
 --
 -- Author:	Riccardo Cuccu
--- Date:	2023/09/12
+-- Date:	2023/09/19
 ----------------------------------------------------------------------------------------------------
 
 library ieee;
@@ -119,11 +119,11 @@ architecture DLX_RTL of DLX is
 				WB_MUX_SEL		: in  std_logic;					-- Write Back MUX Sel
 				JAL_MUX_SEL		: in  std_logic;					-- Jump and Link Sel
 
-				IR_OUT			: out std_logic_vector(IR_SIZE - 1 downto 0);		-- Instruction Register		/ 32 bits
-				PC_OUT			: out std_logic_vector(PC_SIZE - 1 downto 0);		-- Program Counter		/ 32 bits
-				ALU_OUT			: out std_logic_vector(ALU_SIZE - 1 downto 0);		-- DRAM Address Input		/ 32 bits
-				DRAM_IN			: out std_logic_vector(DRAM_SIZE - 1 downto 0));	-- DRAM Data Input		/ 32 bits
-
+				IR_OUT			: out std_logic_vector(IR_SIZE - 1 downto 0);		-- Instruction Register			/ 32 bits
+				PC_OUT			: out std_logic_vector(PC_SIZE - 1 downto 0);		-- Program Counter			/ 32 bits
+				ALU_OUT			: out std_logic_vector(ALU_SIZE - 1 downto 0);		-- DRAM Address Input			/ 32 bits
+				DRAM_IN			: out std_logic_vector(DRAM_SIZE - 1 downto 0));	-- DRAM Data Input			/ 32 bits
+	
 		end component;
 
 
@@ -134,8 +134,8 @@ architecture DLX_RTL of DLX is
 				I_SIZE			: integer := IR_SIZE_GLOBAL);				-- / 32 bits
 
 		port (		RST			: in  std_logic;					-- Clock
-				ADDR			: in  std_logic_vector(I_SIZE - 1 downto 0);		-- Address		/ 32 bits
-				DOUT			: out std_logic_vector(I_SIZE - 1 downto 0));		-- Data out		/ 32 bits
+				ADDR			: in  std_logic_vector(I_SIZE - 1 downto 0);		-- Address				/ 32 bits
+				DOUT			: out std_logic_vector(I_SIZE - 1 downto 0));		-- Data out				/ 32 bits
 
 	end component;
 
@@ -149,9 +149,9 @@ architecture DLX_RTL of DLX is
 				RST			: in  std_logic;					-- Reset (active low)
 				RE			: in  std_logic;					-- Read Enable
 				WE			: in  std_logic;					-- Write Enable
-				ADDR			: in  std_logic_vector(NW - 1 downto 0);		-- Address		/ 32 bits
-				DIN			: in  std_logic_vector(NW - 1 downto 0);		-- Data in		/ 32 bits
-				DOUT			: out std_logic_vector(NW - 1 downto 0));		-- Data out		/ 32 bits
+				ADDR			: in  std_logic_vector(NW - 1 downto 0);		-- Address				/ 32 bits
+				DIN			: in  std_logic_vector(NW - 1 downto 0);		-- Data in				/ 32 bits
+				DOUT			: out std_logic_vector(NW - 1 downto 0));		-- Data out				/ 32 bits
 
 	end component;
 

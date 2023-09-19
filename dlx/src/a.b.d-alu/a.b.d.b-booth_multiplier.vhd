@@ -1,15 +1,18 @@
 ----------------------------------------------------------------------------------------------------
--- Description:	
+-- Description:	This Booth multiplier module serves as the multiplication unit within the DLX's ALU.
+--		It employs Booth's algorithm for multiplication and is designed to handle N-bit operands.
+--		The architecture employs a Ripple-Carry Adder (RCA), a Booth Encoder, and a multiplexer 
+--		with 8-to-1 selection logic. A sequence of RCAs are used to accumulate the partial sums
+--		of the Booth multiplication.
 --
 -- Author:	Riccardo Cuccu
--- Date:	2023/09/14
+-- Date:	2023/09/19
 ----------------------------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use ieee.numeric_std.all;
---use work.functions.all;
 use work.constants.all;
 
 entity BOOTH_MULTIPLIER is
@@ -86,6 +89,7 @@ architecture STRUCTURAL of BOOTH_MULTIPLIER is
 			generic map (N => ENCBIT)
 			port map (B, Bo_signal);
 
+		-- Loop to generate positive and negative values for A operand
 		A_INSTANCE: for i in 0 to N/2 - 1 generate
 
 			aMatrix(2*i) <= std_logic_vector(shift_left(resize(signed(A), MUXBIT), i));	-- extended positive value
@@ -93,11 +97,13 @@ architecture STRUCTURAL of BOOTH_MULTIPLIER is
 
 		end generate;
 
+		-- First level multiplexer instantiation
 		FIRST_MUX: MUX81
 
 			generic map (N => MUXBIT)
 			port map ((others => '0'), aMatrix(0), aMatrix(1), aMatrix(2), aMatrix(3), (others => '0'), (others => '0'), (others => '0'), Bo_signal(2 downto 0), aEncMatrix(0));
 
+		-- Sequence of multiplexers and adders for remaining levels
 		SUMS: for i in 1 to L - 1 generate
 
 			MUXES: MUX81
@@ -124,7 +130,8 @@ architecture STRUCTURAL of BOOTH_MULTIPLIER is
 
 		end generate;
 
-		P <= pSumMatrix(L-2);		-- output of the last adder
+		-- Output of the last adder
+		P <= pSumMatrix(L-2);
 
 end STRUCTURAL;
 
