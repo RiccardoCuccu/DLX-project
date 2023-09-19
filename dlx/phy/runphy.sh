@@ -11,13 +11,12 @@
 source /eda/scripts/init_cadence_2020-21 &> /dev/null #setinnovus
 
 # Cleanup and create new working directories
-rm -f ./scripts/*.sdc
-rm -r -f designs reports
-mkdir -p designs reports
+rm -r -f constraints designs
+mkdir -p constraints designs
 
 # Copy Verilog files
 cp -r ../syn/designs/*.v ./designs
-cp -r ../syn/scripts/*.sdc ./scripts
+cp -r ../syn/constraints/*.sdc ./constraints
 
 #innovus
 
@@ -25,3 +24,6 @@ cp -r ../syn/scripts/*.sdc ./scripts
 # 1. Execute the "source dlx.globals" command to import the design.
 # 2. Execute the "source phy.tcl" command to generate the physical design.
 # 3. Execute the "source analyses.tcl" command to generate the reports.
+
+# Cleanup
+rm -f *.log *.logv *.cmd

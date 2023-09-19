@@ -1,0 +1,1 @@
+/home/ms23.32/project/DLX-project/dlx/phy/constraints/dlx_clock_bound_0.5.sdc

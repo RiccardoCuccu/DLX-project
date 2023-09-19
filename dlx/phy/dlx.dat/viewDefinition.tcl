@@ -52,7 +52,7 @@ create_delay_corner -name ht-wc\
    -rc_corner high
 create_constraint_mode -name coherent-synthesis\
    -sdc_files\
-    [list ${::IMEX::libVar}/mmmc/dlx_002_max_delay_0.5.sdc]
+    [list ${::IMEX::libVar}/mmmc/dlx_clock_bound_0.5.sdc]
 create_analysis_view -name worst -constraint_mode coherent-synthesis -delay_corner ht-wc
 create_analysis_view -name best -constraint_mode coherent-synthesis -delay_corner lt-bc
 create_analysis_view -name default -constraint_mode coherent-synthesis -delay_corner std-typ

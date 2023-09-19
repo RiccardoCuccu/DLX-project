@@ -19,7 +19,7 @@ set init_gnd_net {gnd}
 set init_mmmc_file {default.view}
 set init_oa_search_lib {}
 set init_pwr_net {vdd}
-set init_verilog {designs/dlx_002_max_delay_0.5.v}
+set init_verilog {designs/dlx_clock_bound_0.5.v}
 set lsgOCPGainMult 1.000000
 
 set LEF_DIR /eda/dk/nangate45/lef

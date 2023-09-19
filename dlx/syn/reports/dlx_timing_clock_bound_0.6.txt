@@ -1,0 +1,56 @@
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 1
+Design : DLX
+Version: S-2021.06-SP4
+Date   : Tue Sep 19 16:54:08 2023
+****************************************
+
+Operating Conditions: typical   Library: NangateOpenCellLibrary
+Wire Load Model Mode: top
+
+  Startpoint: DATAPATH_I/IF_ID_IR_reg[31]
+              (rising edge-triggered flip-flop clocked by CK)
+  Endpoint: DATAPATH_I/ID_EX_RD_reg[0]
+            (rising edge-triggered flip-flop clocked by CK)
+  Path Group: CK
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  DLX                5K_hvratio_1_4        NangateOpenCellLibrary
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock CK (rise edge)                                    0.00       0.00
+  clock network delay (ideal)                             0.00       0.00
+  DATAPATH_I/IF_ID_IR_reg[31]/CK (DFF_X1)                 0.00       0.00 r
+  DATAPATH_I/IF_ID_IR_reg[31]/Q (DFF_X1)                  0.08       0.08 f
+  U1109/ZN (NOR3_X1)                                      0.07       0.15 r
+  U1110/ZN (NAND4_X1)                                     0.06       0.21 f
+  U1111/ZN (INV_X1)                                       0.03       0.24 r
+  U1112/ZN (AOI21_X1)                                     0.03       0.27 f
+  U1113/ZN (INV_X1)                                       0.05       0.32 r
+  U1183/ZN (NOR3_X2)                                      0.06       0.38 f
+  U1185/ZN (AOI22_X1)                                     0.06       0.44 r
+  U1187/ZN (NAND2_X1)                                     0.03       0.47 f
+  DATAPATH_I/ID_EX_RD_reg[0]/D (DFF_X1)                   0.01       0.48 f
+  data arrival time                                                  0.48
+
+  clock CK (rise edge)                                    0.60       0.60
+  clock network delay (ideal)                             0.00       0.60
+  clock uncertainty                                      -0.07       0.53
+  DATAPATH_I/ID_EX_RD_reg[0]/CK (DFF_X1)                  0.00       0.53 r
+  library setup time                                     -0.04       0.49
+  data required time                                                 0.49
+  --------------------------------------------------------------------------
+  data required time                                                 0.49
+  data arrival time                                                 -0.48
+  --------------------------------------------------------------------------
+  slack (MET)                                                        0.01
+
+
+1

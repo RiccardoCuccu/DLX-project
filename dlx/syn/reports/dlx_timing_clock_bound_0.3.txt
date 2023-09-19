@@ -1,0 +1,52 @@
+ 
+****************************************
+Report : timing
+        -path full
+        -delay max
+        -max_paths 1
+Design : DLX
+Version: S-2021.06-SP4
+Date   : Tue Sep 19 16:45:07 2023
+****************************************
+
+Operating Conditions: typical   Library: NangateOpenCellLibrary
+Wire Load Model Mode: top
+
+  Startpoint: DATAPATH_I/IF_ID_IR_reg[27]
+              (rising edge-triggered flip-flop clocked by CK)
+  Endpoint: DATAPATH_I/ID_EX_RD_reg[2]
+            (rising edge-triggered flip-flop clocked by CK)
+  Path Group: CK
+  Path Type: max
+
+  Des/Clust/Port     Wire Load Model       Library
+  ------------------------------------------------
+  DLX                5K_hvratio_1_4        NangateOpenCellLibrary
+
+  Point                                                   Incr       Path
+  --------------------------------------------------------------------------
+  clock CK (rise edge)                                    0.00       0.00
+  clock network delay (ideal)                             0.00       0.00
+  DATAPATH_I/IF_ID_IR_reg[27]/CK (DFF_X1)                 0.00       0.00 r
+  DATAPATH_I/IF_ID_IR_reg[27]/Q (DFF_X1)                  0.08       0.08 f
+  U756/ZN (AND4_X2)                                       0.05       0.13 f
+  U907/ZN (OAI211_X1)                                     0.07       0.20 r
+  U1212/ZN (NAND4_X1)                                     0.05       0.25 f
+  U1215/ZN (NAND2_X1)                                     0.03       0.29 r
+  DATAPATH_I/ID_EX_RD_reg[2]/D (DFFRS_X2)                 0.01       0.30 r
+  data arrival time                                                  0.30
+
+  clock CK (rise edge)                                    0.30       0.30
+  clock network delay (ideal)                             0.00       0.30
+  clock uncertainty                                      -0.07       0.23
+  DATAPATH_I/ID_EX_RD_reg[2]/CK (DFFRS_X2)                0.00       0.23 r
+  library setup time                                     -0.03       0.20
+  data required time                                                 0.20
+  --------------------------------------------------------------------------
+  data required time                                                 0.20
+  data arrival time                                                 -0.30
+  --------------------------------------------------------------------------
+  slack (VIOLATED)                                                  -0.10
+
+
+1
