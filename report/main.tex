@@ -1,0 +1,118 @@
+\documentclass[10pt, english, makeidx, a4paper, titlepage, oneside]{book}
+\usepackage[english]{babel}
+\usepackage{url}
+\usepackage{fancyhdr}
+\usepackage{makeidx}
+\usepackage{titlesec}
+\usepackage{listings}
+\usepackage{booktabs}
+
+\newenvironment{listato}{\footnotesize}{\normalsize }
+
+%\pagestyle{empty}
+
+\textwidth 15.5cm
+\textheight 23cm
+\topmargin -1cm
+\oddsidemargin -0cm
+\linespread{1.1}
+
+\pagestyle{fancy}
+\lhead{}
+\chead{Microelectronic Systems}
+\rhead{\thepage}
+\lfoot{}
+\cfoot{}
+\rfoot{}
+
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage{amssymb}
+%\oddsidemargin -1.1cm
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+%\usepackage{subscript}
+\usepackage{empheq}
+\usepackage{verbatim}
+\usepackage{fancyvrb}
+\usepackage[table]{xcolor}
+
+\usepackage[separate-uncertainty=true, multi-part-units=single]{siunitx}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{csquotes}
+\usepackage{caption} % for \caption*{} command
+\usepackage{wrapfig}
+
+\hypersetup{
+	pdftitle={DLX Project},
+	pdfauthor={Riccardo Cuccu},
+	pdfsubject={},
+	pdfkeywords={},
+	hidelinks
+}
+
+\sisetup{mode=text,range-phrase = \div}
+\definecolor{bggray}{rgb}{0.9,0.9,0.9}
+\definecolor{ggreen}{RGB}{0,127,0}
+\def\code#1{\texttt{#1}}		% for writing code
+
+\input{source/styles}
+
+\titleformat{\chapter}[display]
+{\normalfont\Large\filcenter\sffamily}
+{\titlerule[0.5pt]%
+\vspace{1pt}
+\titlerule
+\vspace{1pc}
+\LARGE\MakeUppercase{\chaptertitlename} \thechapter
+}
+{1pc}
+{\titlerule
+\vspace{1pc}
+\Huge}
+
+\makeindex
+
+% set smaller itemize points
+\renewcommand\labelitemi{$\vcenter{\hbox{\tiny$\bullet$}}$}     
+
+% customizing labels of enumerate lists
+\renewcommand{\labelenumii}{\arabic{enumi}.\arabic{enumii}}
+\renewcommand{\labelenumiii}{\arabic{enumi}.\arabic{enumii}.\arabic{enumiii}}
+\renewcommand{\labelenumiv}{\arabic{enumi}.\arabic{enumii}.\arabic{enumiii}.\arabic{enumiv}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\input{source/cover}
+
+\tableofcontents
+
+\mainmatter
+
+%\input{source/chap0}
+\input{source/00_summary}
+\input{source/01_introduction}
+\input{source/02_datapath}
+\input{source/03_control_unit}
+\input{source/04_memories}
+\input{source/05_simulation}
+\input{source/06_synthesis}
+\input{source/07_physical_design}
+\input{source/08_further_implementation}
+
+\input{source/references}
+
+\appendix
+\input{source/appendix}
+
+\end{document}

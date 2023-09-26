@@ -1,0 +1,32 @@
+% chapter 4
+\chapter{Memories}
+\label{chap:04_memories}
+Though not directly incorporated into the datapath, both the instruction and data memories play critical roles in the fetch and memory stages, respectively. It is worth noting that these memory components have neither been synthesized nor had their physical designs realized.
+
+\section{Instruction Memory (IRAM)}
+The Instruction Memory is straightforward and serves as RAM storage, with each row accommodating 32-bits, which contain a single instruction. \\
+
+Two principal procedures exist within the Instruction Memory:
+
+\begin{itemize}
+	\item \textbf{Reading}: the initiation of the reading operation is triggered when the Reset signal \texttt{RST} is asserted to be 0. This process sequentially reads the contents from the file named \texttt{firmware.asm.mem}, storing them in the internal memory. Each row within the file contains a single 32-bit instruction.
+    
+	\item \textbf{Writing}: this operation simply updates a 32-bit data value whenever there is a modification in the address.
+\end{itemize}
+
+\section{Data Memory (DRAM)}
+
+The Data Memory component serves as a specialized memory module that is responsible for storing data that can be accessed and modified through specific load and store instructions, such as \texttt{LW} and \texttt{SW}. \\
+
+For the load operation, data is fetched from the DRAM and transferred to one of the 32 general-purpose registers in the Register File. Conversely, the store operation writes data from a specific general-purpose register back into the Data Memory. \\
+
+The Data Memory operation can be summarized through two principal procedures:
+\begin{itemize}
+	\item \textbf{Reading}: when the read enable signal is asserted, data is fetched from the memory location pointed to by the current address input. This fetched data is then sent to the output port to be further stored in the Register File. Reading is asynchronous and the output is updated as soon as the read enable signal is high.
+  
+	\item \textbf{Writing}: writing occurs synchronously with the rising edge of the clock signal. When the write enable signal is high, the data at the input port is written into the memory location specified by the current address input.
+\end{itemize}
+
+The Data Memory employs a singular address input port, which is used for both reading and writing operations. However, reading and writing operations cannot occur simultaneously. \\
+
+When the reset is activated, all memory locations within the DRAM are cleared, effectively setting them to zero, to ensure a clean state for subsequent operations.

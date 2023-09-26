@@ -1,0 +1,15 @@
+\chapter*{Summary}
+\label{chap:summary}
+
+This project involves the engineering and deployment of an enhanced DLX-based processor, originally conceptualized by D. Patterson and J. Hennessy. Compared to the DLX-basic version, this enhanced version incorporates several advancements:
+
+\begin{itemize}
+    \item \textbf{Extended Instruction Set}: inclusion of an additional 25 instructions, namely: addu, addui, subu, subui, mult, multu, sra, srai, seq, seqi, slt, sltu, slti, sltui, sgt, sgtu, sgti, sgtui, sle, sleu, slei, sleui, jr, jalr and lhi bringing the total count to 52. %27+25
+    \item \textbf{Optimized ALU}: the arithmetic logic unit (ALU) has been optimized and enhanced with a Pentium 4 Adder and a Booth Multiplier Radix-4.
+    \item \textbf{Forwarding Unit}: a Forwarding Unit has been implemented to manage data hazards, specifically those related to Read-After-Write (RAW).
+    \item \textbf{Parametric Design}: the entire project is designed to be parametric. All dimensions and design parameters can be managed through a single file, \texttt{000-globals.vhd}.
+    \item \textbf{Semi-Automated Workflow}: scripts were used to partially automate various stages of the project, including simulation, synthesis and place-and-route. These scripts are detailed in Appendix~\ref{app:scripts}.
+
+\end{itemize}
+
+In addition to the advancements outlined above, various minor optimizations have been incorporated into the code for improved performance. Special attention has also been given to code readability. Great care has been taken to provide comprehensive comments throughout the code files and the scripts, making it as understandable and maintainable as possible.

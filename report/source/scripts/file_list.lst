@@ -1,0 +1,72 @@
+# Constants & functions (000)
+../src/000-functions.vhd
+../src/000-globals.vhd
+
+## Basic Logic Gates
+../src/000-globals/not.vhd
+../src/000-globals/and.vhd
+../src/000-globals/nand.vhd
+../src/000-globals/or.vhd
+../src/000-globals/nor.vhd
+../src/000-globals/xor.vhd
+../src/000-globals/xnor.vhd
+
+## Memory Elements
+../src/000-globals/ffd.vhd
+../src/000-globals/ffdr.vhd
+../src/000-globals/ld.vhd
+../src/000-globals/ldr.vhd
+
+## Multiplexers
+../src/000-globals/mux21.vhd
+../src/000-globals/mux21_logic.vhd
+../src/000-globals/mux41.vhd
+#../src/000-globals/mux41_logic.vhd
+../src/000-globals/mux81.vhd
+#../src/000-globals/mux81_logic.vhd
+
+# Arithmetic Components
+../src/000-globals/fa.vhd
+../src/000-globals/rca.vhd
+../src/000-globals/zero_detector.vhd
+
+## Control Unit (a.a)
+../src/a.a-cu.vhd
+
+## Datapath (a.b)
+../src/a.b-datapath.vhd
+../src/a.b.a-register_file.vhd
+../src/a.b.b-sign_extend.vhd
+../src/a.b.c-register_addresser.vhd
+../src/a.b.e-forwarding_unit.vhd
+
+### ALU (a.b.d)
+../src/a.b.d-alu.vhd
+../src/a.b.d-alu/a.b.d.c-comparator.vhd
+../src/a.b.d-alu/a.b.d.d-logic.vhd
+../src/a.b.d-alu/a.b.d.e-barrel_shifter_left.vhd
+../src/a.b.d-alu/a.b.d.f-barrel_shifter_right.vhd
+
+#### P4 Adder (a.b.d.a)
+../src/a.b.d-alu/a.b.d.a-p4_adder.vhd
+../src/a.b.d-alu/a.b.d.a.a.d-pg_block.vhd
+../src/a.b.d-alu/a.b.d.a.a.c-propagate.vhd
+../src/a.b.d-alu/a.b.d.a.a.b-generate.vhd
+../src/a.b.d-alu/a.b.d.a.a.a-pg_row.vhd
+../src/a.b.d-alu/a.b.d.a.a-carry_generator.vhd
+../src/a.b.d-alu/a.b.d.a.b.a-carry_select_block.vhd
+../src/a.b.d-alu/a.b.d.a.b-sum_generator.vhd
+
+#### Booth Multiplier (a.b.d.b)
+../src/a.b.d-alu/a.b.d.b-booth_multiplier.vhd
+../src/a.b.d-alu/a.b.d.b.a-booth_encoder.vhd
+../src/a.b.d-alu/a.b.d.b.a.a-encoder.vhd
+
+## IRAM (a.c)
+./memories/a.c-iram.vhd
+
+## DRAM (a.d)
+./memories/a.d-dram.vhd
+
+# DLX (a)
+../src/a-dlx.vhd

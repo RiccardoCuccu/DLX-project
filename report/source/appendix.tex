@@ -1,0 +1,201 @@
+%%% Appendix A
+\chapter{Scripts}
+\label{app:scripts}
+
+\section{Simulation}
+
+\subsection{\texttt{assembler.sh}} \label{app:assembler}
+\lstinputlisting[style=MyBash]{source/scripts/assembler.sh}
+
+\subsection{\texttt{runsim.sh}} \label{app:runsim}
+\lstinputlisting[style=MyBash]{source/scripts/runsim.sh}
+
+\subsection{\texttt{resim.tcl}} \label{app:resim}
+\lstinputlisting[style=MyTCL]{source/scripts/resim.tcl}
+
+\subsection{\texttt{sim.tcl}} \label{app:sim}
+\lstinputlisting[style=MyTCL]{source/scripts/sim.tcl}
+
+\newpage
+\section{Synthesis}
+
+\subsection{\texttt{runsyn.sh}} \label{app:runsyn}
+\lstinputlisting[style=MyBash]{source/scripts/runsyn.sh}
+
+\subsection{\texttt{analyze.tcl}} \label{app:analyze}
+\lstinputlisting[style=MyTCL]{source/scripts/analyze.tcl}
+
+\subsection{\texttt{file\_list.lst}} \label{app:file_list}
+\lstinputlisting[style=MyTCL]{source/scripts/file_list.lst}
+
+\subsection{\texttt{syn\_unconstrained.tcl}} \label{app:syn_unconstrained}
+\lstinputlisting[style=MyTCL]{source/scripts/syn_unconstrained.tcl}
+
+\subsection{\texttt{syn\_clock\_bound.tcl}} \label{app:syn_clock_bound}
+\lstinputlisting[style=MyTCL]{source/scripts/syn_clock_bound.tcl}
+
+\newpage
+\section{Physical Design}
+
+\subsection{\texttt{runphy.sh}} \label{app:runphy}
+\lstinputlisting[style=MyBash]{source/scripts/runphy.sh}
+
+\subsection{\texttt{dlx.globals}} \label{app:dlx_globals}
+\lstinputlisting[style=MyTCL]{source/scripts/dlx.globals}
+
+\subsection{\texttt{phy.tcl}} \label{app:phy}
+\lstinputlisting[style=MyTCL]{source/scripts/phy.tcl}
+
+\subsection{\texttt{analyses.tcl}} \label{app:analyses}
+\lstinputlisting[style=MyTCL]{source/scripts/analyses.tcl}
+
+\newpage
+\chapter{HDL}
+
+\section{Globals}
+
+%\subsection{\texttt{000-functions.vhd}} \label{app:000-functions}
+%\lstinputlisting[style=MyVHDL]{source/code/000-functions.vhd}
+
+\subsection{\texttt{000-functions.vhd}} \label{app:000-functions}
+\lstinputlisting[style=MyVHDL]{source/code/000-functions.vhd}
+
+\subsection{\texttt{000-globals.vhd}} \label{app:000-globals}
+\lstinputlisting[style=MyVHDL]{source/code/000-globals.vhd}
+
+\begin{comment}
+
+%\subsection{\texttt{not.vhd}} \label{app:not}
+%\lstinputlisting[style=MyVHDL]{source/code/not.vhd}
+
+%\subsection{\texttt{and.vhd}} \label{app:and}
+%\lstinputlisting[style=MyVHDL]{source/code/and.vhd}
+
+%\subsection{\texttt{nand.vhd}} \label{app:nand}
+%\lstinputlisting[style=MyVHDL]{source/code/nand.vhd}
+
+%\subsection{\texttt{or.vhd}} \label{app:or}
+%\lstinputlisting[style=MyVHDL]{source/code/or.vhd}
+
+%\subsection{\texttt{nor.vhd}} \label{app:nor}
+%\lstinputlisting[style=MyVHDL]{source/code/nor.vhd}
+
+%\subsection{\texttt{xor.vhd}} \label{app:xor}
+%\lstinputlisting[style=MyVHDL]{source/code/xor.vhd}
+
+%\subsection{\texttt{xnor.vhd}} \label{app:xnor}
+%\lstinputlisting[style=MyVHDL]{source/code/xnor.vhd}
+
+%\subsection{\texttt{ffd.vhd}} \label{app:ffd}
+%\lstinputlisting[style=MyVHDL]{source/code/ffd.vhd}
+
+%\subsection{\texttt{ffdr.vhd}} \label{app:ffdr}
+%\lstinputlisting[style=MyVHDL]{source/code/ffdr.vhd}
+
+%\subsection{\texttt{ld.vhd}} \label{app:ld}
+%\lstinputlisting[style=MyVHDL]{source/code/ld.vhd}
+
+%\subsection{\texttt{ldr.vhd}} \label{app:ldr}
+%\lstinputlisting[style=MyVHDL]{source/code/ldr.vhd}
+
+%\subsection{\texttt{mux21.vhd}} \label{app:mux21}
+%\lstinputlisting[style=MyVHDL]{source/code/mux21.vhd}
+
+%\subsection{\texttt{mux21\_logic.vhd}} \label{app:mux21_logic}
+%\lstinputlisting[style=MyVHDL]{source/code/mux21_logic.vhd}
+
+%\subsection{\texttt{mux41.vhd}} \label{app:mux41}
+%\lstinputlisting[style=MyVHDL]{source/code/mux41.vhd}
+
+%\subsection{\texttt{mux81.vhd}} \label{app:mux81}
+%\lstinputlisting[style=MyVHDL]{source/code/mux81.vhd}
+
+%\subsection{\texttt{fa.vhd}} \label{app:fa}
+%\lstinputlisting[style=MyVHDL]{source/code/fa.vhd}
+
+%\subsection{\texttt{rca.vhd}} \label{app:rca}
+%\lstinputlisting[style=MyVHDL]{source/code/rca.vhd}
+
+%\subsection{\texttt{zero\_detector.vhd}} \label{app:zero_detector}
+%\lstinputlisting[style=MyVHDL]{source/code/zero_detector.vhd}
+
+\subsection{\texttt{a.a-cu.vhd}} \label{app:a.a-cu}
+\lstinputlisting[style=MyVHDL]{source/code/a.a-cu.vhd}
+
+\subsection{\texttt{a.b-datapath.vhd}} \label{app:a.b-datapath}
+\lstinputlisting[style=MyVHDL]{source/code/a.b-datapath.vhd}
+
+\subsection{\texttt{a.b.a-register\_file.vhd}} \label{app:a.b.a-register_file}
+\lstinputlisting[style=MyVHDL]{source/code/a.b.a-register_file.vhd}
+
+\subsection{\texttt{a.b.c-forwarding\_unit.vhd}} \label{app:a.b.c-forwarding_unit}
+\lstinputlisting[style=MyVHDL]{source/code/a.b.c-forwarding_unit.vhd}
+
+\subsection{\texttt{a.b.i-sign\_extend.vhd}} \label{app:a.b.i-sign_extend}
+\lstinputlisting[style=MyVHDL]{source/code/a.b.i-sign_extend.vhd}
+
+\subsection{\texttt{a.b.j-register\_addresser.vhd}} \label{app:a.b.j-register_addresser}
+\lstinputlisting[style=MyVHDL]{source/code/a.b.j-register_addresser.vhd}
+
+\subsection{\texttt{a.b.d-alu.vhd}} \label{app:a.b.d-alu}
+\lstinputlisting[style=MyVHDL]{source/code/a.b.d-alu.vhd}
+
+\subsection{\texttt{a.b.d.c-comparator.vhd}} \label{app:a.b.d.c-comparator}
+\lstinputlisting[style=MyVHDL]{source/code/a.b.d.c-comparator.vhd}
+
+\subsection{\texttt{a.b.d.d-logic.vhd}} \label{app:a.b.d.d-logic}
+\lstinputlisting[style=MyVHDL]{source/code/a.b.d.d-logic.vhd}
+
+\subsection{\texttt{a.b.d.e-barrel\_shifter\_left.vhd}} \label{app:a.b.d.e-barrel_shifter_left}
+\lstinputlisting[style=MyVHDL]{source/code/a.b.d.e-barrel_shifter_left.vhd}
+
+\subsection{\texttt{a.b.d.f-barrel\_shifter\_right.vhd}} \label{app:a.b.d.f-barrel_shifter_right}
+\lstinputlisting[style=MyVHDL]{source/code/a.b.d.f-barrel_shifter_right.vhd}
+
+\subsection{\texttt{a.b.d.a-p4\_adder.vhd}} \label{app:a.b.d.a-p4_adder}
+\lstinputlisting[style=MyVHDL]{source/code/a.b.d.a-p4_adder.vhd}
+
+\subsection{\texttt{a.b.d.a.a.d-pg\_block.vhd}} \label{app:a.b.d.a.a.d-pg_block}
+\lstinputlisting[style=MyVHDL]{source/code/a.b.d.a.a.d-pg_block.vhd}
+
+\subsection{\texttt{a.b.d.a.a.c-propagate.vhd}} \label{app:a.b.d.a.a.c-propagate}
+\lstinputlisting[style=MyVHDL]{source/code/a.b.d.a.a.c-propagate.vhd}
+
+\subsection{\texttt{a.b.d.a.a.b-generate.vhd}} \label{app:a.b.d.a.a.b-generate}
+\lstinputlisting[style=MyVHDL]{source/code/a.b.d.a.a.b-generate.vhd}
+
+\subsection{\texttt{a.b.d.a.a.a-pg\_row.vhd}} \label{app:a.b.d.a.a.a-pg_row}
+\lstinputlisting[style=MyVHDL]{source/code/a.b.d.a.a.a-pg_row.vhd}
+
+\subsection{\texttt{a.b.d.a.a-carry\_generator.vhd}} \label{app:a.b.d.a.a-carry_generator}
+\lstinputlisting[style=MyVHDL]{source/code/a.b.d.a.a-carry_generator.vhd}
+
+\subsection{\texttt{a.b.d.a.b.a-carry\_select\_block.vhd}} \label{app:a.b.d.a.b.a-carry_select_block}
+\lstinputlisting[style=MyVHDL]{source/code/a.b.d.a.b.a-carry_select_block.vhd}
+
+\subsection{\texttt{a.b.d.a.b-sum\_generator.vhd}} \label{app:a.b.d.a.b-sum_generator}
+\lstinputlisting[style=MyVHDL]{source/code/a.b.d.a.b-sum_generator.vhd}
+
+\subsection{\texttt{a.b.d.b-booth\_multiplier.vhd}} \label{app:a.b.d.b-booth_multiplier}
+\lstinputlisting[style=MyVHDL]{source/code/a.b.d.b-booth_multiplier.vhd}
+
+\subsection{\texttt{a.b.d.b.a-booth\_encoder.vhd}} \label{app:a.b.d.b.a-booth_encoder}
+\lstinputlisting[style=MyVHDL]{source/code/a.b.d.b.a-booth_encoder.vhd}
+
+\subsection{\texttt{a.b.d.b.a.a-encoder.vhd}} \label{app:a.b.d.b.a.a-encoder}
+\lstinputlisting[style=MyVHDL]{source/code/a.b.d.b.a.a-encoder.vhd}
+
+\subsection{\texttt{a.c-iram.vhd}} \label{app:a.c-iram}
+\lstinputlisting[style=MyVHDL]{source/code/a.c-iram.vhd}
+
+\subsection{\texttt{a.d-dram.vhd}} \label{app:a.d-dram}
+\lstinputlisting[style=MyVHDL]{source/code/a.d-dram.vhd}
+
+\subsection{\texttt{a-dlx.vhd}} \label{app:a-dlx}
+\lstinputlisting[style=MyVHDL]{source/code/a-dlx.vhd}
+
+\end{comment}
+
+% \lstinputlisting is an alternative way to import text or code from an external file. In this example the behavioural VHDL description of an adder contained in the file adder.vhd is imported. 
+% Note that you can set the language of the code that you want to import (VHDL in this example). When you set the language you will see the keywords of that specific language highlighted in your output pdf file.
+%You can set a lot parameters: for some examples take a look at the chapter 'How to document the project' that can you find in DLX_Project.pdf.

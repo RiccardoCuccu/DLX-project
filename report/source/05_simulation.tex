@@ -1,0 +1,46 @@
+% chapter 5
+\chapter{Simulation}
+\label{chap:05_simulation}
+
+\section{Assembler}
+\label{sec:assembler}
+
+Thanks to the initial files provided for this project, it has been possible to automate the loading of instruction code from an external assembly file. This automation is facilitated by the \texttt{assembler.sh} file, which serves as an interface for the actual Perl language assembler, \texttt{dlxasm.pl}. \\
+
+The \texttt{dlxasm.pl} file was modified solely to enable the execution of the \texttt{MULT} and \texttt{MULTU} instructions by changing the OPCODE to R-type. Meanwhile, the \texttt{assembler.sh} file was slightly modified to better manage the generation of test files and maintain as clean a working directory as possible (see Appendix~\ref{app:assembler}). \\
+
+Furthermore, nineteen assembly files have been either created or modified, building upon the files initially provided.
+
+\section{Scripts}
+\label{sec:sim_scripts}
+
+The \texttt{runsim.sh} script, fully detailed in Appendix~\ref{app:runsim}, is designed to manage the simulation process for the DLX project using the QuestaSim software, as mentioned in Section~\ref{sec:software}. This script allows users to specify the test file to be used for the simulation and to choose whether to run the simulation in the background. Two specific flags can be employed for these purposes:
+
+\begin{itemize}
+     \item \texttt{-f}: specifies the test filename. By default, the filename is \texttt{test.asm}.
+     \item \texttt{-b}: allows the user to choose whether to run the simulation in the background (`y' for yes, `n' for no). The default setting is to run in the background.
+\end{itemize}
+
+To execute the script, navigate to the \texttt{dlx/sim} directory, which contains \texttt{runsim.sh}, and run the following command:
+\begin{lstlisting}[style=MyShell]
+ > ./runsim.sh
+\end{lstlisting}
+
+As mentioned earlier, running the simulation with default settings will use the default file (\texttt{test.asm}) and execute in the background. To run a custom test file (\texttt{mytest.asm}) in the background, use the following command:
+\begin{lstlisting}[style=MyShell]
+ > ./runsim.sh -f mytest.asm
+\end{lstlisting}
+
+To run a custom test file (\texttt{mytest.asm}) in the foreground, use the following command:
+\begin{lstlisting}[style=MyShell]
+ > ./runsim.sh -f mytest.asm -b n
+\end{lstlisting}
+
+To run the script again within the QuestaSim program, you must instead launch the \texttt{resim.sh} script, detailed in Appendix~\ref{app:resim}, using the following command:
+\begin{lstlisting}[style=MyShell]
+ > do resim.tcl
+\end{lstlisting}
+
+Both of these files set up the optimal environment for running the simulation and then execute the \texttt{sim.tcl} file, which serves as the core of the simulation. This file, detailed in Appendix~\ref{app:sim}, contains the commands for compiling the VHDL files and managing the waveforms of the entire system's signals. It offers a rudimentary control panel at the beginning of the file, which allows the user to select the unit to execute (choices include DLX, Control Unit, Datapath, IRAM, DRAM, or ALU) and/or the stage to analyze (among all, fetch, decode, execute, memory, and write back). \\
+
+Thanks to this type of display selection, a single testbench file could be used, enabling quicker identification of any bugs and delays. Furthermore, the more complex modules, such as the P4 Adder, Booth Multiplier and Control Unit, had already been tested with specialized testbenches during the course, although they were slightly modified for this project.

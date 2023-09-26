@@ -1,0 +1,136 @@
+% chapter 6
+\chapter{Synthesis}
+\label{chap:06_synthesis}
+
+\section{Scripts}
+\label{sec:syn_scripts}
+
+The synthesis procedure for the DLX architecture was carried out using the Synopsys Design Compiler, as mentioned in Section~\ref{sec:software}. The UMC 45nm technology library was employed for this purpose. \\
+
+For the simulation phase, the bash script \texttt{runsyn.sh} (see Appendix~\ref{app:runsyn}) was developed to initiate and streamline the synthesis process. This script also accommodates the same two optional flags see in Section~\ref{sec:sim_scripts} for simulation:
+
+\begin{itemize}
+    \item \textbf{-b}: allows execution in the background when paired with the \texttt{y} label, alternatively, using the \texttt{n} label initiates foreground execution, which is also the default behavior in this case.
+    \item \textbf{-f}: enables the synthesis of a specific target file. In the absence of a specified file, the default action is to execute all types of synthesis files within the current subdirectory.
+\end{itemize}
+
+To execute the script, navigate to the \texttt{dlx/syn} directory that contains \texttt{runsyn.sh}. Then, run the following command:
+\begin{lstlisting}[style=MyShell]
+ > ./runsyn.sh
+\end{lstlisting}
+
+\section{Workflow}
+
+The subsequent section provides a structured walkthrough of the command sequence employed within the Design Compiler for conducting the synthesis of the architecture:
+
+\begin{enumerate}
+
+	\item The VHDL source files for the DLX architecture were imported using the \texttt{analyze} command.
+
+	\item To facilitate subsequent power analysis, RTL naming was retained in the generated netlist, using the command \texttt{set power\_preserve\_rtl\_hier\_names true}.
+
+	\item Design Compiler was instructed to use generic gates to elaborate the specified entities. The top entity, representing the DLX core, was synthesized with the command: \texttt{elaborate DLX -architecture DLX\_RTL -library WORK}.
+
+	\item For the purpose of warning reduction, unconnected ports were purged from the netlist via the command \texttt{remove\_unconnected\_ports [get\_cells -hierarchical *]}.
+
+	\item Wire load models were set using the command \texttt{set\_wire\_load\_model -name 5K\_hvratio\_1\_4} to precisely calculate wire capacitance. This ensures accurate delay estimations and therefore contributes to a more reliable synthesis and timing analysis.
+
+\end{enumerate}
+
+In the workflow outlined earlier, the first two steps have been automated and generalized using the \texttt{analyze.tcl} script, detailed in Appendix~\ref{app:analyze}. This script is applicable to all three synthesis files and configures the Synopsys Design Compiler to read the \texttt{file\_list.lst} file (see Appendix~\ref{app:file_list}), which contains the paths to the VHDL files. This setup enables centralized editing and should modules be added or removed from the project, only this single file would require modification. Furthermore, the script is designed to automatically exclude empty lines and any paths in \texttt{file\_list.lst} that are commented out. \\
+
+As previously stated, the subsequent tasks of compilation and report generation are managed by two different scripts defined in a TCL file.
+
+\begin{itemize}
+
+	\item \textbf{Unconstrained} - The architecture was synthesized without any specific constraints imposed (Appendix \ref{app:syn_unconstrained}).
+
+	\item \textbf{Clock Bound} - Synthesis was carried out with clock frequency optimizations (Appendix \ref{app:syn_clock_bound}).
+
+\end{itemize}
+
+For the \textbf{Unconstrained} variant, the synthesis process was limited to the execution of the \texttt{compile} command, along with the subsequent generation of reports. \\
+
+For the \textbf{Clock Bounded} iteration, the following step was undertaken in synthesis, aimed at generating quantitative benchmarks for comparative analysis with the other configurations.
+
+\begin{enumerate}
+\setcounter{enumi}{5}
+
+	\item Clock constraints were established by creating a symbolic clock signal, binding it to the actual clock pin, and defining the frequency constraints. Initially, a clock period of zero was specified to determine the theoretical minimum clock period through the \texttt{create\_clock -name "CK" -period 0 {"CLK"}} command.
+
+\end{enumerate}
+
+Based on previous outcomes, a first clock period constraint was established and the following steps were undertaken.
+
+\begin{enumerate}
+\setcounter{enumi}{6}
+
+	\item Buffering and DC optimization were disabled for the clock signal, achieved by the command \texttt{set\_dont\_touch\_network CK}.
+	
+	\item Clock jitter constraints were also defined with \texttt{set\_clock\_uncertainty 0.07 [get\_clocks CK]}.
+
+\end{enumerate}
+
+Upon executing the \texttt{compile\_ultra -timing\_high\_effort\_script} command to initiate the optimized synthesis, it becomes crucial to scrutinize the resultant metrics through specific commands:
+\begin{itemize}
+
+	\item \texttt{report\_area} enumerates the design's combinational and non-combinational areas, along with their aggregate.
+
+	\item \texttt{report\_timing} serves to reveal the outcome of the timing analysis undertaken during synthesis. Notably, it ascertains whether the design's longest path adheres to the clock frequency constraint specified earlier. The status is explicitly marked as either \textit{VIOLATED} or \textit{MET}. In either scenario, the slack value signals by what extent the frequency needs adjustment to realize the design's minimum permissible clock period.
+
+	\item \texttt{report\_power} is employed for quantifying the design's power usage.
+
+\end{itemize}
+
+\section{Results}
+A slack of -0.68~$ns$ was observed during synthesis with a clock period constraint of zero: this corresponds to a theoretical maximum frequency of 1.47~$GHz$. Than different versions of the architecture were synthesized with clock bounds ranging from 0.7~$ns$ to 0.3~$ns$. For additional context, metrics related to area and timing are detailed in Table~\ref{tab:areatiming_report}, while metrics concerning power are provided in Table~\ref{tab:power_report}. \\
+
+\begin{table}[!htbp]
+	\small
+	\centering
+	\begin{tabular}{lccc}
+		\toprule
+		\textbf{Version} & \textbf{Frequency} & \textbf{Area} & \textbf{Slack} \\
+		\midrule
+		Unconstrained & - & 14021.92 $\mu m^{2}$ & - \\
+		CK 0 $ns$ & $\infty$ & 4558.17 $\mu m^{2}$ & -0.68 $ns$ \\
+		CK 0.3 $ns$ & 3.3 $GHz$ & 4590.89 $\mu m^{2}$ & -0.10 $ns$ \\
+		CK 0.4 $ns$ & 2.5 $GHz$ & 4588.23 $\mu m^{2}$ & -0.02 $ns$ \\
+		CK 0.5 $ns$ & 2.0 $GHz$ & 4559.51 $\mu m^{2}$ & 0.00 $ns$ \\
+		CK 0.6 $ns$ & 1.7 $GHz$ & 4558.44 $\mu m^{2}$ & 0.01 $ns$ \\
+		CK 0.7 $ns$ & 1.4 $GHz$ & 4558.18 $\mu m^{2}$ & 0.02 $ns$ \\
+		\bottomrule
+	\end{tabular}
+	\caption{Comparison between areas and timing}
+	\label{tab:areatiming_report}
+\end{table}
+
+\begin{table}[!htbp]
+	\small
+	\centering
+	\begin{tabular}{lccc}
+		\toprule
+		\textbf{Version} & \textbf{Leakage Power} & \textbf{Dynamic Power} & \textbf{Total Power} \\
+		\midrule
+		Unconstrained & 259.67 $\mu W$ & 997.83 $\mu W$ & 1257.50 $\mu W$ \\
+		CK 0 $ns$ & 93.28 $\mu W$ & 95.12 $\mu W$ & 188.40  $\mu W$ \\
+		CK 0.3 $ns$ & 95.21 $\mu W$ & 5211.7 $\mu W$ & 5306.91 $\mu W$ \\
+		CK 0.4 $ns$ & 95.36 $\mu W$ & 4100.1 $\mu W$ & 4195.43 $\mu W$ \\
+		CK 0.5 $ns$ & 94.46 $\mu W$ & 3119.9 $\mu W$ & 3214.36 $\mu W$ \\
+		CK 0.6 $ns$ & 94.44 $\mu W$ & 2600.3 $\mu W$ & 2694.74 $\mu W$ \\
+		CK 0.7 $ns$ & 94.38 $\mu W$ & 2228.6 $\mu W$ & 2322.98 $\mu W$ \\
+		\bottomrule
+	\end{tabular}
+	\caption{Comparison between power consumptions}
+	\label{tab:power_report}
+\end{table}
+
+\paragraph{Area}
+The area metrics reveal some intriguing patterns. The \textbf{Unconstrained} design unsurprisingly yields the largest area, serving as a reference point for the architectural design before any optimizations. Interestingly, area usage seems to reach a plateau in the clock-bounded versions from 0.5~$ns$ to 0.7~$ns$, hovering around 4558~$\mu m^{2}$. These findings suggest that constraints on the clock period have a minimal impact on the chip area beyond the initial clockless design, thus showing the design's resilience to area-based optimizations.
+
+\paragraph{Timing}
+Concerning the timing, the clock-bound versions of the design consistently show an improvement in slack as the clock constraint becomes less stringent. The slack in the design with a 0~$ns$ clock constraint is, as previously mentioned, at a negative value of -0.68~$ns$. This indicates that this particular design configuration is clearly infeasible without adjustments. However, as the clock constraint is relaxed, the slack gradually approaches a positive value, reaching 0~$ns$ at a constraint of 0.5~$ns$ and becoming positive thereafter. The corresponding frequencies also adjust in a manner that is intuitively sensible, decreasing from a theoretically infinite value (which is unattainable) to more practical bounds as the slack improves.
+
+\paragraph{Power}
+When examining power consumption, the CK 0.3~$ns$ version stands out due to its exceptionally high total power consumption, reaching up to 5306.91~$\mu W$. This substantial consumption is primarily driven by its dynamic power, suggesting that operating at such a high frequency of 3.3~$GHz$ incurs significant energy costs. In stark contrast, the design with a clock period constraint of 0~$ns$ is remarkably efficient, consuming only 188.40~$\mu W$ in total. However, this efficiency is likely attributable to the very low power consumption of the architecture's registers. Since they are connected to a clock with a period of 0~$ns$, their power consumption is not calculated realistically. Interestingly, leakage power remains largely consistent across the different clock-bounded versions, indicating that the dynamic power is the primary variable influenced by clock period constraints. These findings provide invaluable insights into the power-performance trade-offs inherent in the DLX architecture, and merit further exploration for optimization opportunities.
+

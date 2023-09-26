@@ -1,0 +1,81 @@
+% chapter 8
+\chapter{Further Implementation}
+\label{chap:08_further_implementation}
+
+As the DLX architecture presented in this report serves as a baseline, there exist several avenues for further enhancement and customization. This chapter aims to explore potential areas where the architecture could be augmented to improve performance, functionality and automation. Topics covered include branch prediction, out-of-order execution, floating-point operations, ISA extensions and more advanced automation of simulation and design stages.
+
+\section{Branch Prediction}
+Effective branch prediction is pivotal for achieving high instruction throughput and minimizing pipeline stalls. Both static and dynamic techniques can be employed to optimize the accuracy of branch prediction, each with its own set of trade-offs in terms of hardware complexity and performance. \\
+
+Static techniques are usually employed at the compiler level and do not require significant changes to the hardware. Some commonly used static methods include:
+
+\begin{itemize}
+    \item \textbf{Always Taken}: this is the simplest form of branch prediction where the outcome is always assumed to be taken. Even with this straightforward approach, notable improvements can be achieved, especially in loops where the branch is often taken. Implementing the `Always Taken' strategy would require minimal changes to the hardware, such as setting a single default bit in the control logic.
+    
+    \item \textbf{Branch Direction}: the compiler could assumes that forward branches are not taken and backward branches are taken. This heuristic is based on common programming constructs: forward branches often correspond to conditional statements, while backward branches are usually part of loops. This strategy improves prediction accuracy with no additional hardware requirements.
+\end{itemize}
+
+Dynamic techniques require hardware support for maintaining and updating prediction data. These methods are generally more accurate but add complexity to the hardware design. Notable dynamic techniques include:
+
+\begin{itemize}
+    \item \textbf{One-Bit Prediction}: a single bit is used to predict the outcome based on the most recent execution. A `1' might indicate that the branch is likely to be taken, and a `0' would indicate otherwise. This scheme can also be extended to use two bits for a more reliable prediction.
+    
+    \item \textbf{Branch History Table (BHT)}: the BHT keeps a history of the outcomes of recent branches and uses this data to predict future branches.
+    
+    \item \textbf{Branch Target Buffer (BTB)}: the BTB stores the target addresses of recently taken branches. When a branch instruction is encountered, the BTB is looked up to fetch the likely target address, speeding up the instruction fetch stage.
+\end{itemize}
+
+By focusing on implementing the `Always Taken' technique as a starting point, one can achieve a balance between improved performance and hardware simplicity. This strategy serves as an excellent stepping stone for more advanced branch prediction techniques that can be incorporated in future iterations of the architecture.
+
+\section{Out-of-Order Execution}
+The existing architecture utilizes a conventional 5-stage pipeline comprising instruction fetch, decode, execute, memory access and write-back stages. While this in-order execution model is straightforward and effective for many applications, it leaves room for optimization, particularly in scenarios involving data hazards or long-latency operations. \\
+
+To transition to an out-of-order execution model, several significant hardware modifications would be required:
+
+\begin{itemize}
+    \item \textbf{Reorder Buffer}: A Reorder Buffer (ROB) would be needed to keep track of the original program order of instructions. This allows for the instructions to be executed out-of-order but committed (written back) in-order, ensuring program correctness. The ROB stores information about the instruction, its status, and the destination for the result.
+    
+    \item \textbf{Reservation Stations}: Reservation stations would be introduced to hold instructions that are ready to be executed but are waiting for the availability of operand data. Each reservation station would be associated with a specific functional unit, like an ALU or FPU, and would store the opcode and operands for each instruction.
+    
+    \item \textbf{Issue Logic}: A more complex issue logic would be required to scan the reservation stations and determine which instructions can be issued for execution based on operand availability. This logic would also handle the forwarding of results to dependent instructions.
+    
+    \item \textbf{Register Renaming}: To alleviate data hazards caused by the limited number of physical registers, register renaming would be implemented. This technique dynamically assigns physical registers to logical registers to avoid write-after-read and write-after-write hazards.
+    
+    \item \textbf{Functional Units}: Additional functional units may be required to support parallel execution of multiple instructions. This could include extra ALUs, FPUs, or specialized units for complex operations.
+    
+    \item \textbf{Complex Control Unit}: The control unit would become significantly more complicated, as it would now have to manage the dynamic scheduling of instructions, handle data hazards, and control multiple functional units. Advanced algorithms would be employed to efficiently manage these tasks.
+\end{itemize}
+
+\section{Floating-Point Operations}
+The current architecture lacks support for floating-point operations, which are essential for scientific computing, graphics, and other high-precision tasks. Implementing floating-point support would involve several significant hardware-level changes:
+
+\begin{itemize}
+    \item \textbf{Floating-Point Unit (FPU)}: a dedicated FPU would need to be integrated into the existing pipeline. This unit would handle floating-point arithmetic operations like addition, subtraction, multiplication, and division. Depending on the performance requirements, it might be beneficial to include multiple FPUs to support parallel execution of floating-point instructions.
+    
+    \item \textbf{Register File Extension}: the existing register file would need to be extended or an entirely new Register File would need to be created to store floating-point numbers. These registers would hold the operands and results of floating-point operations.
+    
+    \item \textbf{Instruction Set Architecture (ISA) Extensions}: the ISA would need to be extended to include new floating-point instructions. This would require updating also the Control Unit to recognize and handle these new instructions appropriately.
+\end{itemize}
+
+By implementing these hardware-level changes, the architecture would gain the capability to perform high-precision floating-point operations, thereby extending its applicability to a broader range of computational tasks.
+
+\section{ISA Extensions}
+The current Instruction Set Architecture (ISA) is designed for general-purpose computing but has potential for enhancements to meet specialized computational needs. Extending the ISA would necessitate various hardware-level modifications, which would entail strengthening all the architectures present within the processor. \\
+
+Unimplemented instructions:  \texttt{MOVI2S}, \texttt{MOVS2I}, \texttt{MOVF}, \texttt{MOVD}, \texttt{MOVFP2I}, \texttt{MOVI2FP}, \texttt{MOVI2T}, \texttt{MOVT2I}, \texttt{ADDF}, \texttt{SUBF}, \texttt{MULTF}, \texttt{DIVF}, \texttt{ADDD}, \texttt{SUBD}, \texttt{MULTD}, \texttt{DIVD}, \texttt{CVTF2D}, \texttt{CVTF2I}, \texttt{CVTD2F}, \texttt{CVTD2I}, \texttt{CVTI2F}, \texttt{CVTI2D}, \texttt{DIV}, \texttt{EQF}, \texttt{NEF}, \texttt{LTF}, \texttt{GTF}, \texttt{LEF}, \texttt{GEF}, \texttt{DIVU}, \texttt{EQD}, \texttt{NED}, \texttt{LTD}, \texttt{GTD}, \texttt{LED}, \texttt{GED}, \texttt{BFPT}, \texttt{BFPF}, \texttt{RFE}, \texttt{TRAP}, \texttt{LB}, \texttt{LH}, \texttt{LBU}, \texttt{LHU}, \texttt{LF}, \texttt{LD}, \texttt{SB}, \texttt{SH}, \texttt{SF}, \texttt{SD} and \texttt{ITLB}.
+
+\section{Script Enhancement}
+The current design flow incorporates various scripts that automate tasks across the simulation, synthesis and physical design phases. Although effective, there is room for additional improvements to establish a more integrated and robust automation framework. Below are some considerations and potential enhancements:
+
+\begin{itemize}
+    \item \textbf{Parameterization}: to facilitate the testing of different hardware parameters, particularly during the synthesis and physical design phases, the scripts could be extended to accept configurable parameters. This would enable quick exploration of the design space.
+
+    \item \textbf{Error Handling and Reporting}: incorporating error-handling mechanisms into the scripts would improve the robustness of the automation process. Additionally, generating logs or reports after each phase could prove beneficial for debugging and performance analysis.
+
+    \item \textbf{Automated Testing}: integrating automated test suites into the scripting environment would help verify the design's correctness after each modification, thereby enhancing the overall reliability of the project.
+\end{itemize}
+
+By implementing these enhancements, the automation framework would not only expedite prototyping but also provide a more robust and configurable environment for testing and validation, particularly in the synthesis and physical design stages.
+
+\section{Conclusion}
+Implementing these improvements would not only augment the processor's performance but also broaden its application spectrum. However, it's important to note that these modifications would substantially increase area and power consumption of the datapath and the processor as a whole.
